@@ -1,0 +1,102 @@
+version: "3.9"  # optional since v1.27.0
+services:
+  drops-database:
+    image: mariadb
+    container_name: drops-database
+    restart: unless-stopped
+    # Required for access from local running drops
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: drops
+      MYSQL_DATABASE: drops
+    command:
+      - "--character-set-server=utf8mb4"
+      - "--collation-server=utf8mb4_unicode_ci"
+    volumes: 
+       - ./.docker-volumes/drops-database/mysql/:/var/lib/mysql/
+    networks:
+       pool-network:
+         ipv4_address: 172.2.200.1
+
+  #############
+  # Dispenser #
+  #############
+
+  dispenser:
+    image: soteto/dispenser:latest
+    container_name: dispenser
+    restart: unless-stopped
+    volumes:
+      - ./.docker-conf/dispenser/application.conf:/opt/docker/conf/application.conf
+      - ./.docker-conf/navigation/:/opt/docker/conf/navigation/jsons/
+    ports:
+      - 7000:9000
+    networks:
+      pool-network:
+        ipv4_address: 172.2.100.4
+
+  dispenser-database:
+    image: mongo
+    container_name: dispenser-database
+    restart: always
+    volumes: 
+       - ./.docker-volumes/dispenser-database/mongodb/:/data/db/
+    # Required for access from local running dispenser
+    ports:
+       - 27017:27017
+    networks:
+      pool-network:
+        ipv4_address: 172.2.200.4
+
+  ################
+  # Architecture #
+  ###############
+
+#  nginx-main:
+#    image: nginx:1.13.7
+#    container_name: nginx-main
+#    restart: unless-stopped
+#    volumes:
+#      - ./.docker-conf/routes/nginx-main/:/etc/nginx/conf.d/
+     # - ./volumes/nginx-main/cert/wildcard.vivaconagua.org.chained.crt:/etc/nginx/wildcard.vivaconagua.org.chained.crt
+     # - ./volumes/nginx-main/cert/wildcard.vivaconagua.org.key:/etc/nginx/wildcard.vivaconagua.org.key
+#    ports:
+#      - 80:80
+#      - 443:443
+#    networks:
+#      pool-network:
+#        ipv4_address: 172.2.10.1
+
+  nginx-pool:
+    image: nginx:1.13.7
+    container_name: nginx-pool
+    restart: unless-stopped
+    volumes:
+      - ./.docker-conf/routes/nginx-pool/:/etc/nginx/conf.d/
+    ports:
+      - 80:80
+      - 443:443
+    extra_hosts:
+      # make 'localhost' ports available in nginx container by using 'host.docker.internal'
+      - "host.docker.internal:host-gateway"
+    networks:
+      pool-network:
+        ipv4_address: 172.2.10.2
+
+  nats:
+    image: nats:1.0.6
+    container_name: pool-nats
+    restart: unless-stopped
+    ports:
+      - 4222:4222
+    networks:
+      pool-network:
+        ipv4_address: 172.2.150.1
+
+networks:
+  pool-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.2.0.0/16

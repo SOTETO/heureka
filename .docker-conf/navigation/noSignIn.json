@@ -1,0 +1,19 @@
+{
+  "name":"default",
+  "involved":[
+    "/arise/#/signin",
+    "/arise/#/signup"
+  ],
+  "entrys": [
+    {
+      "label": { "de_DE": "reinloggen", "en_EN": "sign in" },
+      "render":true,
+      "url":"/arise/#/signin"
+    },
+    {
+      "label": { "de_DE": "mitmachen", "en_EN": "sign up" },
+      "render":true,
+      "url":"/arise/#/signup"
+    }
+  ]
+}

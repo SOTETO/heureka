@@ -1,0 +1,186 @@
+########################
+# Pool² Nginx Location #
+# Stage 2019_04_26     #
+########################
+
+
+###########
+# Backend #
+###########
+
+#location ^~ /backend {
+   #Stream backend
+#   location /backend/stream {
+#      proxy_pass http://stream-backend;
+#      proxy_set_header   X-Real-IP $remote_addr;
+#      proxy_set_header   X-Forwarded-Proto $scheme;
+#      proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+#      proxy_http_version 1.1;
+#      proxy_set_header   Upgrade $http_upgrade;
+#      proxy_set_header Connection "upgrade";
+#      proxy_set_header   Host $host;
+#   }
+   #Canal backend
+#   location /backend/canal {
+#      proxy_pass http://canal-backend;
+#      proxy_set_header   X-Real-IP $remote_addr;
+#      proxy_set_header   X-Forwarded-Proto $scheme;
+#      proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+#      proxy_http_version 1.1;
+#      proxy_set_header   Upgrade $http_upgrade;
+#      proxy_set_header Connection "upgrade";
+#      proxy_set_header   Host $host;
+#   }
+
+#}
+
+# Drops -- Arise backend 
+location /drops {
+   proxy_pass http://drops;
+   proxy_set_header   X-Real-IP $remote_addr;
+   proxy_set_header   X-Forwarded-Proto $scheme;
+   proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+   proxy_http_version 1.1;
+   proxy_set_header   Upgrade $http_upgrade;
+   proxy_set_header Connection "upgrade";
+   proxy_set_header   Host $http_host;
+}
+
+#############
+#   Assets  #
+#############
+#location /assets {
+#   proxy_pass http://assets-backend;
+#   proxy_set_header   X-Real-IP $remote_addr;
+#   proxy_set_header   Host $http_host;
+#}
+
+############
+# Frontend #
+############
+
+# Stream frontend
+#location /stream {
+#   return 301 /stream/;
+#}
+
+#location /stream/ {
+#   proxy_pass http://stream-frontend;
+#   proxy_set_header   X-Real-IP $remote_addr;
+#   proxy_set_header   X-Forwarded-Proto $scheme;
+#   proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+#   proxy_http_version 1.1;
+#   proxy_set_header   Upgrade $http_upgrade;
+#   proxy_set_header Connection "upgrade";
+#   proxy_set_header   Host $host;
+#}
+
+# Canal frontend
+#location /canal {
+#   proxy_pass http://canal-frontend;
+#   proxy_set_header   X-Real-IP $remote_addr;
+#   proxy_set_header   X-Forwarded-Proto $scheme;
+#   proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+#   proxy_http_version 1.1;
+#   proxy_set_header   Upgrade $http_upgrade;
+#   proxy_set_header Connection "upgrade";
+#   proxy_set_header   Host $host;
+#}
+
+# Arise frontend
+location /arise {
+   return 301 /arise/;
+}
+ 
+location /arise/ {
+   proxy_pass http://arise;
+   #proxy_set_header   X-Real-IP $remote_addr;
+   #proxy_set_header   X-Forwarded-Proto $scheme;
+   #proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+   proxy_http_version 1.1;
+   proxy_set_header   Upgrade $http_upgrade;
+   proxy_set_header Connection "upgrade";
+   proxy_set_header   Host $host;
+   # Added from Medium (https://medium.com/homullus/vuejs-dev-serve-with-reverse-proxy-cdc3c9756aeb)
+   #proxy_set_header    Host                localhost;
+   #proxy_set_header    X-Real-IP           $remote_addr;
+   #proxy_set_header    X-Forwarded-Host    localhost;
+   #proxy_set_header    X-Forwarded-Server  localhost;
+   #proxy_set_header    X-Forwarded-Proto   $scheme;
+   #proxy_set_header    X-Forwarded-For     $remote_addr;
+   #proxy_redirect off;
+   #proxy_connect_timeout 90s;
+   #proxy_read_timeout 90s;
+   #proxy_send_timeout 90s;
+}
+#location /arise/sockjs-node/ {
+#    proxy_pass http://arise/arise/sockjs-node/;
+#    proxy_http_version 1.1;
+#    proxy_set_header Upgrade $http_upgrade;
+#    proxy_set_header Connection "Upgrade";
+    # And now all the stuff from above, again.
+#    proxy_set_header    Host                localhost;
+#    proxy_set_header    X-Real-IP           $remote_addr;
+#    proxy_set_header    X-Forwarded-Host    localhost;
+#    proxy_set_header    X-Forwarded-Server  localhost;
+#    proxy_set_header    X-Forwarded-Proto   $scheme;
+#    proxy_set_header    X-Forwarded-For     $remote_addr;
+#    proxy_redirect off;
+#    proxy_connect_timeout 90s;
+#    proxy_read_timeout 90s;
+#    proxy_send_timeout 90s;
+#}
+
+# Bloob frontend
+
+#location /docu {
+#  proxy_pass http://docu;
+#  proxy_set_header   X-Real-IP $remote_addr;
+#   proxy_set_header   X-Forwarded-Proto $scheme;
+#   proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+#   proxy_http_version 1.1;
+#   proxy_set_header   Upgrade $http_upgrade;
+#   proxy_set_header Connection "upgrade";
+#   proxy_set_header   Host $host;
+
+#}
+
+# Waves frontend
+#location /waves {
+#   return 301 /waves/;
+#}
+ 
+#location /waves/ {
+#   proxy_pass http://waves-frontend;
+#   proxy_set_header   X-Real-IP $remote_addr;
+#   proxy_set_header   X-Forwarded-Proto $scheme;
+#   proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+#   proxy_http_version 1.1;
+#   proxy_set_header   Upgrade $http_upgrade;
+#   proxy_set_header Connection "upgrade";
+#   proxy_set_header   Host $host;
+#}
+
+
+#############
+# Dispenser #
+# ###########
+location /dispenser {
+	proxy_pass http://dispenser;
+        proxy_set_header   X-Real-IP $remote_addr;
+        proxy_set_header   X-Forwarded-Proto $scheme;
+        proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_http_version 1.1;
+        proxy_set_header   Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header   Host $http_host;
+}
+
+####################
+# Default Redirect #
+####################
+
+#Root
+location / {
+	return 301 /arise/#/signin/L2FyaXNlLyMvcHJvZmlsZQ==;
+}
