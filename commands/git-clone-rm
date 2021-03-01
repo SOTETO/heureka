@@ -1,0 +1,94 @@
+#!/bin/bash
+set -e
+
+export WORKDIR=$(cd $(dirname $0) && pwd)
+. "$WORKDIR/common"
+
+source "$WORKDIR/git-setup.cfg"
+
+declare -A gitPathes
+declare -A gitURLs
+declare -A gitBranch
+
+gitURLs[drops]=$drops_url
+gitURLs[arise]=$arise_url
+gitURLs[widgetUser]=$widget_user_url
+gitURLs[oauthModule]=$oauth_module_url
+
+gitBranch[drops]=$drops_branch
+gitBranch[arise]=$arise_branch
+gitBranch[widgetUser]=$widget_user_branch
+gitBranch[oauthModule]=$oauth_module_branch
+
+function getBase () {
+  local separated=""
+  local base=""
+  read -p "Do you want to enter one common base path for all repositories? [Y,n] " separated
+  case "$separated" in
+	Yes|yes|Y|y|"")
+	    local DIR="$(getDir)"
+	    DIR=${DIR%/*} # see https://tldp.org/LDP/LG/issue18/bash.html
+	    read -p "Enter the base path [$DIR]: " -e base
+	    if [[ $base == "" || -z $base ]]; then
+		base=$DIR
+	    fi
+	    ;;
+	No|no|N|n) base=""
+	    ;;
+	*) echo "Please answer 'Yes' or 'No'."
+           exit 1
+            ;;
+  esac
+  echo "$base"
+}
+
+function getRepoPath () {
+  local path
+  read -p "Enter a $3path for the repository of the $2 system $1 [$1]: " -e path
+  case "$path" in
+        $1|"") path="$1"
+            ;;
+  esac
+  echo "$path"
+}
+
+function createGITPathes () {
+  printf "Several GIT repositories have to be cloned.\nThus, you can define a base path for all the repositories or you can enter a path for each repository.\n\n"
+  local basePath="$(getBase)"
+  local sub="sub"
+  if [[ -z $basePath ]]; then
+    sub=""
+  fi
+  if [[ $basePath != *"/" && -n $basePath ]]; then
+    basePath="$basePath/"
+  fi
+  gitPathes[base]=$basePath
+  printf "\n"
+  gitPathes[drops]="$(getRepoPath $drops_name backend $sub)"
+  gitPathes[arise]="$(getRepoPath $arise_name frontend $sub)"
+  gitPathes[widgetUser]="$(getRepoPath $widget_user_name widget $sub)"
+  gitPathes[oauthModule]="$(getRepoPath $oauth_module_name module $sub)"
+}
+
+function clone() {
+  git clone --branch $3 $2 "${gitPathes[base]}$1"
+}
+
+function gitClone () {
+  mkdir -p "${gitPathes[base]}"
+
+  clone "${gitPathes[drops]}" "${gitURLs[drops]}" "${gitBranch[drops]}"
+  clone "${gitPathes[arise]}" "${gitURLs[arise]}" "${gitBranch[arise]}"
+  clone "${gitPathes[widgetUser]}" "${gitURLs[widgetUser]}" "${gitBranch[widgetUser]}"
+  clone "${gitPathes[oauthModule]}" "${gitURLs[oauthModule]}" "${gitBranch[oauthModule]}"
+
+}
+
+function gitRemove () {
+  rm -rf "${gitPathes[base]}${gitPathes[drops]}"
+  rm -rf "${gitPathes[base]}${gitPathes[arise]}"
+  rm -rf "${gitPathes[base]}${gitPathes[widgetUser]}"
+  rm -rf "${gitPathes[base]}${gitPathes[oauthModule]}"
+
+  # Todo: Remove all empty directories of the base path.
+}
