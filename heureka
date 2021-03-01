@@ -91,10 +91,10 @@ function gitClone () {
 }
 
 function gitRemove () {
-  rm -R "${gitPathes[base]}${gitPathes[drops]}"
-  rm -R "${gitPathes[base]}${gitPathes[arise]}"
-  rm -R "${gitPathes[base]}${gitPathes[widgetUser]}"
-  rm -R "${gitPathes[base]}${gitPathes[oauthModule]}"
+  rm -rf "${gitPathes[base]}${gitPathes[drops]}"
+  rm -rf "${gitPathes[base]}${gitPathes[arise]}"
+  rm -rf "${gitPathes[base]}${gitPathes[widgetUser]}"
+  rm -rf "${gitPathes[base]}${gitPathes[oauthModule]}"
 
   # Todo: Remove all empty directories of the base path.
 }
