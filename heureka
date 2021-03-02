@@ -2,12 +2,15 @@
 
 source "git-setup.cfg"
 
+source "commands/init"
 source "commands/git-clone-rm"
 source "commands/docker"
 
+stateFile=".state"
+
 function init () {
   printf "Welcome to HEUREKA!\nSetup a development environment to implement the microservice DROPS."
-  createGITPathes
+  initPathes
   printf "\n"
 
   for (( ; ; ))

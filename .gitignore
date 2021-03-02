@@ -1,3 +1,4 @@
 .docker-volumes/drops-database/mysql/*
 .docker-volumes/dispenser-database/mongodb/*
 *.swp
+.state
