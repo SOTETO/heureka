@@ -3,6 +3,7 @@
 source "git-setup.cfg"
 
 source "commands/git-clone-rm"
+source "commands/docker"
 
 function init () {
   printf "Welcome to HEUREKA!\nSetup a development environment to implement the microservice DROPS."
@@ -18,6 +19,12 @@ function init () {
 	  ;;
 	"rm")
 	  gitRemove
+	  ;;
+	"docker up")
+	  dockerRun
+	  ;;
+	"docker rm")
+	  dockerRm
 	  ;;
 	"exit") exit 1
 	  ;;

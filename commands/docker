@@ -1,0 +1,19 @@
+#!/bin/bash
+set -e
+
+export WORKDIR=$(cd $(dirname $0) && pwd)
+. "$WORKDIR/common"
+
+source "$WORKDIR/git-setup.cfg"
+
+function dockerRun () {
+  sudo docker-compose --env-file $WORKDIR/.docker-conf/docker-compose/.env.dev up -d
+}
+
+function dockerStop () {
+  sudo docker-compose --env-file $WORKDIR/.docker-conf/docker-compose/.env.dev stop
+}
+
+function dockerRm () {
+  sudo docker-compose --env-file $WORKDIR/.docker-conf/docker-compose/.env.dev rm -fs
+}

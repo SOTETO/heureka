@@ -1,15 +1,15 @@
 version: "3.9"  # optional since v1.27.0
 services:
   drops-database:
-    image: mariadb
+    image: "mariadb:${DROPS_DB_TAG}"
     container_name: drops-database
     restart: unless-stopped
     # Required for access from local running drops
     ports:
       - 3306:3306
     environment:
-      MYSQL_ROOT_PASSWORD: drops
-      MYSQL_DATABASE: drops
+      MYSQL_ROOT_PASSWORD: "${DROPS_DB_PASS}"
+      MYSQL_DATABASE: "${DROPS_DB_NAME}"
     command:
       - "--character-set-server=utf8mb4"
       - "--collation-server=utf8mb4_unicode_ci"
@@ -17,14 +17,14 @@ services:
        - ./.docker-volumes/drops-database/mysql/:/var/lib/mysql/
     networks:
        pool-network:
-         ipv4_address: 172.2.200.1
+         ipv4_address: ${DROPS_DB_IP}
 
   #############
   # Dispenser #
   #############
 
   dispenser:
-    image: soteto/dispenser:latest
+    image: "soteto/dispenser:${DISPENSER_TAG}"
     container_name: dispenser
     restart: unless-stopped
     volumes:
@@ -34,10 +34,10 @@ services:
       - 7000:9000
     networks:
       pool-network:
-        ipv4_address: 172.2.100.4
+        ipv4_address: ${DISPENSER_IP}
 
   dispenser-database:
-    image: mongo
+    image: "mongo:${DISPENSER_DB_TAG}"
     container_name: dispenser-database
     restart: always
     volumes: 
@@ -47,7 +47,7 @@ services:
        - 27017:27017
     networks:
       pool-network:
-        ipv4_address: 172.2.200.4
+        ipv4_address: ${DISPENSER_DB_IP}
 
   ################
   # Architecture #
@@ -69,7 +69,7 @@ services:
 #        ipv4_address: 172.2.10.1
 
   nginx-pool:
-    image: nginx:1.13.7
+    image: "nginx:${NGINX_POOL_TAG}"
     container_name: nginx-pool
     restart: unless-stopped
     volumes:
@@ -82,21 +82,21 @@ services:
       - "host.docker.internal:host-gateway"
     networks:
       pool-network:
-        ipv4_address: 172.2.10.2
+        ipv4_address: ${NGINX_POOL_IP}
 
   nats:
-    image: nats:1.0.6
+    image: "nats:${NATS_TAG}"
     container_name: pool-nats
     restart: unless-stopped
     ports:
       - 4222:4222
     networks:
       pool-network:
-        ipv4_address: 172.2.150.1
+        ipv4_address: ${NATS_IP}
 
 networks:
   pool-network:
     driver: bridge
     ipam:
       config:
-        - subnet: 172.2.0.0/16
+        - subnet: ${NETWORK_SUBNET}
