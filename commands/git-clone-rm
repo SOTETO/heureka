@@ -6,7 +6,6 @@ export WORKDIR=$(cd $(dirname $0) && pwd)
 
 source "$WORKDIR/git-setup.cfg"
 
-declare -A gitPathes
 declare -A gitURLs
 declare -A gitBranch
 
@@ -19,18 +18,6 @@ gitBranch[drops]=$drops_branch
 gitBranch[arise]=$arise_branch
 gitBranch[widgetUser]=$widget_user_branch
 gitBranch[oauthModule]=$oauth_module_branch
-
-function readPathes () {
-  if [ -f "$stateFile" ] # state file is declared in heureka bash main file
-  then
-    source "$stateFile"
-    gitPathes[base]=$path_base
-    gitPathes[drops]=$path_drops
-    gitPathes[arise]=$path_arise
-    gitPathes[widgetUser]=$path_widget_user
-    gitPathes[oauthModule]=$path_oauth_module
-  fi
-}
 
 function clone() {
   git clone --branch $3 $2 "${gitPathes[base]}$1"

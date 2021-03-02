@@ -6,8 +6,6 @@ export WORKDIR=$(cd $(dirname $0) && pwd)
 
 source "$WORKDIR/git-setup.cfg"
 
-declare -A gitPathes
-
 function getBase () {
   local separated=""
   local base=""
@@ -56,36 +54,6 @@ function createGITPathes () {
   gitPathes[arise]="$(getRepoPath $arise_name frontend $sub)"
   gitPathes[widgetUser]="$(getRepoPath $widget_user_name widget $sub)"
   gitPathes[oauthModule]="$(getRepoPath $oauth_module_name module $sub)"
-}
-
-function savePathes () {
-  if [ ! -f "$stateFile" ]; # state file is declared in heureka bash main file
-  then
-    touch "$stateFile"
-  fi
-
-  local line_base="path_base=${gitPathes[base]}"
-  local line_drops="path_drops=${gitPathes[drops]}"
-  local line_arise="path_arise=${gitPathes[arise]}"
-  local line_widget_user="path_widget_user=${gitPathes[widgetUser]}"
-  local line_oauth_module="path_oauth_module=${gitPathes[oauthModule]}"
-  echo "$line_base" >> "$stateFile"
-  echo "$line_drops" >> "$stateFile"
-  echo "$line_arise" >> "$stateFile"
-  echo "$line_widget_user" >> "$stateFile"
-  echo "$line_oauth_module" >> "$stateFile"
-}
-
-function readPathes () {
-  if [ -f "$stateFile" ] # state file is declared in heureka bash main file
-  then
-    source "$stateFile"
-    gitPathes[base]=$path_base
-    gitPathes[drops]=$path_drops
-    gitPathes[arise]=$path_arise
-    gitPathes[widgetUser]=$path_widget_user
-    gitPathes[oauthModule]=$path_oauth_module
-  fi
 }
 
 function initPathes () {

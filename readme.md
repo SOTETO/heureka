@@ -9,8 +9,8 @@ A Command-Line-Interface (CLI) to start the microservice MS-DROPS. It is the bas
 - Sudo access
 
 ## Commands
-- `git` - create the git repositories
-- `rm` - remove the git repositories
+- `git clone` - clone the git repositories
+- `git rm` - remove the git repositories
 - `docker up` - start the `docker-compose up` considering the `.docker-conf/docker-compose/.env.dev` file
 - `docker rm` - stop and remove all docker containers
 - `exit` - close the Heureka console

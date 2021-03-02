@@ -6,8 +6,6 @@ source "commands/init"
 source "commands/git-clone-rm"
 source "commands/docker"
 
-stateFile=".state"
-
 function init () {
   printf "Welcome to HEUREKA!\nSetup a development environment to implement the microservice DROPS."
   initPathes
@@ -17,10 +15,10 @@ function init () {
   do
     read -p "heureka> " cmd
     case "$cmd" in
-	"git")
+	"git clone")
 	  gitClone
 	  ;;
-	"rm")
+	"git rm")
 	  gitRemove
 	  ;;
 	"docker up")
