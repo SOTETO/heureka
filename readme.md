@@ -9,8 +9,14 @@ A Command-Line-Interface (CLI) to start the microservice MS-DROPS. It is the bas
 - Sudo access
 
 ## Commands
-- `git clone` - clone the git repositories
-- `git rm` - remove the git repositories
-- `docker up` - start the `docker-compose up` considering the `.docker-conf/docker-compose/.env.dev` file
-- `docker rm` - stop and remove all docker containers
+- `git clone` - Clone the required git repositories
+- `git rm` - Remove the git repositories
+- `docker up` - Start the `docker-compose up` considering the `.docker-conf/docker-compose/.env.dev` file
+- `docker rm` - Stop and remove all docker containers described in the docker-compose file
+- `docker rm drops volumes` - Remove the drops volumes. That means the database contents.
+- `docker rm dispenser volumes` - Remove the dispenser volumes. That means the database contents.
+- `drops up man` - Shows a manual explaining how to setup the DROPS backend service
+- `drops admin` - Sets admin access rights in DROPS for a specific user identified by its email address
+- `arise up man` - Shows a manual explaining how to setup the ARISE frontend service
 - `exit` - close the Heureka console
+- * - Help

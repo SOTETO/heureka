@@ -17,3 +17,7 @@ function dockerStop () {
 function dockerRm () {
   sudo docker-compose --env-file $WORKDIR/.docker-conf/docker-compose/.env.dev rm -fs
 }
+
+function dockerRmVolumes () {
+  sudo rm -R $WORKDIR/.docker-volumes/$1/mysql/*
+}

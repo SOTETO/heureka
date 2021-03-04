@@ -5,6 +5,28 @@ source "git-setup.cfg"
 source "commands/init"
 source "commands/git-clone-rm"
 source "commands/docker"
+source "commands/drops"
+source "commands/arise"
+
+function man () {
+  echo "
+HEUREKA CLI
+Version: $(cat $(getDir)/VERSION)
+Usage: [command]
+Commands:
+  git clone   			Clone the required git repositories
+  git rm      			Remove the git repositories
+  docker up   			Start the 'docker-compose up' considering the '.docker-conf/docker-compose/.env.dev' file
+  docker rm   			Stop and remove all docker containers described in the docker-compose file
+  docker rm drops volumes	Remove the drops volumes. That means the database contents.
+  docker rm dispenser volumes   Remove the dispenser volumes. That means the database contents.
+  drops up man			Shows a manual explaining how to setup the DROPS backend service
+  drops admin			Sets admin access rights in DROPS for a specific user identified by its email address
+  arise up man			Shows a manual explaining how to setup the ARISE frontend service
+  exit				Close console
+  *           			Help
+"
+}
 
 function init () {
   printf "Welcome to HEUREKA!\nSetup a development environment to implement the microservice DROPS."
@@ -27,7 +49,26 @@ function init () {
 	"docker rm")
 	  dockerRm
 	  ;;
-	"exit") exit 1
+	"docker rm drops volumes")
+	  dockerRmVolumes drops-database
+	  ;;
+	"docker rm dispenser volumes")
+	  dockerRmVolumes dispenser-database
+	  ;;
+	"drops up man")
+	  dropsMan
+	  ;;
+	"drops admin")
+	  dropsAdmin
+	  ;;
+	"arise up man")
+	  ariseMan
+	  ;;
+	"exit")
+	  exit 1
+	  ;;
+	*)
+	  man
 	  ;;
 	# Todo: catch arrow up and down
     esac
