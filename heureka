@@ -35,34 +35,77 @@ function init () {
 
   for (( ; ; ))
   do
-    read -p "heureka> " cmd
+    read -r -p "heureka> " cmd sub para1 para2
     case "$cmd" in
-	"git clone")
-	  gitClone
+	"git")
+	  case "$sub" in
+		"clone") gitClone
+			;;
+		"rm") gitRemove
+			;;
+	        *) man
+			;;
+	  esac
 	  ;;
-	"git rm")
-	  gitRemove
+	"docker")
+	  case "$sub" in
+		"up") dockerRun
+			;;
+		"rm")
+		  case "$para1" in
+			"drops")
+			  case "$para2" in
+				"volumes") dockerRmVolumes drops-database
+					;;
+				*) man
+					;;
+			  esac
+			  ;;
+			"dispenser")
+			  case "$para2" in
+				"volumes") dockerRmVolumes dispenser-database
+					;;
+				*) man
+					;;
+			  esac
+			  ;;
+			"") dockerRm
+			  ;;
+			*) man
+			  ;;
+		  esac
+			;;
+		*) man
+			;;
+	  esac
 	  ;;
-	"docker up")
-	  dockerRun
+	"drops")
+	  case "$sub" in
+		"up")
+		  case "$para1" in
+			"man") dropsMan
+			  ;;
+			*) man
+			  ;;
+		  esac
+			;;
+		"admin") dropsAdmin
+	  		;;
+	  esac
 	  ;;
-	"docker rm")
-	  dockerRm
-	  ;;
-	"docker rm drops volumes")
-	  dockerRmVolumes drops-database
-	  ;;
-	"docker rm dispenser volumes")
-	  dockerRmVolumes dispenser-database
-	  ;;
-	"drops up man")
-	  dropsMan
-	  ;;
-	"drops admin")
-	  dropsAdmin
-	  ;;
-	"arise up man")
-	  ariseMan
+	"arise")
+	  case "$sub" in
+		"up")
+		  case "$para1" in
+			"man") ariseMan
+	  		  ;;
+			*) man
+			  ;;
+		  esac
+			;;
+		*) man
+			;;
+	  esac
 	  ;;
 	"exit")
 	  exit 1
@@ -76,5 +119,3 @@ function init () {
 }
 
 init
-
-# TODO: start docker; start local develop systems
