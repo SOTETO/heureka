@@ -14,6 +14,18 @@ HEUREKA CLI
 Version: $(cat $(getDir)/VERSION)
 Usage: [command]
 Commands:
+  dev	                        Start dev environment
+  exit                          Close console
+  *                             Help
+"
+}
+
+function devMan () {
+  echo "
+HEUREKA DEV-CLI
+Version: $(cat $(getDir)/VERSION)
+Usage: [command]
+Commands:
   git clone   			Clone the required git repositories
   git rm      			Remove the git repositories
   docker up   			Start the 'docker-compose up' considering the '.docker-conf/docker-compose/.env.dev' file
@@ -23,6 +35,7 @@ Commands:
   drops up man			Shows a manual explaining how to setup the DROPS backend service
   drops admin			Sets admin access rights in DROPS for a specific user identified by its email address
   arise up man			Shows a manual explaining how to setup the ARISE frontend service
+  leave				Leave DEV environment
   exit				Close console
   *           			Help
 "
@@ -32,10 +45,27 @@ function init () {
   printf "Welcome to HEUREKA!\nSetup a development environment to implement the microservice DROPS."
   initPathes
   printf "\n"
-
   for (( ; ; ))
   do
-    read -r -p "heureka> " cmd sub para1 para2
+    read -r -p "heureka> " environment
+    case "$environment" in
+	"dev")
+	  dev
+	  ;;
+	"exit")
+	  exit 1
+	  ;;
+	*)
+	  man
+	  ;;
+    esac
+  done
+}
+
+function dev () {
+  for (( ; ; ))
+  do
+    read -r -p "heureka-DEV> " cmd sub para1 para2
     case "$cmd" in
 	"git")
 	  case "$sub" in
@@ -107,11 +137,14 @@ function init () {
 			;;
 	  esac
 	  ;;
+	"leave")
+	  break
+	  ;;
 	"exit")
 	  exit 1
 	  ;;
 	*)
-	  man
+	  devMan
 	  ;;
 	# Todo: catch arrow up and down
     esac
