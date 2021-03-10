@@ -8,13 +8,18 @@ source "commands/docker"
 source "commands/drops"
 source "commands/arise"
 
+RED='\033[0;31m'
+YELLOW='\033[1;33m'
+LIGHTBLUE=='\033[1;34m'
+NC='\033[0m' # No Color
+
 function man () {
-  echo "
-HEUREKA CLI
+  echo -e "
+${YELLOW}HEUREKA CLI${NC}
 Version: $(cat $(getDir)/VERSION)
 Usage: [command]
 Commands:
-  dev	                        Start development environment
+  dev drops                     Start development environment for MS-DROPS
   prod				Start production environment
   exit                          Close console
   *                             Help
@@ -22,8 +27,8 @@ Commands:
 }
 
 function prodMan () {
-  echo "
-HEUREKA PROD-CLI
+  echo -e "
+${YELLOW}HEUREKA PROD-CLI${NC}
 Version: $(cat $(getDir)/VERSION)
 Usage: [command]
 Commands:
@@ -40,8 +45,9 @@ Commands:
 }
 
 function devMan () {
-  echo "
-HEUREKA DEV-CLI
+  echo -e "
+${YELLOW}HEUREKA DEV-CLI${NC}
+MICROSERVICE: $1
 Version: $(cat $(getDir)/VERSION)
 Usage: [command]
 Commands:
@@ -61,15 +67,22 @@ Commands:
 }
 
 function init () {
-  printf "Welcome to HEUREKA!\nSetup a development environment to implement the microservice DROPS."
+  printf "Welcome to ${YELLOW}HEUREKA!${NC}\nSetup a development environment to implement the microservice DROPS."
   initPathes
   printf "\n"
   for (( ; ; ))
   do
-    read -r -p "heureka> " environment
+    read -r -p $'\033[1;33mheureka> \e[0m' environment ms
     case "$environment" in
 	"dev")
-	  dev
+	  case "$ms" in
+	    "drops")
+	      dev "DROPS"
+	      ;;
+	    *)
+	      man
+	      ;;
+	  esac
 	  ;;
 	"prod")
 	  prod
@@ -87,7 +100,7 @@ function init () {
 function prod () {
   for (( ; ; ))
   do
-    read -r -p "heureka-PROD> " cmd para1 para2
+    read -r -p $'\033[1;33mheureka-\033[1;34mPROD\033[1;33m> \e[0m' cmd para1 para2
     case "$cmd" in
 	"up")
 	  dockerRun prod
@@ -138,15 +151,19 @@ function prod () {
 function dev () {
   for (( ; ; ))
   do
-    read -r -p "heureka-DEV> " cmd sub para1 para2
+    read -r -p $'\033[1;33mheureka-\033[1;34mDEV\033[1;33m-\033[1;34m'$1$'\033[1;33m> \e[0m' cmd sub para1 para2
     case "$cmd" in
+	"up")
+	  gitClone
+	  dockerRun dev
+	  ;;
 	"git")
 	  case "$sub" in
 		"clone") gitClone
 			;;
 		"rm") gitRemove
 			;;
-	        *) devMan
+	        *) devMan $1
 			;;
 	  esac
 	  ;;
@@ -160,7 +177,7 @@ function dev () {
 			  case "$para2" in
 				"volumes") dockerRmVolumes drops-database mysql
 					;;
-				*) devMan
+				*) devMan $1
 					;;
 			  esac
 			  ;;
@@ -168,17 +185,17 @@ function dev () {
 			  case "$para2" in
 				"volumes") dockerRmVolumes dispenser-database mongo
 					;;
-				*) devMan
+				*) devMan $1
 					;;
 			  esac
 			  ;;
 			"") dockerRm dev
 			  ;;
-			*) devMan
+			*) devMan $1
 			  ;;
 		  esac
 			;;
-		*) devMan
+		*) devMan $1
 			;;
 	  esac
 	  ;;
@@ -188,12 +205,14 @@ function dev () {
 		  case "$para1" in
 			"man") dropsMan
 			  ;;
-			*) devMan
+			*) devMan $1
 			  ;;
 		  esac
 			;;
 		"admin") dropsAdmin
 	  		;;
+		*) devMan $1
+			;;
 	  esac
 	  ;;
 	"arise")
@@ -202,11 +221,11 @@ function dev () {
 		  case "$para1" in
 			"man") ariseMan
 	  		  ;;
-			*) devMan
+			*) devMan $1
 			  ;;
 		  esac
 			;;
-		*) devMan
+		*) devMan $1
 			;;
 	  esac
 	  ;;
@@ -217,7 +236,7 @@ function dev () {
 	  exit 1
 	  ;;
 	*)
-	  devMan
+	  devMan $1
 	  ;;
 	# Todo: catch arrow up and down
     esac
