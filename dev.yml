@@ -1,0 +1,40 @@
+version: "3.9"  # optional since v1.27.0
+services:
+  drops-database:
+    ports:
+      - 3306:3306
+    volumes: 
+       - ./.docker-volumes/drops-database/dev-mysql/:/var/lib/mysql/
+
+  #############
+  # Dispenser #
+  #############
+
+  dispenser:
+    volumes:
+      - ./.docker-conf/dev-dispenser/application.conf:/opt/docker/conf/application.conf
+      - ./.docker-conf/dev-navigation/:/opt/docker/conf/navigation/jsons/
+    ports:
+      - 7000:9000
+
+  dispenser-database:
+    volumes: 
+       - ./.docker-volumes/dispenser-database/dev-mongo/:/data/db/
+    # Required for access from local running dispenser
+    ports:
+       - 27017:27017
+
+  ################
+  # Architecture #
+  ###############
+
+  nginx-pool:
+    volumes:
+      - ./.docker-conf/routes/dev-nginx/:/etc/nginx/conf.d/
+    extra_hosts:
+      # make 'localhost' ports available in nginx container by using 'host.docker.internal'
+      - "host.docker.internal:host-gateway"
+
+  nats:
+    ports:
+      - 4222:4222

@@ -1,0 +1,48 @@
+version: "3.9"  # optional since v1.27.0
+services:
+  arise:
+    image: soteto/arise:${ARISE_TAG}
+    #build: ./repos/arise
+    container_name: arise
+    restart: unless-stopped
+    networks:
+      pool-network:
+        ipv4_address: ${ARISE_IP}
+  
+  drops:
+    image: soteto/drops:${DROPS_TAG}
+    container_name: drops
+    restart: unless-stopped
+#    links:
+#      - nats
+#      - drops-database
+    volumes:
+      - ./.docker-conf/prod-drops/application.conf:/opt/docker/conf/application.conf
+    networks:
+      pool-network:
+        ipv4_address: ${DROPS_IP}
+
+  drops-database:
+    volumes: 
+       - ./.docker-volumes/drops-database/prod-mysql/:/var/lib/mysql/
+
+  #############
+  # Dispenser #
+  #############
+
+  dispenser:
+    volumes:
+      - ./.docker-conf/prod-dispenser/application.conf:/opt/docker/conf/application.conf
+      - ./.docker-conf/prod-navigation/:/opt/docker/conf/navigation/jsons/
+
+  dispenser-database:
+    volumes: 
+       - ./.docker-volumes/dispenser-database/prod-mongo/:/data/db/
+
+  ################
+  # Architecture #
+  ###############
+
+  nginx-pool:
+    volumes:
+      - ./.docker-conf/routes/prod-nginx/:/etc/nginx/conf.d/

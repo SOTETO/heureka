@@ -1,23 +1,43 @@
 #!/bin/bash
 set -e
 
-export WORKDIR=$(cd $(dirname $0) && pwd)
+export WORKDIR=$(cd $(dirname $(dirname $0)) && pwd)
 . "$WORKDIR/common"
 
 source "$WORKDIR/git-setup.cfg"
 
+dev="-f base.yml -f dev.yml"
+prod="-f base.yml -f prod.yml"
+
+# $1 = selector for development environment (value "dev") or production environment (value "prod")
 function dockerRun () {
-  sudo docker-compose --env-file $WORKDIR/.docker-conf/docker-compose/.env.dev up -d
+  local compose=$dev
+  if [[ $1 == "prod" ]]; then
+    compose=$prod
+  fi
+  sudo docker-compose $compose --env-file $WORKDIR/.docker-conf/docker-compose/.env.$1 up -d
 }
 
+# $1 = selector for development environment (value "dev") or production environment (value "prod")
 function dockerStop () {
-  sudo docker-compose --env-file $WORKDIR/.docker-conf/docker-compose/.env.dev stop
+  local compose=$dev
+  if [[ $1 == "prod" ]]; then
+    compose=$prod
+  fi
+  sudo docker-compose $compose --env-file $WORKDIR/.docker-conf/docker-compose/.env.$1 stop
 }
 
+# $1 = selector for development environment (value "dev") or production environment (value "prod")
 function dockerRm () {
-  sudo docker-compose --env-file $WORKDIR/.docker-conf/docker-compose/.env.dev rm -fs
+  local compose=$dev
+  if [[ $1 == "prod" ]]; then
+    compose=$prod
+  fi
+  sudo docker-compose $compose --env-file $WORKDIR/.docker-conf/docker-compose/.env.$1 rm -fs
 }
 
+# $1 = selector for development environment (value "dev") or production environment (value "prod")
+# $2 = database container name and $3 = database technology (mysql or mongo)
 function dockerRmVolumes () {
-  sudo rm -R $WORKDIR/.docker-volumes/$1/mysql/*
+  sudo rm -R $WORKDIR/.docker-volumes/$2/$1-$3/*
 }

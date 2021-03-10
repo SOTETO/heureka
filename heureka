@@ -14,7 +14,26 @@ HEUREKA CLI
 Version: $(cat $(getDir)/VERSION)
 Usage: [command]
 Commands:
-  dev	                        Start dev environment
+  dev	                        Start development environment
+  prod				Start production environment
+  exit                          Close console
+  *                             Help
+"
+}
+
+function prodMan () {
+  echo "
+HEUREKA PROD-CLI
+Version: $(cat $(getDir)/VERSION)
+Usage: [command]
+Commands:
+  up				Start the 'docker-compose up' considering the '.docker-conf/docker-compose/.env.prod' file
+  stop				Stop all created containers.
+  rm				Stop and remove all docker containers described in the docker-compose files
+  rm drops volumes		Remove the drops volumes. That means the database contents.
+  rm dispenser volumes		Remove the dispenser volumes. That means the database contents.
+  admin				Sets admin access rights in DROPS for a specific user identified by its email address
+  leave                         Leave PROD environment
   exit                          Close console
   *                             Help
 "
@@ -29,7 +48,7 @@ Commands:
   git clone   			Clone the required git repositories
   git rm      			Remove the git repositories
   docker up   			Start the 'docker-compose up' considering the '.docker-conf/docker-compose/.env.dev' file
-  docker rm   			Stop and remove all docker containers described in the docker-compose file
+  docker rm   			Stop and remove all docker containers described in the docker-compose files
   docker rm drops volumes	Remove the drops volumes. That means the database contents.
   docker rm dispenser volumes   Remove the dispenser volumes. That means the database contents.
   drops up man			Shows a manual explaining how to setup the DROPS backend service
@@ -52,11 +71,65 @@ function init () {
 	"dev")
 	  dev
 	  ;;
+	"prod")
+	  prod
+	  ;;
 	"exit")
 	  exit 1
 	  ;;
 	*)
 	  man
+	  ;;
+    esac
+  done
+}
+
+function prod () {
+  for (( ; ; ))
+  do
+    read -r -p "heureka-PROD> " cmd para1 para2
+    case "$cmd" in
+	"up")
+	  dockerRun prod
+	  ;;
+	"stop")
+	  dockerStop prod
+	  ;;
+	"rm")
+	  case "$para1" in
+              "drops")
+                case "$para2" in
+                    "volumes") dockerRmVolumes drops-database mysql
+                       ;;
+                    *) prodMan
+                       ;;
+                esac
+                  ;;
+              "dispenser")
+                case "$para2" in
+                    "volumes") dockerRmVolumes dispenser-database mongo
+                       ;;
+                    *) prodMan
+                       ;;
+                esac
+                  ;;
+               "") dockerRm prod
+                  ;;
+               *) prodMan
+                  ;;
+          esac
+	  ;;
+	"admin")
+	  dropsAdmin
+	  ;;
+	"leave")
+	  break
+	  ;;
+	"exit")
+	  exit 1
+	  ;;
+	*)
+	  prodMan
 	  ;;
     esac
   done
@@ -73,39 +146,39 @@ function dev () {
 			;;
 		"rm") gitRemove
 			;;
-	        *) man
+	        *) devMan
 			;;
 	  esac
 	  ;;
 	"docker")
 	  case "$sub" in
-		"up") dockerRun
+		"up") dockerRun dev
 			;;
 		"rm")
 		  case "$para1" in
 			"drops")
 			  case "$para2" in
-				"volumes") dockerRmVolumes drops-database
+				"volumes") dockerRmVolumes drops-database mysql
 					;;
-				*) man
+				*) devMan
 					;;
 			  esac
 			  ;;
 			"dispenser")
 			  case "$para2" in
-				"volumes") dockerRmVolumes dispenser-database
+				"volumes") dockerRmVolumes dispenser-database mongo
 					;;
-				*) man
+				*) devMan
 					;;
 			  esac
 			  ;;
-			"") dockerRm
+			"") dockerRm dev
 			  ;;
-			*) man
+			*) devMan
 			  ;;
 		  esac
 			;;
-		*) man
+		*) devMan
 			;;
 	  esac
 	  ;;
@@ -115,7 +188,7 @@ function dev () {
 		  case "$para1" in
 			"man") dropsMan
 			  ;;
-			*) man
+			*) devMan
 			  ;;
 		  esac
 			;;
@@ -129,11 +202,11 @@ function dev () {
 		  case "$para1" in
 			"man") ariseMan
 	  		  ;;
-			*) man
+			*) devMan
 			  ;;
 		  esac
 			;;
-		*) man
+		*) devMan
 			;;
 	  esac
 	  ;;

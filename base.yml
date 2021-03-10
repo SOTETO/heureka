@@ -5,8 +5,8 @@ services:
     container_name: drops-database
     restart: unless-stopped
     # Required for access from local running drops
-    ports:
-      - 3306:3306
+#    ports:
+#      - 3306:3306
     environment:
       MYSQL_ROOT_PASSWORD: "${DROPS_DB_ROOT_PASS}"
       MYSQL_DATABASE: "${DROPS_DB_NAME}"
@@ -15,8 +15,8 @@ services:
     command:
       - "--character-set-server=utf8mb4"
       - "--collation-server=utf8mb4_unicode_ci"
-    volumes: 
-       - ./.docker-volumes/drops-database/mysql/:/var/lib/mysql/
+#    volumes: 
+#       - ./.docker-volumes/drops-database/mysql/:/var/lib/mysql/
     networks:
        pool-network:
          ipv4_address: ${DROPS_DB_IP}
@@ -29,11 +29,11 @@ services:
     image: "soteto/dispenser:${DISPENSER_TAG}"
     container_name: dispenser
     restart: unless-stopped
-    volumes:
-      - ./.docker-conf/dispenser/application.conf:/opt/docker/conf/application.conf
-      - ./.docker-conf/navigation/:/opt/docker/conf/navigation/jsons/
-    ports:
-      - 7000:9000
+#    volumes:
+#      - ./.docker-conf/dispenser/application.conf:/opt/docker/conf/application.conf
+#      - ./.docker-conf/navigation/:/opt/docker/conf/navigation/jsons/
+#    ports:
+#      - 7000:9000
     networks:
       pool-network:
         ipv4_address: ${DISPENSER_IP}
@@ -42,11 +42,11 @@ services:
     image: "mongo:${DISPENSER_DB_TAG}"
     container_name: dispenser-database
     restart: always
-    volumes: 
-       - ./.docker-volumes/dispenser-database/mongodb/:/data/db/
+#    volumes: 
+#       - ./.docker-volumes/dispenser-database/mongodb/:/data/db/
     # Required for access from local running dispenser
-    ports:
-       - 27017:27017
+#    ports:
+#       - 27017:27017
     networks:
       pool-network:
         ipv4_address: ${DISPENSER_DB_IP}
@@ -74,14 +74,14 @@ services:
     image: "nginx:${NGINX_POOL_TAG}"
     container_name: nginx-pool
     restart: unless-stopped
-    volumes:
-      - ./.docker-conf/routes/nginx-pool/:/etc/nginx/conf.d/
+#    volumes:
+#      - ./.docker-conf/routes/nginx-pool/:/etc/nginx/conf.d/
     ports:
       - 80:80
       - 443:443
-    extra_hosts:
+#    extra_hosts:
       # make 'localhost' ports available in nginx container by using 'host.docker.internal'
-      - "host.docker.internal:host-gateway"
+#      - "host.docker.internal:host-gateway"
     networks:
       pool-network:
         ipv4_address: ${NGINX_POOL_IP}
@@ -90,8 +90,8 @@ services:
     image: "nats:${NATS_TAG}"
     container_name: pool-nats
     restart: unless-stopped
-    ports:
-      - 4222:4222
+#    ports:
+#      - 4222:4222
     networks:
       pool-network:
         ipv4_address: ${NATS_IP}
