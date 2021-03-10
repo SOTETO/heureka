@@ -29,7 +29,7 @@ Setting up a microservice environment requires a lot of configuration. This cons
 - `arise up man` - Shows a manual explaining how to setup the ARISE frontend service
 - `leave` - Leave `DEV` environment
 - `exit` - close the Heureka console
-- * - Help
+- \* - Help
 
 Follow the upcoming steps to create your development environment:
 1. `git clone`
@@ -51,7 +51,7 @@ If you want to setup a production environment, you have the following commands:
 - `admin` - Sets admin access rights in DROPS for a specific user identified by its email address
 - `leave` - Leave `PROD` environment
 - `exit` - Close console
-- * - Help
+- \* - Help
 
 Follow the upcoming steps to create your development environment:
 1. `up`
