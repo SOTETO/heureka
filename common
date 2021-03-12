@@ -5,6 +5,15 @@ stateFile=".state"
 
 declare -A gitPathes
 
+while read line; do
+    if [[ $line =~ ^"["(.+)"]"$ ]]; then
+        arrname=${BASH_REMATCH[1]}
+        declare -A $arrname
+    elif [[ $line =~ ^([_[:alpha:]][_[:alnum:]]*)"="(.*) ]]; then
+        declare ${arrname}[${BASH_REMATCH[1]}]="${BASH_REMATCH[2]}"
+    fi
+done < git-setup.cfg
+
 function getDir () {
   # Taken from https://stackoverflow.com/questions/59895/how-can-i-get-the-source-directory-of-a-bash-script-from-within-the-script-itsel
   local SOURCE="${BASH_SOURCE[0]}"
@@ -18,32 +27,38 @@ function getDir () {
   echo "$DIR"
 }
 
-function savePathes () {
-  if [ ! -f "$stateFile" ]; # state file is declared in heureka bash main file
-  then
-    touch "$stateFile"
-  fi
-
-  local line_base="path_base=${gitPathes[base]}"
-  local line_drops="path_drops=${gitPathes[drops]}"
-  local line_arise="path_arise=${gitPathes[arise]}"
-  local line_widget_user="path_widget_user=${gitPathes[widgetUser]}"
-  local line_oauth_module="path_oauth_module=${gitPathes[oauthModule]}"
-  echo "$line_base" >> "$stateFile"
-  echo "$line_drops" >> "$stateFile"
-  echo "$line_arise" >> "$stateFile"
-  echo "$line_widget_user" >> "$stateFile"
-  echo "$line_oauth_module" >> "$stateFile"
-}
-
-function readPathes () {
-  if [ -f "$stateFile" ] # state file is declared in heureka bash main file
-  then
-    source "$stateFile"
-    gitPathes[base]=$path_base
-    gitPathes[drops]=$path_drops
-    gitPathes[arise]=$path_arise
-    gitPathes[widgetUser]=$path_widget_user
-    gitPathes[oauthModule]=$path_oauth_module
-  fi
+function expandPath () {
+  # Taken from https://stackoverflow.com/questions/3963716/how-to-manually-expand-a-special-variable-ex-tilde-in-bash/29310477#29310477
+  local path
+  local -a pathElements resultPathElements
+  IFS=':' read -r -a pathElements <<<"$1"
+  : "${pathElements[@]}"
+  for path in "${pathElements[@]}"; do
+    : "$path"
+    case $path in
+      "~+"/*)
+        path=$PWD/${path#"~+/"}
+        ;;
+      "~-"/*)
+        path=$OLDPWD/${path#"~-/"}
+        ;;
+      "~"/*)
+        path=$HOME/${path#"~/"}
+        ;;
+      "~"*)
+        username=${path%%/*}
+        username=${username#"~"}
+        IFS=: read -r _ _ _ _ _ homedir _ < <(getent passwd "$username")
+        if [[ $path = */* ]]; then
+          path=${homedir}/${path#*/}
+        else
+          path=$homedir
+        fi
+        ;;
+    esac
+    resultPathElements+=( "$path" )
+  done
+  local result
+  printf -v result '%s:' "${resultPathElements[@]}"
+  printf '%s\n' "${result%:}"
 }

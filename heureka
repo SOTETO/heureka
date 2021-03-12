@@ -1,7 +1,5 @@
 #!/bin/bash
 
-source "git-setup.cfg"
-
 source "commands/init"
 source "commands/git-clone-rm"
 source "commands/docker"
@@ -66,9 +64,24 @@ Commands:
 "
 }
 
+function infraMan () {
+  echo -e "
+${YELLOW}HEUREKA DEV-CLI${NC}
+INFRASTRUCTURE REQUIRED TO RUN MICROSERVICES
+Version: $(cat $(getDir)/VERSION)
+Usage: [command]
+Commands:
+  clone                         Clone the required git repositories
+  rm                            Remove the git repositories
+  leave                         Leave DEV environment
+  exit                          Close console
+  *                             Help
+"
+}
+
 function init () {
   printf "Welcome to ${YELLOW}HEUREKA!${NC}\nSetup a development environment to implement the microservice DROPS."
-  initPathes
+  #initPathes
   printf "\n"
   for (( ; ; ))
   do
@@ -78,6 +91,9 @@ function init () {
 	  case "$ms" in
 	    "drops")
 	      dev "DROPS"
+	      ;;
+	    "infra")
+	      infra
 	      ;;
 	    *)
 	      man
@@ -154,14 +170,14 @@ function dev () {
     read -r -p $'\033[1;33mheureka-\033[1;34mDEV\033[1;33m-\033[1;34m'$1$'\033[1;33m> \e[0m' cmd sub para1 para2
     case "$cmd" in
 	"up")
-	  gitClone
+	  gitClone drops
 	  dockerRun dev
 	  ;;
 	"git")
 	  case "$sub" in
-		"clone") gitClone
+		"clone") gitClone drops
 			;;
-		"rm") gitRemove
+		"rm") gitRemove drops
 			;;
 	        *) devMan $1
 			;;
@@ -239,6 +255,20 @@ function dev () {
 	  devMan $1
 	  ;;
 	# Todo: catch arrow up and down
+    esac
+  done
+}
+
+function infra () {
+  for (( ; ; ))
+  do
+    read -r -p $'\033[1;33mheureka-\033[1;34mDEV\033[1;33m-\033[1;34mINFRA\033[1;33m> \e[0m' cmd
+    case "$cmd" in
+      "clone") gitClone infra;;
+      "rm") gitRemove infra;;
+      "leave") break;;
+      "exit") exit 1;;
+      *) infraMan;;
     esac
   done
 }

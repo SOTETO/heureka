@@ -4,42 +4,53 @@ set -e
 export WORKDIR=$(cd $(dirname $0) && pwd)
 . "$WORKDIR/common"
 
-source "$WORKDIR/git-setup.cfg"
-
-declare -A gitURLs
-declare -A gitBranch
-
-gitURLs[drops]=$drops_url
-gitURLs[arise]=$arise_url
-gitURLs[widgetUser]=$widget_user_url
-gitURLs[oauthModule]=$oauth_module_url
-
-gitBranch[drops]=$drops_branch
-gitBranch[arise]=$arise_branch
-gitBranch[widgetUser]=$widget_user_branch
-gitBranch[oauthModule]=$oauth_module_branch
-
 function clone() {
-  git clone --branch $3 $2 "${gitPathes[base]}$1"
+  #echo "git clone --branch $3 $2 $1"
+  git clone --branch $3 $2 $1
 }
 
 function gitClone () {
-  readPathes
-  mkdir -p "${gitPathes[base]}"
+  case "$1" in
+    "drops") gitCloneDrops;;
+    "infra") gitCloneInfra;;
+  esac
+}
 
-  clone "${gitPathes[drops]}" "${gitURLs[drops]}" "${gitBranch[drops]}"
-  clone "${gitPathes[arise]}" "${gitURLs[arise]}" "${gitBranch[arise]}"
-  clone "${gitPathes[widgetUser]}" "${gitURLs[widgetUser]}" "${gitBranch[widgetUser]}"
-  clone "${gitPathes[oauthModule]}" "${gitURLs[oauthModule]}" "${gitBranch[oauthModule]}"
+function gitCloneDrops () {
+  clone $(expandPath "${drops[path]}") "${drops[url]}" "${drops[branch]}"
+  clone $(expandPath "${arise[path]}") "${arise[url]}" "${arise[branch]}"
+  clone $(expandPath "${widgetUser[path]}") "${widgetUser[url]}" "${widgetUser[branch]}"
+  clone $(expandPath "${oauthModule[path]}") "${oauthModule[url]}" "${oauthModule[branch]}"
+}
 
+function gitCloneInfra () {
+  clone $(expandPath "${dispenser[path]}") "${dispenser[url]}" "${dispenser[branch]}"
+  clone $(expandPath "${dispenser_navigation_widget[path]}") "${dispenser_navigation_widget[url]}" "${dispenser_navigation_widget[branch]}"
+  clone $(expandPath "${navigationWidget[path]}") "${navigationWidget[url]}" "${navigationWidget[branch]}"
+  clone $(expandPath "${vcaWidgetBase[path]}") "${vcaWidgetBase[url]}" "${vcaWidgetBase[branch]}"
+  clone $(expandPath "${vcaWidgetNavigation[path]}") "${vcaWidgetNavigation[url]}" "${vcaWidgetNavigation[branch]}"
 }
 
 function gitRemove () {
-  readPathes
-  rm -rf "${gitPathes[base]}${gitPathes[drops]}"
-  rm -rf "${gitPathes[base]}${gitPathes[arise]}"
-  rm -rf "${gitPathes[base]}${gitPathes[widgetUser]}"
-  rm -rf "${gitPathes[base]}${gitPathes[oauthModule]}"
+  case "$1" in
+    "drops") gitRemoveDrops;;
+    "infra") gitRemoveInfra;;
+  esac
+}
+
+function gitRemoveInfra () {
+  rm -rf $(expandPath "${dispenser[path]}")
+  rm -rf $(expandPath "${dispenser_navigation_widget[path]}")
+  rm -rf $(expandPath "${navigationWidget[path]}")
+  rm -rf $(expandPath "${vcaWidgetBase[path]}")
+  rm -rf $(expandPath "${vcaWidgetNavigation[path]}")
+}
+
+function gitRemoveDrops () {
+  rm -rf $(expandPath "${drops[path]}")
+  rm -rf $(expandPath "${arise[path]}")
+  rm -rf $(expandPath "${widgetUser[path]}")
+  rm -rf $(expandPath "${oauthModule[path]}")
 
   # Todo: Remove all empty directories of the base path.
 }

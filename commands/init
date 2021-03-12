@@ -1,10 +1,12 @@
 #!/bin/bash
 set -e
 
+##############
+# DEPRICATED #
+##############
+
 export WORKDIR=$(cd $(dirname $0) && pwd)
 . "$WORKDIR/common"
-
-source "$WORKDIR/git-setup.cfg"
 
 function getBase () {
   local separated=""
@@ -50,17 +52,17 @@ function createGITPathes () {
   fi
   gitPathes[base]=$basePath
   printf "\n"
-  gitPathes[drops]="$(getRepoPath $drops_name backend $sub)"
-  gitPathes[arise]="$(getRepoPath $arise_name frontend $sub)"
-  gitPathes[widgetUser]="$(getRepoPath $widget_user_name widget $sub)"
-  gitPathes[oauthModule]="$(getRepoPath $oauth_module_name module $sub)"
+  gitPathes[drops]="$(getRepoPath ${drops[name]} backend $sub)"
+  gitPathes[arise]="$(getRepoPath ${arise[name]} frontend $sub)"
+  gitPathes[widgetUser]="$(getRepoPath ${widgetUser[name]} widget $sub)"
+  gitPathes[oauthModule]="$(getRepoPath ${oauthModule[name]} module $sub)"
 }
 
 function initPathes () {
-  readPathes
+#  readPathes - removed
   if [ -z "${gitPathes[drops]}" ] && [ -z "${gitPathes[arise]}" ] && [ -z "${gitPathes[widgetUser]}" ] && [ -z "${gitPathes[oauthModule]}" ]; then
     createGITPathes
-    savePathes
+#    savePathes - removed
   else
     printf "\nAll pathes were read from '.state' file. You have entered the pathes before."
   fi

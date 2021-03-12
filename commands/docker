@@ -4,8 +4,6 @@ set -e
 export WORKDIR=$(cd $(dirname $(dirname $0)) && pwd)
 . "$WORKDIR/common"
 
-source "$WORKDIR/git-setup.cfg"
-
 dev="-f base.yml -f dev.yml"
 prod="-f base.yml -f prod.yml"
 
