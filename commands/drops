@@ -4,7 +4,7 @@ set -e
 export WORKDIR=$(cd $(dirname $0) && pwd)
 . "$WORKDIR/common"
 
-source "$WORKDIR/.docker-conf/docker-compose/.env.dev"
+source "$WORKDIR/.docker-conf/docker-compose/.env.dev.drops"
 
 function dropsUp () {
   # TODO

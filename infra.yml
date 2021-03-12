@@ -1,0 +1,15 @@
+version: "3.9"  # optional since v1.27.0
+services:
+  #############
+  # Dispenser #
+  #############
+
+  dispenser-database:
+    image: "mongo:${DISPENSER_DB_TAG}"
+    container_name: dispenser-database
+    restart: always
+    volumes: 
+       - ./.docker-volumes/dispenser-database/dev-mongo/:/data/db/
+    # Required for access from local running dispenser
+    ports:
+       - 27017:27017

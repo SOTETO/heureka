@@ -4,37 +4,44 @@ set -e
 export WORKDIR=$(cd $(dirname $(dirname $0)) && pwd)
 . "$WORKDIR/common"
 
-dev="-f base.yml -f dev.yml"
+dev="-f base.yml -f dev-drops.yml"
 prod="-f base.yml -f prod.yml"
+infra="-f infra.yml"
 
-# $1 = selector for development environment (value "dev") or production environment (value "prod")
+# $1 = selector for drops development environment (value "dev.drops"), infrastructure development (value "infra") or production environment (value "prod")
 function dockerRun () {
   local compose=$dev
   if [[ $1 == "prod" ]]; then
     compose=$prod
+  elif [[ $1 == "infra" ]]; then
+    compose=$infra
   fi
   sudo docker-compose $compose --env-file $WORKDIR/.docker-conf/docker-compose/.env.$1 up -d
 }
 
-# $1 = selector for development environment (value "dev") or production environment (value "prod")
+# $1 = selector for development environment (value "dev.drops"), infrastructure development (value "infra") or production environment (value "prod")
 function dockerStop () {
   local compose=$dev
   if [[ $1 == "prod" ]]; then
     compose=$prod
+  elif [[ $1 == "infra" ]]; then
+    compose=$infra
   fi
   sudo docker-compose $compose --env-file $WORKDIR/.docker-conf/docker-compose/.env.$1 stop
 }
 
-# $1 = selector for development environment (value "dev") or production environment (value "prod")
+# $1 = selector for development environment (value "dev.drops"), infrastructure development (value "infra") or production environment (value "prod")
 function dockerRm () {
   local compose=$dev
   if [[ $1 == "prod" ]]; then
     compose=$prod
+  elif [[ $1 == "infra" ]]; then
+    compose=$infra
   fi
   sudo docker-compose $compose --env-file $WORKDIR/.docker-conf/docker-compose/.env.$1 rm -fs
 }
 
-# $1 = selector for development environment (value "dev") or production environment (value "prod")
+# $1 = selector for development environment (value "dev"), infrastructure development (value "infra") or production environment (value "prod")
 # $2 = database container name and $3 = database technology (mysql or mongo)
 function dockerRmVolumes () {
   sudo rm -R $WORKDIR/.docker-volumes/$2/$1-$3/*

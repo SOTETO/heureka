@@ -46,6 +46,9 @@ Required to clone all git repositories for the development of infrastructure ser
 
 - `clone` - Clone the required git repositories
 - `rm` - Remove the git repositories
+- `docker up` - Start the `docker-compose up` considering the `.docker-conf/docker-compose/.env.infra` file (starts the dispenser database on `localhost:27017`)
+- `docker rm` - Stop and remove all docker containers described in the docker-compose file
+- `docker rm dispenser volumes` - Remove the dispenser volumes. That means the database contents.
 - `leave` - Leave `DEV` environment
 - `exit` - close the Heureka console
 - \* - Help
@@ -53,6 +56,8 @@ Required to clone all git repositories for the development of infrastructure ser
 Follow the upcoming steps to create your development environment:
 0. Enter the local file system pathes of the git repositories that will be created to `git-setup.cfg>
 1. `clone`
+2. `docker up`
+3. Configure the local `application.conf` in your dispenser repository to listen to `localhost:27017` (or another port, if you have changed it in your `infra.yml`)
 
 ### Production environment
 If you want to setup a production environment, you have the following commands:

@@ -17,7 +17,8 @@ ${YELLOW}HEUREKA CLI${NC}
 Version: $(cat $(getDir)/VERSION)
 Usage: [command]
 Commands:
-  dev drops                     Start development environment for MS-DROPS
+  dev drops                     Initiate a development environment for the MS-DROPS.
+  dev infra                     Initiate a development environment for infrastructure services and widget required to run the microservices.
   prod				Start production environment
   exit                          Close console
   *                             Help
@@ -51,7 +52,7 @@ Usage: [command]
 Commands:
   git clone   			Clone the required git repositories
   git rm      			Remove the git repositories
-  docker up   			Start the 'docker-compose up' considering the '.docker-conf/docker-compose/.env.dev' file
+  docker up   			Start the 'docker-compose up' considering the '.docker-conf/docker-compose/.env.dev.drops' file
   docker rm   			Stop and remove all docker containers described in the docker-compose files
   docker rm drops volumes	Remove the drops volumes. That means the database contents.
   docker rm dispenser volumes   Remove the dispenser volumes. That means the database contents.
@@ -73,6 +74,9 @@ Usage: [command]
 Commands:
   clone                         Clone the required git repositories
   rm                            Remove the git repositories
+  docker up                     Start the 'docker-compose up' considering the '.docker-conf/docker-compose/.env.infra' file (starts the dispenser database on localhost:27017)
+  docker rm                     Stop and remove all docker containers described in the docker-compose files
+  docker rm dispenser volumes   Remove the dispenser volumes. That means the database contents.
   leave                         Leave DEV environment
   exit                          Close console
   *                             Help
@@ -128,7 +132,7 @@ function prod () {
 	  case "$para1" in
               "drops")
                 case "$para2" in
-                    "volumes") dockerRmVolumes drops-database mysql
+                    "volumes") dockerRmVolumes prod drops-database mysql
                        ;;
                     *) prodMan
                        ;;
@@ -136,7 +140,7 @@ function prod () {
                   ;;
               "dispenser")
                 case "$para2" in
-                    "volumes") dockerRmVolumes dispenser-database mongo
+                    "volumes") dockerRmVolumes prod dispenser-database mongo
                        ;;
                     *) prodMan
                        ;;
@@ -171,7 +175,7 @@ function dev () {
     case "$cmd" in
 	"up")
 	  gitClone drops
-	  dockerRun dev
+	  dockerRun dev.drops
 	  ;;
 	"git")
 	  case "$sub" in
@@ -185,13 +189,13 @@ function dev () {
 	  ;;
 	"docker")
 	  case "$sub" in
-		"up") dockerRun dev
+		"up") dockerRun dev.drops
 			;;
 		"rm")
 		  case "$para1" in
 			"drops")
 			  case "$para2" in
-				"volumes") dockerRmVolumes drops-database mysql
+				"volumes") dockerRmVolumes dev drops-database mysql
 					;;
 				*) devMan $1
 					;;
@@ -199,13 +203,13 @@ function dev () {
 			  ;;
 			"dispenser")
 			  case "$para2" in
-				"volumes") dockerRmVolumes dispenser-database mongo
+				"volumes") dockerRmVolumes dev dispenser-database mongo
 					;;
 				*) devMan $1
 					;;
 			  esac
 			  ;;
-			"") dockerRm dev
+			"") dockerRm dev.drops
 			  ;;
 			*) devMan $1
 			  ;;
@@ -262,10 +266,28 @@ function dev () {
 function infra () {
   for (( ; ; ))
   do
-    read -r -p $'\033[1;33mheureka-\033[1;34mDEV\033[1;33m-\033[1;34mINFRA\033[1;33m> \e[0m' cmd
+    read -r -p $'\033[1;33mheureka-\033[1;34mDEV\033[1;33m-\033[1;34mINFRA\033[1;33m> \e[0m' cmd sub para1 para2
     case "$cmd" in
       "clone") gitClone infra;;
       "rm") gitRemove infra;;
+      "docker")
+        case "$sub" in
+          "up") dockerRun infra;;
+          "rm")
+	     case "$para1" in
+               "dispenser")
+                  case "$para2" in
+                    "volumes") dockerRmVolumes infra dispenser-database mongo;;
+                    *) infraMan;;
+                  esac
+               ;;
+               "") dockerRm infra;;
+               *) infraMan;;
+             esac
+	  ;;
+	  *) infraMan;;
+	esac
+      ;;
       "leave") break;;
       "exit") exit 1;;
       *) infraMan;;
