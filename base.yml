@@ -106,10 +106,10 @@ services:
       - ${GRAV_PATH}/pages:/var/www/html/user/pages
       - ${GRAV_PATH}/languages:/var/www/html/user/languages
       # While the configuration of GRAV is saved in the heureka config directories
-      - ${GRAV_PATH}/plugins:/var/www/html/user/plugins
-      - ${GRAV_PATH}/themes:/var/www/html/user/themes
-      - ${GRAV_PATH}/config:/var/www/html/user/config
-      - ${GRAV_PATH}/accounts:/var/www/html/user/accounts
+      - .docker-conf/grav/plugins:/var/www/html/user/plugins
+      - .docker-conf/grav/themes:/var/www/html/user/themes
+      - .docker-conf/grav/config:/var/www/html/user/config
+      - .docker-conf/grav/accounts:/var/www/html/user/accounts
     networks:
       pool-network:
         ipv4_address: ${GRAV_IP}
