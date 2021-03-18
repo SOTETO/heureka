@@ -9,7 +9,19 @@ prod="-f base.yml -f prod.yml"
 infra="-f infra.yml"
 
 # $1 = selector for drops development environment (value "dev.drops"), infrastructure development (value "infra") or production environment (value "prod")
+function dockerPull () {
+  local compose=$dev
+  if [[ $1 == "prod" ]]; then
+    compose=$prod
+  elif [[ $1 == "infra" ]]; then
+    compose=$infra
+  fi
+  sudo docker-compose $compose --env-file $WORKDIR/.docker-conf/docker-compose/.env.$1 pull
+}
+
+# $1 = selector for drops development environment (value "dev.drops"), infrastructure development (value "infra") or production environment (value "prod")
 function dockerRun () {
+  dockerPull $1
   local compose=$dev
   if [[ $1 == "prod" ]]; then
     compose=$prod

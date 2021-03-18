@@ -6,13 +6,25 @@ export WORKDIR=$(cd $(dirname $0) && pwd)
 
 function clone() {
   #echo "git clone --branch $3 $2 $1"
-  git clone --branch $3 $2 $1
+  if [ "$(ls -A $1)" ]; then
+    printf "Directory $1 is not empty.\n"
+  else
+    git clone --branch $3 $2 $1
+  fi
 }
 
 function gitClone () {
   case "$1" in
-    "drops") gitCloneDrops;;
-    "infra") gitCloneInfra;;
+    "drops")
+      gitCloneDrops
+      # Always required to have a running local documentation
+      gitCloneDocu
+    ;;
+    "infra")
+      gitCloneInfra
+      # Always required to have a running local documentation
+      gitCloneDocu
+    ;;
   esac
 }
 
@@ -31,11 +43,20 @@ function gitCloneInfra () {
   clone $(expandPath "${vcaWidgetNavigation[path]}") "${vcaWidgetNavigation[url]}" "${vcaWidgetNavigation[branch]}"
 }
 
+function gitCloneDocu () {
+  clone $(expandPath "${docu[path]}") "${docu[url]}" "${docu[branch]}"
+}
+
 function gitRemove () {
   case "$1" in
     "drops") gitRemoveDrops;;
     "infra") gitRemoveInfra;;
+    "docu") gitRemoveDocu;;
   esac
+}
+
+function gitRemoveDocu () {
+  rm -rf $(expandPath "${docu[path]}")
 }
 
 function gitRemoveInfra () {

@@ -31,9 +31,9 @@ ${YELLOW}HEUREKA PROD-CLI${NC}
 Version: $(cat $(getDir)/VERSION)
 Usage: [command]
 Commands:
-  up				Start the 'docker-compose up' considering the '.docker-conf/docker-compose/.env.prod' file
+  up				Start the 'docker-compose up' considering the '.docker-conf/docker-compose/.env.prod' file. Additionally, the documentation contents will be cloned from a git repository.
   stop				Stop all created containers.
-  rm				Stop and remove all docker containers described in the docker-compose files
+  rm				Stop and remove all docker containers described in the docker-compose files. Additionally, the documentation contents of the cloned repository will be removed.
   rm drops volumes		Remove the drops volumes. That means the database contents.
   rm dispenser volumes		Remove the dispenser volumes. That means the database contents.
   admin				Sets admin access rights in DROPS for a specific user identified by its email address
@@ -50,8 +50,10 @@ MICROSERVICE: $1
 Version: $(cat $(getDir)/VERSION)
 Usage: [command]
 Commands:
+  up				Start the 'docker-compose up' considering the '.docker-conf/docker-compose/.env.dev.drops' file. Additionally, the documentation contents will be cloned from a git repository.
   git clone   			Clone the required git repositories
-  git rm      			Remove the git repositories
+  git rm      			Remove the git repositories excluding the documentatuin contents
+  git rm docu                   Remove the git repositories including the documentation contents
   docker up   			Start the 'docker-compose up' considering the '.docker-conf/docker-compose/.env.dev.drops' file
   docker rm   			Stop and remove all docker containers described in the docker-compose files
   docker rm drops volumes	Remove the drops volumes. That means the database contents.
@@ -73,7 +75,8 @@ Version: $(cat $(getDir)/VERSION)
 Usage: [command]
 Commands:
   clone                         Clone the required git repositories
-  rm                            Remove the git repositories
+  rm                        	Remove the git repositories excluding the documentatuin contents
+  rm docu                   	Remove the git repositories including the documentation contents
   docker up                     Start the 'docker-compose up' considering the '.docker-conf/docker-compose/.env.infra' file (starts the dispenser database on localhost:27017)
   docker rm                     Stop and remove all docker containers described in the docker-compose files
   docker rm dispenser volumes   Remove the dispenser volumes. That means the database contents.
@@ -123,6 +126,7 @@ function prod () {
     read -r -p $'\033[1;33mheureka-\033[1;34mPROD\033[1;33m> \e[0m' cmd para1 para2
     case "$cmd" in
 	"up")
+	  gitCloneDocu
 	  dockerRun prod
 	  ;;
 	"stop")
@@ -146,7 +150,9 @@ function prod () {
                        ;;
                 esac
                   ;;
-               "") dockerRm prod
+               "")
+                  dockerRm prod
+                  gitRemove docu
                   ;;
                *) prodMan
                   ;;
@@ -181,8 +187,20 @@ function dev () {
 	  case "$sub" in
 		"clone") gitClone drops
 			;;
-		"rm") gitRemove drops
-			;;
+		"rm")
+		  case "$para1" in
+		    "docu")
+			gitRemove drops
+			gitRemove docu
+		    ;;
+		    "")
+			gitRemove drops
+		    ;;
+		    *)
+			devMan $1
+		    ;;
+		  esac
+		;;
 	        *) devMan $1
 			;;
 	  esac
@@ -269,7 +287,20 @@ function infra () {
     read -r -p $'\033[1;33mheureka-\033[1;34mDEV\033[1;33m-\033[1;34mINFRA\033[1;33m> \e[0m' cmd sub para1 para2
     case "$cmd" in
       "clone") gitClone infra;;
-      "rm") gitRemove infra;;
+      "rm") 
+        case "$para1" in
+          "docu")
+             gitRemove infra
+             gitRemove docu
+          ;;
+          "")
+             gitRemove infra
+          ;;
+          *)
+             infraMan
+          ;;
+        esac
+      ;;
       "docker")
         case "$sub" in
           "up") dockerRun infra;;

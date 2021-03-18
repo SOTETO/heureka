@@ -17,3 +17,7 @@ upstream drops {
 upstream dispenser {
 	server 172.3.100.4:9000;
 }
+
+upstream grav { 
+        server 172.3.150.2;
+}

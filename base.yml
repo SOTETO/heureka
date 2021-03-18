@@ -96,6 +96,24 @@ services:
       pool-network:
         ipv4_address: ${NATS_IP}
 
+  docu:
+    image: "soteto/grav:${GRAV_TAG}"
+    container_name: grav-docu
+    restart: unless-stopped
+    volumes:
+      # Content of the documentation is gathered in the docu repository of SOTETO
+      - ${GRAV_PATH}/images:/var/www/html/user/images
+      - ${GRAV_PATH}/pages:/var/www/html/user/pages
+      - ${GRAV_PATH}/languages:/var/www/html/user/languages
+      # While the configuration of GRAV is saved in the heureka config directories
+      - ${GRAV_PATH}/plugins:/var/www/html/user/plugins
+      - ${GRAV_PATH}/themes:/var/www/html/user/themes
+      - ${GRAV_PATH}/config:/var/www/html/user/config
+      - ${GRAV_PATH}/accounts:/var/www/html/user/accounts
+    networks:
+      pool-network:
+        ipv4_address: ${GRAV_IP}
+
 networks:
   pool-network:
     driver: bridge
