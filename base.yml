@@ -102,14 +102,14 @@ services:
     restart: unless-stopped
     volumes:
       # Content of the documentation is gathered in the docu repository of SOTETO
-      - ${GRAV_PATH}/images:/var/www/html/user/images
-      - ${GRAV_PATH}/pages:/var/www/html/user/pages
-      - ${GRAV_PATH}/languages:/var/www/html/user/languages
+      - ${GRAV_PATH}/images:/var/www/html/docu/user/images
+      - ${GRAV_PATH}/pages:/var/www/html/docu/user/pages
+      - ${GRAV_PATH}/languages:/var/www/html/docu/user/languages
       # While the configuration of GRAV is saved in the heureka config directories
-      - .docker-conf/grav/plugins:/var/www/html/user/plugins
-      - .docker-conf/grav/themes:/var/www/html/user/themes
-      - .docker-conf/grav/config:/var/www/html/user/config
-      - .docker-conf/grav/accounts:/var/www/html/user/accounts
+      - .docker-conf/grav/plugins:/var/www/html/docu/user/plugins
+      - .docker-conf/grav/themes:/var/www/html/docu/user/themes
+      - .docker-conf/grav/config:/var/www/html/docu/user/config
+      - .docker-conf/grav/accounts:/var/www/html/docu/user/accounts
     networks:
       pool-network:
         ipv4_address: ${GRAV_IP}

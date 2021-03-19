@@ -2,3 +2,8 @@
 .docker-volumes/drops-database/mysql/*
 .docker-volumes/dispenser-database/mongodb/*
 *.swp
+
+# GRAV ignore list
+.docker-conf/grav/config/media.yaml
+.docker-conf/grav/config/security.yaml
+.docker-conf/grav/config/versions.yaml
