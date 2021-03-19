@@ -40,6 +40,7 @@ Follow the upcoming steps to create your development environment:
 4. Follow `arise up man`
 5. Create an account by using the registration view on `http://localhost`.
 6. Use `drops admin` to grant admin rights to your newly created user.
+7. Request `/docu` to initiate an admin account for your local Grav CMS instance, the base for the documentation.
 
 ### Infrastructure development environment
 Required to clone all git repositories for the development of infrastructure services like `dispenser` or `vca-widget-base`.
@@ -76,6 +77,7 @@ Follow the upcoming steps to create your development environment:
 1. `up`
 2. Create an account by using the registration view on `http://localhost`.
 3. Use `admin` to grant admin rights to your newly created user.
+4. Request `/docu` to initiate an admin account for your local Grav CMS instance, the base for the documentation.
 
 ## Configuration files
 There are several configuration files to make the MS-architecture more save:
