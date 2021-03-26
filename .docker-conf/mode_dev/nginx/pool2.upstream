@@ -1,3 +1,14 @@
+##########
+# New MS #
+##########
+
+# Edit the upstreams name or port (but use the server name). Consider a changed upstream name in the locations file.
+# Add as many new upstream as required (e.g. for front- and backend separation)
+upstream new {
+        server host.docker.internal:8080;
+}
+
+
 #########
 # Drops #
 #########

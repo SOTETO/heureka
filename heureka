@@ -19,6 +19,7 @@ Usage: [command]
 Commands:
   dev drops                     Initiate a development environment for the MS-DROPS.
   dev infra                     Initiate a development environment for infrastructure services and widget required to run the microservices.
+  dev new			Initiate a development environment for a complete new microservice.
   prod				Start production environment
   exit                          Close console
   *                             Help
@@ -31,7 +32,7 @@ ${YELLOW}HEUREKA PROD-CLI${NC}
 Version: $(cat $(getDir)/VERSION)
 Usage: [command]
 Commands:
-  up				Start the 'docker-compose up' considering the '.docker-conf/docker-compose/.env.prod' file. Additionally, the documentation contents will be cloned from a git repository.
+  up				Start the 'docker-compose up' considering the '.docker-conf/mode_prod/.env' file. Additionally, the documentation contents will be cloned from a git repository.
   stop				Stop all created containers.
   rm				Stop and remove all docker containers described in the docker-compose files. Additionally, the documentation contents of the cloned repository will be removed.
   rm drops volumes		Remove the drops volumes. That means the database contents.
@@ -42,6 +43,26 @@ Commands:
   *                             Help
 "
 }
+
+function createMan () {
+  echo -e "
+${YELLOW}HEUREKA DEV-CLI${NC}
+CREATE A NEW MICROSERVICE
+Version: $(cat $(getDir)/VERSION)
+Usage: [command]
+Commands:
+  up                            Start the 'docker-compose up' considering the '.docker-conf/mode_dev/.env' file. Additionally, the documentation contents will be cloned from a git repository.
+  stop                          Stop all created containers.
+  rm                            Stop and remove all docker containers described in the docker-compose files. Additionally, the documentation contents of the cloned repository will be removed.
+  rm drops volumes              Remove the drops volumes. That means the database contents.
+  rm dispenser volumes          Remove the dispenser volumes. That means the database contents.
+  admin                         Sets admin access rights in DROPS for a specific user identified by its email address
+  leave                         Leave DEV environment
+  exit                          Close console
+  *                             Help
+"
+}
+
 
 function devMan () {
   echo -e "
@@ -101,6 +122,9 @@ function init () {
 	      ;;
 	    "infra")
 	      infra
+	      ;;
+	    "new")
+	      create
 	      ;;
 	    *)
 	      man
@@ -170,6 +194,60 @@ function prod () {
 	*)
 	  prodMan
 	  ;;
+    esac
+  done
+}
+
+function create () {
+  for (( ; ; ))
+  do
+    read -r -p $'\033[1;33mheureka-\033[1;34mDEV\033[1;33m-\033[1;34mNEW\033[1;33m> \e[0m' cmd sub para1 para2
+    case "$cmd" in
+        "up")
+          gitCloneDocu
+          dockerRun dev
+          ;;
+        "stop")
+          dockerStop dev
+          ;;
+        "rm")
+          case "$para1" in
+              "drops")
+                case "$para2" in
+                    "volumes") dockerRmVolumes dev drops-database
+                       ;;
+                    *) createMan
+                       ;;
+                esac
+                  ;;
+              "dispenser")
+                case "$para2" in
+                    "volumes") dockerRmVolumes dev dispenser-database
+                       ;;
+                    *) createMan
+                       ;;
+                esac
+                  ;;
+               "")
+                  dockerRm dev
+                  gitRemove docu
+                  ;;
+               *) createMan
+                  ;;
+          esac
+          ;;
+        "admin")
+          dropsAdmin
+          ;;
+        "leave")
+          break
+          ;;
+        "exit")
+          exit 1
+          ;;
+        *)
+          createMan
+          ;;
     esac
   done
 }

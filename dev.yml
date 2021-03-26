@@ -17,7 +17,7 @@ services:
 #      - nats
 #      - drops-database
     ports:
-       - 9000:9000
+      - 9000:9000
     volumes:
       - ./.docker-conf/mode_dev/drops/application.conf:/opt/docker/conf/application.conf
     networks:
@@ -52,3 +52,7 @@ services:
   nginx-pool:
     volumes:
       - ./.docker-conf/mode_dev/nginx/:/etc/nginx/conf.d/
+    extra_hosts:
+      # make 'localhost' ports available in nginx container by using 'host.docker.internal'
+      - "host.docker.internal:host-gateway"
+
