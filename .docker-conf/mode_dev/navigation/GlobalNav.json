@@ -1,0 +1,109 @@
+{
+  "name":"global",
+  "entrys": [
+    {
+      "label": { "de_DE": "wiki", "en_EN": "wiki" },
+      "render": true,
+      "url": "/wiki",
+      "permission":[{"role": "supporter"}]
+    },
+    {
+      "label": { "de_DE": "profil", "en_EN": "profile" },
+       "render":true,
+       "url":"/arise/#/profile",
+       "permission": [{ "role": "supporter" }]
+    },
+    {
+      "label": { "de_DE": "aktionen", "en_EN": "actions" },
+      "render":true,
+      "url":"/waves/#/",
+      "permission": [{ "role": "supporter" }]
+    },
+    {
+      "label": { "de_DE": "office", "en_EN": "office" },
+      "render":true,
+      "url":"/arise/#/users",
+      "permission": [{ "role": "VolunteerManager" },{ "role": "employee" },{ "role": "admin" }],
+      "entrys": [
+        {
+          "label": { "de_DE": "nutzer", "en_EN": "users" },
+          "render":true,
+          "url":"/arise/#/users",
+          "permission": [{ "role": "VolunteerManager", "pillars": ["network", "operation"] },{ "role": "employee" },{ "role": "admin" }],
+          "entrys": [
+              {
+                "label": { "de_DE": "alle nutzer", "en_EN": "all users" },
+                "render": true,
+                "url": "/arise/#/users",
+                "permission": [{ "role": "VolunteerManager", "pillars": ["network", "operation"] },{ "role": "employee" },{ "role": "admin" }]
+              },
+              {
+                "label": { "de_DE": "aktiv-anfragen", "en_EN": "active requests" },
+                "render":true,
+                "url":"/arise/#/users/requested",
+                "permission": [{ "role": "VolunteerManager", "pillars": ["network"] },{ "role": "employee" },{ "role": "admin" }]
+              },
+              {
+                "label": { "de_DE": "aktive nutzer", "en_EN": "active users" },
+                "render":true,
+                "url":"/arise/#/users/active",
+                "permission": [{ "role": "VolunteerManager", "pillars": ["network"] },{ "role": "employee" },{ "role": "admin" }]
+              },
+              {
+                "label": { "de_DE": "inaktiv", "en_EN": "inactive" },
+                "render": true,
+                "url":"/arise/#/users/inactive",
+                "permission": [{ "role": "employee" },{ "role": "admin" }]
+              }
+          ]
+        },
+        {
+          "label": { "de_DE": "crew", "en_EN": "crews" },
+          "render":true,
+          "url":"/arise/#/crews",
+          "permission": [{ "role": "employee" },{ "role": "admin" }]
+        },
+        {
+          "label": { "de_DE": "finanzen", "en_EN": "finances" },
+            "render": true,
+            "url": "/stream/#/takings",
+            "permission": [{ "role": "VolunteerManager", "pillars": ["finance"] },{ "role": "employee" },{ "role": "admin" }],
+            "entrys": [
+              {
+                "label": { "de_DE": "einnahmen", "en_EN": "takings" },
+                "render": true,
+                "url": "/stream/#/takings",
+                "permission": [{ "role": "VolunteerManager", "pillars": ["finance"] },{ "role": "employee" },{ "role": "admin" }]
+              },
+              {
+                "label": { "de_DE": "einzahlungen", "en_EN": "deposits" },
+                "render": true,
+                "url": "/stream/#/deposits",
+                "permission": [{ "role": "VolunteerManager", "pillars": ["finance"] },{ "role": "employee" },{ "role": "admin" }]
+              }
+            ]
+          }
+      ]
+    },
+    {
+      "label": { "de_DE": "admin", "en_EN": "admin" },
+      "render":true,
+      "url":"/arise/#/oauth",
+      "permission": [{ "role": "admin" }],
+      "entrys": [
+        {
+          "label": { "de_DE": "oauth clients verwalten", "en_EN": "oauth clients" },
+          "render":true,
+          "url":"/arise/#/oauth",
+          "permission": [{ "role": "admin" }]
+        }
+      ]
+    },
+    {
+      "label": { "de_DE": "ausloggen", "en_EN": "sign out" },
+      "render":true,
+      "url":"/arise/#/out",
+      "permission": [{ "role": "supporter" }]
+    }
+  ]
+}

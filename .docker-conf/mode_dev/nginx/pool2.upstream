@@ -1,0 +1,23 @@
+#########
+# Drops #
+#########
+
+upstream arise {
+	server 172.3.0.3:80;
+}
+
+upstream drops {
+	server 172.3.0.2:9000;
+}
+
+#############
+# Dispenser #
+#############
+
+upstream dispenser {
+	server 172.3.100.4:9000;
+}
+
+upstream grav { 
+        server 172.3.150.2;
+}
