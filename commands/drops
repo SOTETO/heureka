@@ -4,9 +4,9 @@ set -e
 export WORKDIR=$(cd $(dirname $0) && pwd)
 . "$WORKDIR/common"
 
-source "$WORKDIR/.docker-conf/mode_dev_ms_drops/.env"
-
+# $1 is the current mode ("prod", "dev", "infra" or "dev_ms_drops")
 function dropsUp () {
+  source "$WORKDIR/.docker-conf/mode_$1/.env"
   # TODO
   # cd "${gitPathes[base]}${gitPathes[drops]}"
   # sbt clean
@@ -16,18 +16,24 @@ function dropsUp () {
   echo "Not implemented yet!"
 }
 
+# $1 is the current mode ("prod", "dev", "infra" or "dev_ms_drops")
 function dropsDown () {
+  source "$WORKDIR/.docker-conf/mode_$1/.env"
   # TODO
   echo "Not implemented yet!"
 }
 
+# $1 is the current mode ("prod", "dev", "infra" or "dev_ms_drops")
 function dropsMan () {
+  source "$WORKDIR/.docker-conf/mode_$1/.env"
   printf "Starting the DROPS backend service should be done manually by the user to have full control. Open a new terminal window and change to '${gitPathes[base]}${gitPathes[drops]}'. Run the command 'sbt run' and DROPS should start.\n\n"
   printf "Next step: Make a request to DROPS at the started port (e.g. 'localhost:9000/drops/') to initiate the database creation. This requires some time. Therefore, calling the nginx proxy will lead to a timeout HTTP error. DROPS itself is configured to wait 30 seconds.\n\n"
   printf "Afterwards, you should also start ARISE, create a user and run 'drops admin' to grant admin rights to the newly created user.\n"
 }
 
+# $1 is the current mode ("prod", "dev", "infra" or "dev_ms_drops")
 function dropsAdmin () {
+  source "$WORKDIR/.docker-conf/mode_$1/.env"
   read -p "Please enter the email of the user that becomes an admin: " email
   local update="UPDATE User SET roles='supporter,admin' WHERE id=(SELECT user_id FROM Profile WHERE email='$email');"
   sudo docker exec -it drops-database mysql -u "$DROPS_DB_USER" -p "$DROPS_DB_NAME" -e "$update"
