@@ -136,7 +136,7 @@ function prod () {
 	  case "$para1" in
               "drops")
                 case "$para2" in
-                    "volumes") dockerRmVolumes prod drops-database mysql
+                    "volumes") dockerRmVolumes prod drops-database
                        ;;
                     *) prodMan
                        ;;
@@ -144,7 +144,7 @@ function prod () {
                   ;;
               "dispenser")
                 case "$para2" in
-                    "volumes") dockerRmVolumes prod dispenser-database mongo
+                    "volumes") dockerRmVolumes prod dispenser-database
                        ;;
                     *) prodMan
                        ;;
@@ -181,7 +181,7 @@ function dev () {
     case "$cmd" in
 	"up")
 	  gitClone drops
-	  dockerRun dev.drops
+	  dockerRun dev_ms_drops
 	  ;;
 	"git")
 	  case "$sub" in
@@ -207,13 +207,13 @@ function dev () {
 	  ;;
 	"docker")
 	  case "$sub" in
-		"up") dockerRun dev.drops
+		"up") dockerRun dev_ms_drops
 			;;
 		"rm")
 		  case "$para1" in
 			"drops")
 			  case "$para2" in
-				"volumes") dockerRmVolumes dev drops-database mysql
+				"volumes") dockerRmVolumes dev_ms_drops drops-database
 					;;
 				*) devMan $1
 					;;
@@ -221,13 +221,13 @@ function dev () {
 			  ;;
 			"dispenser")
 			  case "$para2" in
-				"volumes") dockerRmVolumes dev dispenser-database mongo
+				"volumes") dockerRmVolumes dev_ms_drops dispenser-database
 					;;
 				*) devMan $1
 					;;
 			  esac
 			  ;;
-			"") dockerRm dev.drops
+			"") dockerRm dev_ms_drops
 			  ;;
 			*) devMan $1
 			  ;;
@@ -308,7 +308,7 @@ function infra () {
 	     case "$para1" in
                "dispenser")
                   case "$para2" in
-                    "volumes") dockerRmVolumes infra dispenser-database mongo;;
+                    "volumes") dockerRmVolumes infra dispenser-database;;
                     *) infraMan;;
                   esac
                ;;

@@ -9,7 +9,7 @@ services:
     container_name: dispenser-database
     restart: always
     volumes: 
-       - ./.docker-volumes/dispenser-database/dev-mongo/:/data/db/
+       - ./.docker-volumes/mode_infra/dispenser-database/:/data/db/
     # Required for access from local running dispenser
     ports:
        - 27017:27017

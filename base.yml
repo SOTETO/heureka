@@ -15,8 +15,6 @@ services:
     command:
       - "--character-set-server=utf8mb4"
       - "--collation-server=utf8mb4_unicode_ci"
-#    volumes: 
-#       - ./.docker-volumes/drops-database/mysql/:/var/lib/mysql/
     networks:
        pool-network:
          ipv4_address: ${DROPS_DB_IP}
@@ -106,10 +104,10 @@ services:
       - ${GRAV_PATH}/pages:/var/www/html/docu/user/pages
       - ${GRAV_PATH}/languages:/var/www/html/docu/user/languages
       # While the configuration of GRAV is saved in the heureka config directories
-      - .docker-conf/grav/plugins:/var/www/html/docu/user/plugins
-      - .docker-conf/grav/themes:/var/www/html/docu/user/themes
-      - .docker-conf/grav/config:/var/www/html/docu/user/config
-      - .docker-conf/grav/accounts:/var/www/html/docu/user/accounts
+      - .docker-conf/base/grav/plugins:/var/www/html/docu/user/plugins
+      - .docker-conf/base/grav/themes:/var/www/html/docu/user/themes
+      - .docker-conf/base/grav/config:/var/www/html/docu/user/config
+      - .docker-conf/base/grav/accounts:/var/www/html/docu/user/accounts
     networks:
       pool-network:
         ipv4_address: ${GRAV_IP}

@@ -4,57 +4,58 @@ set -e
 export WORKDIR=$(cd $(dirname $(dirname $0)) && pwd)
 . "$WORKDIR/common"
 
-dev="-f base.yml -f dev-drops.yml"
+dev="-f base.yml -f dev.yml"
+dev_ms_drops="-f base.yml -f dev_ms_drops.yml"
 prod="-f base.yml -f prod.yml"
 infra="-f infra.yml"
 
-# $1 = selector for drops development environment (value "dev.drops"), infrastructure development (value "infra") or production environment (value "prod")
+# $1 = selector for drops development environment (value "dev_ms_drops"), infrastructure development (value "infra") or production environment (value "prod")
 function dockerPull () {
-  local compose=$dev
+  local compose=$dev_ms_drops
   if [[ $1 == "prod" ]]; then
     compose=$prod
   elif [[ $1 == "infra" ]]; then
     compose=$infra
   fi
-  sudo docker-compose $compose --env-file $WORKDIR/.docker-conf/docker-compose/.env.$1 pull
+  sudo docker-compose $compose --env-file $WORKDIR/.docker-conf/mode_$1/.env pull
 }
 
-# $1 = selector for drops development environment (value "dev.drops"), infrastructure development (value "infra") or production environment (value "prod")
+# $1 = selector for drops development environment (value "dev_ms_drops"), infrastructure development (value "infra") or production environment (value "prod")
 function dockerRun () {
   dockerPull $1
-  local compose=$dev
+  local compose=$dev_ms_drops
   if [[ $1 == "prod" ]]; then
     compose=$prod
   elif [[ $1 == "infra" ]]; then
     compose=$infra
   fi
-  sudo docker-compose $compose --env-file $WORKDIR/.docker-conf/docker-compose/.env.$1 up -d
+  sudo docker-compose $compose --env-file $WORKDIR/.docker-conf/mode_$1/.env up -d
 }
 
-# $1 = selector for development environment (value "dev.drops"), infrastructure development (value "infra") or production environment (value "prod")
+# $1 = selector for development environment (value "dev_ms_drops"), infrastructure development (value "infra") or production environment (value "prod")
 function dockerStop () {
-  local compose=$dev
+  local compose=$dev_ms_drops
   if [[ $1 == "prod" ]]; then
     compose=$prod
   elif [[ $1 == "infra" ]]; then
     compose=$infra
   fi
-  sudo docker-compose $compose --env-file $WORKDIR/.docker-conf/docker-compose/.env.$1 stop
+  sudo docker-compose $compose --env-file $WORKDIR/.docker-conf/mode_$1/.env stop
 }
 
-# $1 = selector for development environment (value "dev.drops"), infrastructure development (value "infra") or production environment (value "prod")
+# $1 = selector for development environment (value "dev_ms_drops"), infrastructure development (value "infra") or production environment (value "prod")
 function dockerRm () {
-  local compose=$dev
+  local compose=$dev_ms_drops
   if [[ $1 == "prod" ]]; then
     compose=$prod
   elif [[ $1 == "infra" ]]; then
     compose=$infra
   fi
-  sudo docker-compose $compose --env-file $WORKDIR/.docker-conf/docker-compose/.env.$1 rm -fs
+  sudo docker-compose $compose --env-file $WORKDIR/.docker-conf/mode_$1/.env rm -fs
 }
 
-# $1 = selector for development environment (value "dev"), infrastructure development (value "infra") or production environment (value "prod")
-# $2 = database container name and $3 = database technology (mysql or mongo)
+# $1 = selector for development environment (value "dev_ms_drops"), infrastructure development (value "infra") or production environment (value "prod")
+# $2 = database container name
 function dockerRmVolumes () {
-  sudo rm -R $WORKDIR/.docker-volumes/$2/$1-$3/*
+  sudo rm -R $WORKDIR/.docker-volumes/mode_$1/$2/*
 }
