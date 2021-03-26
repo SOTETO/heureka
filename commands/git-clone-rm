@@ -36,7 +36,7 @@ function gitCloneDrops () {
 }
 
 function gitCloneInfra () {
-  clone $(expandPath "${grav-dockerfile[path]}") "${grav-dockerfile[url]}" "${grav-dockerfile[branch]}"
+  clone $(expandPath "${grav_dockerfile[path]}") "${grav_dockerfile[url]}" "${grav_dockerfile[branch]}"
   clone $(expandPath "${dispenser[path]}") "${dispenser[url]}" "${dispenser[branch]}"
   clone $(expandPath "${dispenser_navigation_widget[path]}") "${dispenser_navigation_widget[url]}" "${dispenser_navigation_widget[branch]}"
   clone $(expandPath "${navigationWidget[path]}") "${navigationWidget[url]}" "${navigationWidget[branch]}"
@@ -62,7 +62,7 @@ function gitRemoveDocu () {
 
 function gitRemoveInfra () {
 grav-dockerfile
-  rm -rf $(expandPath "${grav-dockerfile[path]}")
+  rm -rf $(expandPath "${grav_dockerfile[path]}")
   rm -rf $(expandPath "${dispenser[path]}")
   rm -rf $(expandPath "${dispenser_navigation_widget[path]}")
   rm -rf $(expandPath "${navigationWidget[path]}")
