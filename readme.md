@@ -2,11 +2,21 @@
 A Command-Line-Interface (CLI) to start the microservice MS-DROPS. It is the base for the user management of the microservice architecture.
 
 ## Pre-Requirements
-- Have a GitHub Account configured
-- Git installed
-- BASH
-- Docker installed
-- Sudo access
+- Install Git ([https://git-scm.com/](https://git-scm.com/))
+- Configure your [GitHub account](https://docs.github.com/en/github/getting-started-with-github/set-up-git). Save a SSH public key of your systems user in your GitHub account.
+- Install docker ([https://docs.docker.com/get-docker/](https://docs.docker.com/get-docker/))
+- Install docker-compose ([https://docs.docker.com/compose/install/](https://docs.docker.com/compose/install/))
+- The Heureka-CLI is a [GNU Bash](https://www.gnu.org/software/bash/)-Script. Thus, make sure your OS has bash installed.
+- The Heureka-CLI requires `sudo` operations. Thus, make sure your user has `sudo` access rights.
+
+## Installation
+The Heureka-CLI is a script library. Thus, you just have to clone it to use it.
+```
+git clone https://github.com/SOTETO/heureka.git heureka-cli
+cd heureka-cli
+# Start the Heureka-CLI
+bash ./heureka
+```
 
 ## Manual
 Please choose the environment you want to setup:
@@ -20,6 +30,13 @@ You can also use `exit` to quit the console.
 ### Development environment - Create a new microservice
 Setting up the environment to develop a new microservice requires a bit of configuration effort. See a list of commands available in this environment:
 
+#### Best practice for DEV configuration
+1. Setup the required git repositories for your new MS
+2. Optional: Add the repositories to the `git-setup.cfg`, if it becomes part of MS-DROPS or an infrastructure system
+3. Change the database configurations in `.docker-conf/mode_dev/.env`
+4. Add an nginx upstream for your local new MS in `.docker-conf/mode_dev/nginx/pool2.upstream` (see new or arise and drops as an example)
+5. Add new locations to the nginx `.docker-conf/mode_dev/nginx/location.pool` file (using the new upstreams).
+
 - `up` - Start the `docker-compose up` considering the `.docker-conf/mode_dev/.env` file
 - `stop` - Stop all created containers.
 - `rm` - Stop and remove all docker containers described in the docker-compose files
@@ -30,6 +47,7 @@ Setting up the environment to develop a new microservice requires a bit of confi
 - `exit` - Close console
 - \* - Help
 
+#### Deployment
 Follow the upcoming steps to create your development environment:
 0. Start your application using all required ports except the ports used in `dev.yml` (heureka uses ports 80, 443, 9000 and 4222 by default).
 0. Edit the placeholder upstream `new` in `.docker-conf/mode_dev/nginx/pool2.upstream` and add more required upstreams (the ports at the localhost used by your application).
@@ -57,8 +75,26 @@ Setting up the microservice environment requires a lot of configuration. This co
 - `exit` - close the Heureka console
 - \* - Help
 
+#### Best practice for DEV configuration
+1. Setup the required git repositories for your new MS
+2. Optional: Add the repositories to the `git-setup.cfg`, if it becomes part of MS-DROPS or an infrastructure system
+3. Change the database configurations in `.docker-conf/mode_dev/.env`
+4. Add an nginx upstream for your local new MS in `.docker-conf/mode_dev/nginx/pool2.upstream` (see new or arise and drops as an example)
+5. Add new locations to the nginx `.docker-conf/mode_dev/nginx/location.pool` file (using the new upstreams).
+
+- `up` - Start the `docker-compose up` considering the `.docker-conf/mode_dev/.env` file
+- `stop` - Stop all created containers.
+- `rm` - Stop and remove all docker containers described in the docker-compose files
+- `rm drops volumes` - Remove the drops volumes. That means the database contents.
+- `rm dispenser volumes` - Remove the dispenser volumes. That means the database contents.
+- `admin` - Sets admin access rights in DROPS for a specific user identified by its email address
+- `leave` - Leave `DEV` environment
+- `exit` - Close console
+- \* - Help
+
+#### Deployment
 Follow the upcoming steps to create your development environment:
-0. Enter the local file system pathes of the git repositories that will be created to `git-setup.cfg` (default is `~/heureka/ms-drops/...` for MS-DROPS)
+0. Enter the local file system pathes of the git repositories that will be created to `git-setup.cfg` (default is `~/heureka/ms-drops/...` for MS-DROPS). If you change the default path, also change the path value of the `GRAV_PATH` variable in `.docker-conf/mode_dev/.env` file.
 1. `git clone`
 2. `docker up`
 3. Follow `drops up man`
@@ -98,6 +134,14 @@ If you want to setup a production environment, you have the following commands:
 - `exit` - Close console
 - \* - Help
 
+#### Best practice for PROD configuration
+0. Enter the local file system pathes of the git repositories that will be created to `git-setup.cfg` (default is `~/heureka/...`). If you change the default path, also change the path value of the `GRAV_PATH` variable in `.docker-conf/mode_dev/.env` file.
+1. Change the database configurations in `.docker-conf/mode_prod/.env`.
+2. Change the application secrets of drops (`.docker-conf/mode_prod/drops/application.conf`) and dispenser (`.docker-conf/mode_prod/dispenser/application.conf`). Both should have a length of 64 characters.
+3. Change the server name (`localhost`) in `.docker-conf/mode_prod/nginx/default.conf`.
+4. Add an SSH config (on Port 443)
+
+#### Deployment
 Follow the upcoming steps to create your development environment:
 1. `up`
 2. Create an account by using the registration view on `http://localhost`.
@@ -106,19 +150,6 @@ Follow the upcoming steps to create your development environment:
 
 ## Configuration files
 There are several configuration files to make the MS-architecture more save:
-
-### Best practice for DEV configuration
-1. Setup the required git repositories for your new MS
-2. Optional: Add the repositories to the `git-setup.cfg`, if it becomes part of MS-DROPS or an infrastructure system
-3. Change the database configurations in `.docker-conf/mode_dev/.env`
-4. Add an nginx upstream for your local new MS in `.docker-conf/mode_dev/nginx/pool2.upstream` (see new or arise and drops as an example)
-5. Add new locations to the nginx `.docker-conf/mode_dev/nginx/location.pool` file (using the new upstreams).
-
-### Best practice for PROD configuration
-1. Change the database configurations in `.docker-conf/mode_prod/.env`
-2. Change the application secrets of drops (`.docker-conf/mode_prod/drops/application.conf`) and dispenser (`.docker-conf/mode_prod/dispenser/application.conf`)
-3. Change the server name (`localhost`) in `.docker-conf/mode_prod/nginx/default.conf`
-4. Add an SSH config (on Port 443)
 
 ### Docker compose configuration
 - `base.yml`
