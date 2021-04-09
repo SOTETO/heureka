@@ -57,7 +57,8 @@ Follow the upcoming steps to create your development environment:
 1. Call `http://localhost/drops/` to initiate the drops DB. Notice that the server requires up to 30 seconds to answer this call.
 2. Create an account by using the registration view on `http://localhost`.
 3. Use `admin` to grant admin rights to your newly created user.
-4. Request `/docu` to initiate an admin account for your local Grav CMS instance,
+4. Request `/docu` to initiate an admin account for your local Grav CMS instance.
+5. Initiate the navigation by calling `http://localhost/dispenser/navigation/init`. In case of a whitescreen, the call has been successfully.
 
 After all, your microservice will be available by calling `http://localhost/new` (or the pathes that you have introduced. Using the default `dev.yml`, the REST-API of MS-DROPS will be available by calling `http://localhost/drops/<endpoint>` or `http://localhost:9000/<endpoint>` and the NATS listens to `localhost:4222`. Keep in mind that you have to configure an API user to call the REST-API of MS-DROPS or execute the OAuth handshake.
 
@@ -105,6 +106,7 @@ Follow the upcoming steps to create your development environment:
 5. Create an account by using the registration view on `http://localhost`.
 6. Use `drops admin` to grant admin rights to your newly created user.
 7. Request `/docu` to initiate an admin account for your local Grav CMS instance, the base for the documentation.
+8. Initiate the navigation by calling `http://localhost/dispenser/navigation/init`. In case of a whitescreen, the call has been successfully.
 
 ### Infrastructure development environment
 Required to clone all git repositories for the development of infrastructure services like `dispenser` or `vca-widget-base`.
@@ -150,6 +152,7 @@ Follow the upcoming steps to create your development environment:
 2. Create an account by using the registration view on `http://localhost`.
 3. Use `admin` to grant admin rights to your newly created user.
 4. Request `/docu` to initiate an admin account for your local Grav CMS instance, the base for the documentation.
+5. Initiate the navigation by calling `/dispenser/navigation/init`. In case of a whitescreen, the call has been successfully.
 
 ## Configuration files
 There are several configuration files to make the MS-architecture more save:
