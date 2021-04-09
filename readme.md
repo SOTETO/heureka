@@ -141,7 +141,7 @@ If you want to setup a production environment, you have the following commands:
 0. Enter the local file system pathes of the git repositories that will be created to `git-setup.cfg` (default is `~/heureka/...`). If you change the default path, also change the path value of the `GRAV_PATH` variable in `.docker-conf/mode_dev/.env` file.
 1. Change the database configurations in `.docker-conf/mode_prod/.env`.
 2. Change the application secrets of drops (`.docker-conf/mode_prod/drops/application.conf`) and dispenser (`.docker-conf/mode_prod/dispenser/application.conf`). Both should have a length of 64 characters.
-3. Change the server name (`localhost`) in `.docker-conf/mode_prod/nginx/default.conf`.
+3. Change the server name in `.docker-conf/mode_prod/nginx/default.conf`. Also add it to `play.filters.hosts.allowed` in `.docker-conf/mod_prod/dispenser/application.conf`.
 4. Add an SSH config (on Port 443)
 
 #### Deployment
