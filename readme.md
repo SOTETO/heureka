@@ -17,6 +17,7 @@ cd heureka-cli
 # Start the Heureka-CLI
 bash ./heureka
 ```
+Due to a [known issue](https://github.com/SOTETO/grav-dockerfile/issues/1), there are access rights problems with the GRAV documentation setup. As a workaround, you have to set `chmod -R 777 .docker-conf/base/grav`.
 
 ## Manual
 Please choose the environment you want to setup:
@@ -53,6 +54,7 @@ Follow the upcoming steps to create your development environment:
 0. Edit the placeholder upstream `new` in `.docker-conf/mode_dev/nginx/pool2.upstream` and add more required upstreams (the ports at the localhost used by your application).
 0. Use the new / updated upstreams in `.docker-conf/mode_dev/nginx/location.pool` by introducing new pathes or editing the plaeholder path `/new`.
 1. `up`
+1. Call `http://localhost/drops/` to initiate the drops DB. Notice that the server requires up to 30 seconds to answer this call.
 2. Create an account by using the registration view on `http://localhost`.
 3. Use `admin` to grant admin rights to your newly created user.
 4. Request `/docu` to initiate an admin account for your local Grav CMS instance,
@@ -98,6 +100,7 @@ Follow the upcoming steps to create your development environment:
 1. `git clone`
 2. `docker up`
 3. Follow `drops up man`
+1. Call `http://localhost/drops/` to initiate the drops DB. Notice that the server requires up to 30 seconds to answer this call.
 4. Follow `arise up man`
 5. Create an account by using the registration view on `http://localhost`.
 6. Use `drops admin` to grant admin rights to your newly created user.
