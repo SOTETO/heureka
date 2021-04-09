@@ -41,7 +41,7 @@ function gitCloneInfra () {
   clone $(expandPath "${dispenser_navigation_widget[path]}") "${dispenser_navigation_widget[url]}" "${dispenser_navigation_widget[branch]}"
   clone $(expandPath "${navigationWidget[path]}") "${navigationWidget[url]}" "${navigationWidget[branch]}"
   clone $(expandPath "${vcaWidgetBase[path]}") "${vcaWidgetBase[url]}" "${vcaWidgetBase[branch]}"
-  clone $(expandPath "${vcaWidgetNavigation[path]}") "${vcaWidgetNavigation[url]}" "${vcaWidgetNavigation[branch]}"
+  clone $(expandPath "${heurekaWidgetNavigation[path]}") "${heurekaWidgetNavigation[url]}" "${heurekaWidgetNavigation[branch]}"
 }
 
 function gitCloneDocu () {
@@ -67,7 +67,7 @@ grav-dockerfile
   rm -rf $(expandPath "${dispenser_navigation_widget[path]}")
   rm -rf $(expandPath "${navigationWidget[path]}")
   rm -rf $(expandPath "${vcaWidgetBase[path]}")
-  rm -rf $(expandPath "${vcaWidgetNavigation[path]}")
+  rm -rf $(expandPath "${heurekaWidgetNavigation[path]}")
 }
 
 function gitRemoveDrops () {
