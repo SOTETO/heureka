@@ -3,7 +3,7 @@ A Command-Line-Interface (CLI) to start the microservice MS-DROPS. It is the bas
 
 ## Pre-Requirements
 - Install Git ([https://git-scm.com/](https://git-scm.com/))
-- Configure your [GitHub account](https://docs.github.com/en/github/getting-started-with-github/set-up-git). Save a SSH public key of your systems user in your GitHub account.
+- *Optional: Configure your [GitHub account](https://docs.github.com/en/github/getting-started-with-github/set-up-git). Save a SSH public key of your systems user in your GitHub account.*
 - Install docker ([https://docs.docker.com/get-docker/](https://docs.docker.com/get-docker/))
 - Install docker-compose ([https://docs.docker.com/compose/install/](https://docs.docker.com/compose/install/))
 - The Heureka-CLI is a [GNU Bash](https://www.gnu.org/software/bash/)-Script. Thus, make sure your OS has bash installed.
