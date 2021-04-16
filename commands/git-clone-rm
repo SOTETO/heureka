@@ -6,7 +6,7 @@ export WORKDIR=$(cd $(dirname $0) && pwd)
 
 function clone() {
   #echo "git clone --branch $3 $2 $1"
-  if [ "$(ls -A $1)" ]; then
+  if [[ -d "$1" && "$(ls -A $1)" ]]; then
     printf "Directory $1 is not empty.\n"
   else
     git clone --branch $3 $2 $1
