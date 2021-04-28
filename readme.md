@@ -9,6 +9,8 @@ A Command-Line-Interface (CLI) to start the microservice MS-DROPS. It is the bas
 - The Heureka-CLI is a [GNU Bash](https://www.gnu.org/software/bash/)-Script. Thus, make sure your OS has bash installed.
 - The Heureka-CLI requires `sudo` operations. Thus, make sure your user has `sudo` access rights.
 
+_Hardware:_ You should have at least 4 GB working memory for using the `dev drops` environment.
+
 ## Installation
 The Heureka-CLI is a script library. Thus, you just have to clone it to use it.
 ```
