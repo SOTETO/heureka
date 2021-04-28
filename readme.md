@@ -30,6 +30,8 @@ Please choose the environment you want to setup:
 
 You can also use `exit` to quit the console.
 
+_Configuration:_ As a best practice, the configuration should always be edited _before_ the console will be used. Otherwise, the state of the console could become invalid.
+
 ### Development environment - Create a new microservice
 Setting up the environment to develop a new microservice requires a bit of configuration effort.
 
