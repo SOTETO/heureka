@@ -50,15 +50,17 @@ Setting up the environment to develop a new microservice requires a bit of confi
 
 #### Deployment
 Follow the upcoming steps to create your development environment:
-0. Start your application using all required ports except the ports used in `dev.yml` (heureka uses ports 80, 443, 9000 and 4222 by default).
-0. Edit the placeholder upstream `new` in `.docker-conf/mode_dev/nginx/pool2.upstream` and add more required upstreams (the ports at the localhost used by your application).
-0. Use the new / updated upstreams in `.docker-conf/mode_dev/nginx/location.pool` by introducing new pathes or editing the plaeholder path `/new`.
-1. `up`
-1. Call `http://localhost/drops/` to initiate the drops DB. Notice that the server requires up to 30 seconds to answer this call.
-2. Create an account by using the registration view on `http://localhost`.
-3. Use `admin` to grant admin rights to your newly created user.
-4. Request `/docu` to initiate an admin account for your local Grav CMS instance.
-5. Initiate the navigation by calling `http://localhost/dispenser/navigation/init`. In case of a whitescreen, the call has been successfully.
+1. `bash ./heureka`
+2. `dev new` to enter the development environment of the CLI
+3. Start your application using all required ports except the ports used in `dev.yml` (heureka uses ports 80, 443, 9000 and 4222 by default).
+4. Edit the placeholder upstream `new` in `.docker-conf/mode_dev/nginx/pool2.upstream` and add more required upstreams (the ports at the localhost used by your application).
+5. Use the new / updated upstreams in `.docker-conf/mode_dev/nginx/location.pool` by introducing new pathes or editing the plaeholder path `/new`.
+6. `up`
+7. Call `http://localhost/drops/` to initiate the drops DB. Notice that the server requires up to 30 seconds to answer this call.
+8. Create an account by using the registration view on `http://localhost`.
+9. Use `admin` to grant admin rights to your newly created user.
+10. Request `/docu` to initiate an admin account for your local Grav CMS instance.
+11. Initiate the navigation by calling `http://localhost/dispenser/navigation/init`. In case of a whitescreen, the call has been successfully.
 
 After all, your microservice will be available by calling `http://localhost/new` (or the pathes that you have introduced. Using the default `dev.yml`, the REST-API of MS-DROPS will be available by calling `http://localhost/drops/<endpoint>` or `http://localhost:9000/<endpoint>` and the NATS listens to `localhost:4222`. Keep in mind that you have to configure an API user to call the REST-API of MS-DROPS or execute the OAuth handshake.
 
@@ -97,19 +99,33 @@ Setting up the microservice environment requires a lot of configuration. This co
 
 #### Deployment
 Follow the upcoming steps to create your development environment:
-0. Enter the local file system pathes of the git repositories that will be created to `git-setup.cfg` (default is `~/heureka/ms-drops/...` for MS-DROPS). If you change the default path, also change the path value of the `GRAV_PATH` variable in `.docker-conf/mode_dev/.env` file.
-1. `git clone`
-2. `docker up`
-3. Follow `drops up man`
-1. Call `http://localhost/drops/` to initiate the drops DB. Notice that the server requires up to 30 seconds to answer this call.
-4. Follow `arise up man`
-5. Create an account by using the registration view on `http://localhost`.
-6. Use `drops admin` to grant admin rights to your newly created user.
-7. Request `/docu` to initiate an admin account for your local Grav CMS instance, the base for the documentation.
-8. Initiate the navigation by calling `http://localhost/dispenser/navigation/init`. In case of a whitescreen, the call has been successfully.
+1. Enter the local file system pathes of the git repositories that will be created to `git-setup.cfg` (default is `~/heureka/ms-drops/...` for MS-DROPS). If you change the default path, also change the path value of the `GRAV_PATH` variable in `.docker-conf/mode_dev/.env` file.
+2. `bash ./heureka`
+3. `dev drops` to enter the drops development environment of the CLI
+4. `git clone`
+5. `docker up`
+6. Follow `drops up man`
+7. Call `http://localhost/drops/` to initiate the drops DB. Notice that the server requires up to 30 seconds to answer this call.
+8. Follow `arise up man`
+9. Create an account by using the registration view on `http://localhost`.
+10. Use `drops admin` to grant admin rights to your newly created user.
+11. Request `/docu` to initiate an admin account for your local Grav CMS instance, the base for the documentation.
+12. Initiate the navigation by calling `http://localhost/dispenser/navigation/init`. In case of a whitescreen, the call has been successfully.
 
 ### Infrastructure development environment
 Required to clone all git repositories for the development of infrastructure services like `dispenser` or `vca-widget-base`.
+
+#### Deployment
+Follow the upcoming steps to create your infrastructure development environment:
+1. Enter the local file system pathes of the git repositories that will be created to `git-setup.cfg>
+2. `bash ./heureka`
+3. `dev infra` to enter the infrastructure environment of the CLI
+4. `clone`
+5. `docker up`
+6. Configure the local `application.conf` in your dispenser repository to listen to `localhost:27017` (or another port, if you have changed it in your `infra.yml`)
+
+#### List of commands
+The `dev infra` environment provides the following commands:
 
 - `clone` - Clone the required git repositories
 - `rm` - Remove the git repositories
@@ -120,14 +136,29 @@ Required to clone all git repositories for the development of infrastructure ser
 - `exit` - close the Heureka console
 - \* - Help
 
-Follow the upcoming steps to create your development environment:
-0. Enter the local file system pathes of the git repositories that will be created to `git-setup.cfg>
-1. `clone`
-2. `docker up`
-3. Configure the local `application.conf` in your dispenser repository to listen to `localhost:27017` (or another port, if you have changed it in your `infra.yml`)
 
 ### Production environment
 If you want to setup a production environment, you have the following commands:
+
+### Deployment
+Follow the upcoming steps to create your production environment:
+1. `bash ./heureka`
+2. `dev prod` to enter the production environment of the CLI
+3. `up`
+4. Create an account by using the registration view on `http://localhost`.
+5. Use `admin` to grant admin rights to your newly created user.
+6. Request `/docu` to initiate an admin account for your local Grav CMS instance, the base for the documentation.
+7. Initiate the navigation by calling `/dispenser/navigation/init`. In case of a whitescreen, the call has been successfully.
+
+#### Best practice for PROD configuration
+1. Enter the local file system pathes of the git repositories that will be created to `git-setup.cfg` (default is `~/heureka/...`). If you change the default path, also change the path value of the `GRAV_PATH` variable in `.docker-conf/mode_dev/.env` file.
+2. Change the database configurations in `.docker-conf/mode_prod/.env`.
+3. Change the application secrets of drops (`.docker-conf/mode_prod/drops/application.conf`) and dispenser (`.docker-conf/mode_prod/dispenser/application.conf`). Both should have a length of 64 characters.
+4. Change the server name in `.docker-conf/mode_prod/nginx/default.conf`. Also add it to `play.filters.hosts.allowed` in `.docker-conf/mod_prod/dispenser/application.conf`.
+5. Add an SSH config (on Port 443)
+
+#### List of commands
+The `dev prod` environment provides the following commands:
 
 - `up` - Start the `docker-compose up` considering the `.docker-conf/mode_prod/.env` file
 - `stop` - Stop all created containers.
@@ -139,20 +170,6 @@ If you want to setup a production environment, you have the following commands:
 - `exit` - Close console
 - \* - Help
 
-#### Best practice for PROD configuration
-0. Enter the local file system pathes of the git repositories that will be created to `git-setup.cfg` (default is `~/heureka/...`). If you change the default path, also change the path value of the `GRAV_PATH` variable in `.docker-conf/mode_dev/.env` file.
-1. Change the database configurations in `.docker-conf/mode_prod/.env`.
-2. Change the application secrets of drops (`.docker-conf/mode_prod/drops/application.conf`) and dispenser (`.docker-conf/mode_prod/dispenser/application.conf`). Both should have a length of 64 characters.
-3. Change the server name in `.docker-conf/mode_prod/nginx/default.conf`. Also add it to `play.filters.hosts.allowed` in `.docker-conf/mod_prod/dispenser/application.conf`.
-4. Add an SSH config (on Port 443)
-
-#### Deployment
-Follow the upcoming steps to create your development environment:
-1. `up`
-2. Create an account by using the registration view on `http://localhost`.
-3. Use `admin` to grant admin rights to your newly created user.
-4. Request `/docu` to initiate an admin account for your local Grav CMS instance, the base for the documentation.
-5. Initiate the navigation by calling `/dispenser/navigation/init`. In case of a whitescreen, the call has been successfully.
 
 ## Configuration files
 There are several configuration files to make the MS-architecture more save:
