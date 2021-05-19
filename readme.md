@@ -59,6 +59,9 @@ After all, your microservice will be available by calling `http://localhost/new`
 4. Add an nginx upstream for your local new MS in `.docker-conf/mode_dev/nginx/pool2.upstream` (see new or arise and drops as an example).
 5. Add new locations to the nginx `.docker-conf/mode_dev/nginx/location.pool` file (using the new upstreams).
 
+#### Hints for the deployment
+If no SMTP-Server has been configured to send emails, the confirmation email of the MS-DROPS backend is logged. Thus, search in the logs for the confirmation email (see the end of this readme).
+
 #### List of commands
 The `dev drops` environment provides the following commands:
 - `up` - Start the `docker-compose up` considering the `.docker-conf/mode_dev/.env` file
@@ -157,6 +160,9 @@ Follow the upcoming steps to create your production environment:
 3. Change the server name in `.docker-conf/mode_prod/nginx/default.conf`. Also add it to `play.filters.hosts.allowed` in `.docker-conf/mod_prod/dispenser/application.conf`.
 4. Add an SSH config (on Port 443)
 
+#### Hints for the deployment
+If no SMTP-Server has been configured to send emails, the confirmation email of the MS-DROPS backend is logged. Thus, search in the logs for the confirmation email (see the end of this readme).
+
 #### List of commands
 The `dev prod` environment provides the following commands:
 
@@ -216,3 +222,14 @@ The following files contain the configuration for the play2 apps:
 - `.docker-conf/mode_prod/nginx/default.conf`
 - `.docker-conf/mode_prod/nginx/location.pool`
 - `.docker-conf/mode_prod/nginx/pool2.upstream`
+
+## Logging
+Currently, the Heureka-CLI just uses the [logging implemented by Docker](https://docs.docker.com/config/containers/logging/). Thus, leave the Heureka-CLI and enter
+```
+sudo docker logs <container-name>
+```
+to show the logs of a container. See `docker ps --format '{{.Names}}'` to print the names of the running container.
+```
+# Print log of MS-DROPS backend service (drops)
+sudo docker logs drops
+```
