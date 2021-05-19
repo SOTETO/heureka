@@ -53,10 +53,10 @@ Follow the upcoming steps to create your development environment:
 After all, your microservice will be available by calling `http://localhost/new` (or the pathes that you have introduced. Using the default `dev.yml`, the REST-API of MS-DROPS will be available by calling `http://localhost/drops/<endpoint>` or `http://localhost:9000/<endpoint>` and the NATS listens to `localhost:4222`. Keep in mind that you have to configure an API user to call the REST-API of MS-DROPS or execute the OAuth handshake.
 
 #### Best practice for DEV configuration
-1. Setup the required git repositories for your new MS
-2. Optional: Add the repositories to the `git-setup.cfg`, if it becomes part of MS-DROPS or an infrastructure system
-3. Change the database configurations in `.docker-conf/mode_dev/.env`
-4. Add an nginx upstream for your local new MS in `.docker-conf/mode_dev/nginx/pool2.upstream` (see new or arise and drops as an example)
+1. Setup the required git repositories for your new MS.
+2. Optional: Add the repositories to the `git-setup.cfg`.
+3. Change the database configurations for MS-DROPS (`DROPS_DB_*`) and other existing microservices in `.docker-conf/mode_dev/.env`.
+4. Add an nginx upstream for your local new MS in `.docker-conf/mode_dev/nginx/pool2.upstream` (see new or arise and drops as an example).
 5. Add new locations to the nginx `.docker-conf/mode_dev/nginx/location.pool` file (using the new upstreams).
 
 #### List of commands
@@ -152,7 +152,7 @@ Follow the upcoming steps to create your production environment:
 
 #### Best practice for PROD configuration
 0. Enter the local file system pathes of the git repositories that will be created to `git-setup.cfg` (default is `~/heureka/...`). If you change the default path, also change the path value of the `GRAV_PATH` variable in `.docker-conf/mode_dev/.env` file.
-1. Change the database configurations in `.docker-conf/mode_prod/.env`.
+1. Change the database configurations for MS-DROPS (`DROPS_DB_*`) and other existing microservices in `.docker-conf/mode_prod/.env`.
 2. Change the application secrets of drops (`.docker-conf/mode_prod/drops/application.conf`) and dispenser (`.docker-conf/mode_prod/dispenser/application.conf`). Both should have a length of 64 characters.
 3. Change the server name in `.docker-conf/mode_prod/nginx/default.conf`. Also add it to `play.filters.hosts.allowed` in `.docker-conf/mod_prod/dispenser/application.conf`.
 4. Add an SSH config (on Port 443)
