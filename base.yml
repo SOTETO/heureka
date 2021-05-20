@@ -105,7 +105,7 @@ services:
       - ${GRAV_PATH}/languages:/var/www/html/docu/user/languages
       # While the configuration of GRAV is saved in the heureka config directories
       - .docker-conf/base/grav/plugins:/var/www/html/docu/user/plugins
-      - .docker-conf/base/grav/themes:/var/www/html/docu/user/themes
+      - ${GRAV_THEME_PATH}/themes:/var/www/html/docu/user/themes
       - .docker-conf/base/grav/config:/var/www/html/docu/user/config
       - .docker-conf/base/grav/accounts:/var/www/html/docu/user/accounts
     networks:
