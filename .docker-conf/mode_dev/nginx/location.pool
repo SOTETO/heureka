@@ -9,14 +9,18 @@
 
 # Edit this entry for the path new and add several more required entries (e.g. for front- and backend separation)
 location /new {
+   return 301 /new/;
+}
+
+location /new/ {
    proxy_pass http://new;
-   proxy_set_header   X-Real-IP $remote_addr;
-   proxy_set_header   X-Forwarded-Proto $scheme;
-   proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+   #proxy_set_header   X-Real-IP $remote_addr;
+   #proxy_set_header   X-Forwarded-Proto $scheme;
+   #proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
    proxy_http_version 1.1;
    proxy_set_header   Upgrade $http_upgrade;
    proxy_set_header Connection "upgrade";
-   proxy_set_header   Host $http_host;
+   proxy_set_header   Host $host;
 }
 
 ###########

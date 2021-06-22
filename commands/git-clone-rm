@@ -46,6 +46,8 @@ function gitCloneInfra () {
 
 function gitCloneDocu () {
   clone $(expandPath "${docu[path]}") "${docu[url]}" "${docu[branch]}"
+  clone $(expandPath "${grav_theme[path]}") "${grav_theme[url]}" "${grav_theme[branch]}"
+  clone $(expandPath "${grav_theme[grav_plugins]}") "${grav_plugins[url]}" "${grav_plugins[branch]}"
 }
 
 function gitRemove () {
@@ -58,6 +60,8 @@ function gitRemove () {
 
 function gitRemoveDocu () {
   rm -rf $(expandPath "${docu[path]}")
+  rm -rf $(expandPath "${grav_theme[path]}")
+  rm -rf $(expandPath "${grav_plugins[path]}")
 }
 
 function gitRemoveInfra () {
