@@ -17,12 +17,12 @@ ${YELLOW}HEUREKA CLI${NC}
 Version: $(cat $(getDir)/VERSION)
 Usage: [command]
 Commands:
-  dev drops                     Initiate a development environment for the MS-DROPS.
-  dev infra                     Initiate a development environment for infrastructure services and widget required to run the microservices.
-  dev new			Initiate a development environment for a complete new microservice.
-  prod				Start production environment
-  exit                          Close console
-  *                             Help
+  ${YELLOW}prod${NC}				Start production environment
+  ${YELLOW}dev new${NC}			Initiate a development environment for a complete new microservice.
+  dev drops                     ${RED}Additional:${NC} Initiate a development environment for the MS-DROPS.
+  dev infra                     ${RED}Additional:${NC} Initiate a development environment for infrastructure services and widget required to run the microservices.
+  ${YELLOW}exit${NC}                          Close console
+  ${YELLOW}*${NC}                             Help
 "
 }
 
