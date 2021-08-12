@@ -23,10 +23,10 @@ Due to a [known issue](https://github.com/SOTETO/grav-dockerfile/issues/1), ther
 
 ## Manual
 Please choose the environment you want to setup:
-- `dev drops` - Initiate a development environment for the MS-DROPS.
-- `dev infra` - Initiate a development environment for infrastructure services and widget required to run the microservices.
-- `dev new`   - Initiate a development environment for a complete new microservice.
 - `prod`      - A production environment.
+- `dev new`   - Initiate a development environment for a complete new microservice.
+- `dev drops` - *Additional:* Initiate a development environment for the MS-DROPS.
+- `dev infra` - *Additional:* Initiate a development environment for infrastructure services and widget required to run the microservices.
 
 You can also use `exit` to quit the console.
 
