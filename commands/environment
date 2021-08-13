@@ -1,0 +1,47 @@
+#!/bin/bash
+set -e
+
+confFile=".heureka.conf"
+
+typeset -A config # init array
+
+config=( # set default values in config array
+  [env]="Not selected"
+  [running]="no"
+)
+
+readHeurekaConf() {
+  while IFS= read -r line
+  do
+    if echo $line | grep -F = &>/dev/null
+    then
+        varname=$(echo "$line" | cut -d '=' -f 1)
+        config[$varname]=$(echo "$line" | cut -d '=' -f 2-)
+    fi
+  done <"$confFile"
+}
+
+# $1 = the configuration parameter that has to be changed
+# $2 = the new value for the configuration parameter
+writeConfig() {
+  target=$1
+  value=$2
+  sed -i "s/\($target *= *\).*/\1$value/" $confFile
+}
+
+# $1 = the configuration parameter that has to be changed
+# $2 = the new value for the configuration parameter
+setConfig() {
+  writeConfig $1 $2
+  readHeurekaConf
+}
+
+# $1 = Highlight color code
+# $2 = Second color code
+# $3 = Default color code
+printCurrentConf() {
+  echo -e "
+${1}Environment:${3} ${2}${config[env]}${3}
+${1}Running:${3} ${2}${config[running]}${3}
+"
+}
