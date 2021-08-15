@@ -24,16 +24,30 @@ readHeurekaConf() {
 # $1 = the configuration parameter that has to be changed
 # $2 = the new value for the configuration parameter
 writeConfig() {
-  target=$1
-  value=$2
+  target="$1"
+  value="$2"
   sed -i "s/\($target *= *\).*/\1$value/" $confFile
 }
 
 # $1 = the configuration parameter that has to be changed
 # $2 = the new value for the configuration parameter
 setConfig() {
-  writeConfig $1 $2
+  writeConfig "$1" "$2"
   readHeurekaConf
+}
+
+# Set selected environment to "Not supported", if nothing is running.
+setEnvToIdle() {
+  # if nothing is running
+  if [[ ${config[running]} = "no" ]]; then
+    # set environment to "Not selected"
+    newEnv="Not selected"
+    setConfig "env" "$newEnv"
+  fi
+}
+
+getEnv() {
+  echo "${config[env]}"
 }
 
 # $1 = Highlight color code
