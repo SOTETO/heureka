@@ -50,6 +50,27 @@ getEnv() {
   echo "${config[env]}"
 }
 
+# Returns a string extending the prompt with context information
+# $1 = Highlight color code
+# $2 = Second color code
+# $3 = Alert color code
+# $3 = Default color code
+getPromptExt() {
+  local cleanEnv="${config[env]// /${1}-${2}}"
+  local promptExt=$(echo -e "${2}${cleanEnv}${1}")
+  case "${config[running]}" in
+    "yes")
+        echo -e "$promptExt-${3}UP${4}"
+	;;
+    "stopped")
+        echo -e "$promptExt-${2}STOPPED${4}"
+	;;
+    "no")
+        echo -e "$promptExt-${2}DOWN${4}"
+	;;
+  esac
+}
+
 # $1 = Highlight color code
 # $2 = Second color code
 # $3 = Default color code

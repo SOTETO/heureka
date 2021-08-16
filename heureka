@@ -108,6 +108,11 @@ Commands:
 "
 }
 
+function calcPrompt () {
+  local promptExt=$(getPromptExt "$YELLOW" "$LIGHTBLUE" "$RED" "$NC")
+  echo -e "${YELLOW}heureka-${promptExt}${YELLOW}> ${NC}"
+}
+
 function init () {
   printf "Welcome to ${YELLOW}HEUREKA!${NC}\nSetup a development environment to implement microservices for the HEUREKA platform."
   readHeurekaConf
@@ -182,20 +187,23 @@ function initConsole () {
 }
 
 function prod () {
+  local prompt=$(calcPrompt)
   for (( ; ; ))
   do
-    read -r -p $'\033[1;33mheureka-\033[1;34mPROD\033[1;33m> \e[0m' cmd para1 para2
+    read -r -p $"${prompt}" cmd para1 para2
     case "$cmd" in
 	"up")
 	  gitCloneDocu
 	  dockerRun prod
           setConfig "running" "yes"
           printCurrentConf "$YELLOW" "$LIGHTBLUE" "$NC"
+          prompt=$(calcPrompt)
 	  ;;
 	"stop")
 	  dockerStop prod
           setConfig "running" "stopped"
           printCurrentConf "$YELLOW" "$LIGHTBLUE" "$NC"
+          prompt=$(calcPrompt)
 	  ;;
 	"rm")
 	  case "$para1" in
@@ -220,6 +228,7 @@ function prod () {
                   gitRemove docu
 		  setConfig "running" "no"
                   printCurrentConf "$YELLOW" "$LIGHTBLUE" "$NC"
+                  prompt=$(calcPrompt)
                   ;;
                *) prodMan
                   ;;
@@ -231,6 +240,7 @@ function prod () {
 	"leave")
           setEnvToIdle
           printCurrentConf "$YELLOW" "$LIGHTBLUE" "$NC"
+          prompt=$(calcPrompt)
 	  break
 	  ;;
 	"exit")
@@ -244,20 +254,23 @@ function prod () {
 }
 
 function create () {
+  local prompt=$(calcPrompt)
   for (( ; ; ))
   do
-    read -r -p $'\033[1;33mheureka-\033[1;34mDEV\033[1;33m-\033[1;34mNEW\033[1;33m> \e[0m' cmd sub para1 para2
+    read -r -p $"${prompt}" cmd sub para1 para2
     case "$cmd" in
         "up")
           gitCloneDocu
           dockerRun dev
           setConfig "running" "yes"
           printCurrentConf "$YELLOW" "$LIGHTBLUE" "$NC"
+          prompt=$(calcPrompt)
           ;;
         "stop")
           dockerStop dev
           setConfig "running" "stopped"
           printCurrentConf "$YELLOW" "$LIGHTBLUE" "$NC"
+          prompt=$(calcPrompt)
           ;;
         "rm")
           case "$para1" in
@@ -282,6 +295,7 @@ function create () {
                   gitRemove docu
                   setConfig "running" "no"
                   printCurrentConf "$YELLOW" "$LIGHTBLUE" "$NC"
+                  prompt=$(calcPrompt)
                   ;;
                *) createMan
                   ;;
@@ -293,6 +307,7 @@ function create () {
         "leave")
           setEnvToIdle
           printCurrentConf "$YELLOW" "$LIGHTBLUE" "$NC"
+          prompt=$(calcPrompt)
           break
           ;;
         "exit")
@@ -306,15 +321,17 @@ function create () {
 }
 
 function dev () {
+  local prompt=$(calcPrompt)
   for (( ; ; ))
   do
-    read -r -p $'\033[1;33mheureka-\033[1;34mDEV\033[1;33m-\033[1;34m'$1$'\033[1;33m> \e[0m' cmd sub para1 para2
+    read -r -p $"${prompt}" cmd sub para1 para2
     case "$cmd" in
 	"up")
 	  gitClone drops
 	  dockerRun dev_ms_drops
           setConfig "running" "yes"
           printCurrentConf "$YELLOW" "$LIGHTBLUE" "$NC"
+          prompt=$(calcPrompt)
 	  ;;
 	"git")
 	  case "$sub" in
@@ -343,6 +360,7 @@ function dev () {
 		"up") dockerRun dev_ms_drops
                       setConfig "running" "yes"
                       printCurrentConf "$YELLOW" "$LIGHTBLUE" "$NC"
+                      prompt=$(calcPrompt)
 			;;
 		"rm")
 		  case "$para1" in
@@ -365,6 +383,7 @@ function dev () {
 			"") dockerRm dev_ms_drops
                             setConfig "running" "no"
                             printCurrentConf "$YELLOW" "$LIGHTBLUE" "$NC"
+                            prompt=$(calcPrompt)
 			  ;;
 			*) devMan $1
 			  ;;
@@ -407,6 +426,7 @@ function dev () {
 	"leave")
           setEnvToIdle
           printCurrentConf "$YELLOW" "$LIGHTBLUE" "$NC"
+          prompt=$(calcPrompt)
 	  break
 	  ;;
 	"exit")
@@ -421,9 +441,10 @@ function dev () {
 }
 
 function infra () {
+  local prompt=$(calcPrompt)
   for (( ; ; ))
   do
-    read -r -p $'\033[1;33mheureka-\033[1;34mDEV\033[1;33m-\033[1;34mINFRA\033[1;33m> \e[0m' cmd sub para1 para2
+    read -r -p $"${prompt}" cmd sub para1 para2
     case "$cmd" in
       "clone") gitClone infra;;
       "rm")
@@ -446,6 +467,7 @@ function infra () {
                dockerRun infra
 	       setConfig "running" "yes"
                printCurrentConf "$YELLOW" "$LIGHTBLUE" "$NC"
+               prompt=$(calcPrompt)
                ;;
           "rm")
 	     case "$para1" in
@@ -459,6 +481,7 @@ function infra () {
 		  dockerRm infra
                   setConfig "running" "no"
                   printCurrentConf "$YELLOW" "$LIGHTBLUE" "$NC"
+                  prompt=$(calcPrompt)
                   ;;
                *) infraMan;;
              esac
@@ -469,6 +492,7 @@ function infra () {
       "leave")
         setEnvToIdle
         printCurrentConf "$YELLOW" "$LIGHTBLUE" "$NC"
+        prompt=$(calcPrompt)
         break
       ;;
       "exit") exit 1;;
