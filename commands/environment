@@ -7,6 +7,7 @@ typeset -A config # init array
 
 config=( # set default values in config array
   [env]="Not selected"
+  [running_environment]="-"
   [running]="no"
 )
 
@@ -33,21 +34,31 @@ writeConfig() {
 # $2 = the new value for the configuration parameter
 setConfig() {
   writeConfig "$1" "$2"
+  if [[ $1 = "running" && $2 = "yes" ]]; then
+    writeConfig "running_environment" "${config[env]}"
+  fi
+  if [[ $1 = "running" && $2 = "no" ]]; then
+    writeConfig "running_environment" "-"
+  fi
   readHeurekaConf
 }
 
 # Set selected environment to "Not supported", if nothing is running.
 setEnvToIdle() {
   # if nothing is running
-  if [[ ${config[running]} = "no" ]]; then
+  #if [[ ${config[running]} = "no" ]]; then
     # set environment to "Not selected"
     newEnv="Not selected"
     setConfig "env" "$newEnv"
-  fi
+  #fi
 }
 
 getEnv() {
-  echo "${config[env]}"
+  local selected="${config[env]}"
+  if [[ $selected = "Not selected" && ${config[running_environment]} != "-" ]]; then
+    selected="${config[running_environment]}"
+  fi
+  echo "$selected"
 }
 
 # Returns a string extending the prompt with context information
@@ -56,19 +67,23 @@ getEnv() {
 # $3 = Alert color code
 # $3 = Default color code
 getPromptExt() {
-  local cleanEnv="${config[env]// /${1}-${2}}"
-  local promptExt=$(echo -e "${2}${cleanEnv}${1}")
-  case "${config[running]}" in
-    "yes")
-        echo -e "$promptExt-${3}UP${4}"
+    local cleanEnv="${config[env]// /${1}-${2}}"
+    local cleanRunningEnv="${config[running_environment]// /${1}-${2}}"
+    local promptExt="${4}"
+    if [[ ${config[env]} != "Not selected" ]]; then
+      promptExt=$(echo -e "${4} in ${2}${cleanEnv}${4}")
+    fi
+    case "${config[running]}" in
+      "yes")
+        echo -e "$promptExt while ${2}${cleanRunningEnv}${4} is ${3}UP${4}"
 	;;
-    "stopped")
-        echo -e "$promptExt-${2}STOPPED${4}"
+      "stopped")
+        echo -e "$promptExt while ${2}${cleanRunningEnv}${4} is ${2}STOPPED${4}"
 	;;
-    "no")
-        echo -e "$promptExt-${2}DOWN${4}"
+      "no")
+        echo -e "$promptExt"
 	;;
-  esac
+    esac
 }
 
 # $1 = Highlight color code
@@ -77,6 +92,5 @@ getPromptExt() {
 printCurrentConf() {
   echo -e "
 ${1}Environment:${3} ${2}${config[env]}${3}
-${1}Running:${3} ${2}${config[running]}${3}
-"
+${1}Running:${3} ${2}${config[running]}${3} in ${2}${config[running_environment]}${3}"
 }

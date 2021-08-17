@@ -110,7 +110,10 @@ Commands:
 
 function calcPrompt () {
   local promptExt=$(getPromptExt "$YELLOW" "$LIGHTBLUE" "$RED" "$NC")
-  echo -e "${YELLOW}heureka-${promptExt}${YELLOW}> ${NC}"
+  #if [[ ! -z "$promptExt" ]]; then
+  #  promptExt="${promptExt}"
+  #fi
+  echo -e "${YELLOW}heureka${promptExt}${YELLOW}> ${NC}"
 }
 
 function init () {
@@ -122,48 +125,50 @@ function init () {
   local selectedEnv=$(getEnv)
   case $selectedEnv in
 	"PROD")
-	printf "${YELLOW}PROD${NC} environment has been selected automatically, since you've choosen it the last time. Use 'leave' to switch the environment.\n"
-	prod
-	;;
+	  printf "${YELLOW}PROD${NC} environment has been selected automatically, since you've choosen it the last time. Use 'leave' to switch the environment.\n"
+	  setConfig "env" "PROD"
+          prod
+	  ;;
 	"DEV NEW")
-        printf "${YELLOW}DEV NEW${NC} environment has been selected automatically, since you've choosen it the last time. Use 'leave' to switch the environment.\n"
-	create
-	;;
+          printf "${YELLOW}DEV NEW${NC} environment has been selected automatically, since you've choosen it the last time. Use 'leave' to switch the environment.\n"
+	  setConfig "env" "DEV NEW"
+          create
+	  ;;
 	"INFRA")
-        printf "${YELLOW}INFRA${NC} environment has been selected automatically, since you've choosen it the last time. Use 'leave' to switch the environment.\n"
-	infra
-	;;
+          printf "${YELLOW}INFRA${NC} environment has been selected automatically, since you've choosen it the last time. Use 'leave' to switch the environment.\n"
+	  setConfig "env" "INFRA"
+          infra
+	  ;;
 	"DEV DROPS")
-        printf "${YELLOW}DEV DROPS${NC} environment has been selected automatically, since you've choosen it the last time. Use 'leave' to switch the environment.\n"
-	dev "DROPS"
-	;;
+          printf "${YELLOW}DEV DROPS${NC} environment has been selected automatically, since you've choosen it the last time. Use 'leave' to switch the environment.\n"
+	  setConfig "env" "DEV DROPS"
+          dev "DROPS"
+	  ;;
 	*)
-	initConsole
-	;;
+	  initConsole
+	  ;;
   esac
   initConsole
 }
 
 function initConsole () {
+  prompt=$(calcPrompt)
   for (( ; ; ))
   do
-    read -r -p $'\033[1;33mheureka> \e[0m' environment ms
+    read -r -p $"${prompt}" environment ms
     case "$environment" in
 	"dev")
 	  case "$ms" in
 	    "drops")
               setConfig "env" "DEV DROPS"
-              printCurrentConf "$YELLOW" "$LIGHTBLUE" "$NC"
 	      dev "DROPS"
 	      ;;
 	    "infra")
               setConfig "env" "INFRA"
-              printCurrentConf "$YELLOW" "$LIGHTBLUE" "$NC"
 	      infra
 	      ;;
 	    "new")
               setConfig "env" "DEV NEW"
-              printCurrentConf "$YELLOW" "$LIGHTBLUE" "$NC"
 	      create
 	      ;;
 	    *)
@@ -173,7 +178,6 @@ function initConsole () {
 	  ;;
 	"prod")
           setConfig "env" "PROD"
-          printCurrentConf "$YELLOW" "$LIGHTBLUE" "$NC"
 	  prod
 	  ;;
 	"exit")
@@ -187,7 +191,7 @@ function initConsole () {
 }
 
 function prod () {
-  local prompt=$(calcPrompt)
+  prompt=$(calcPrompt)
   for (( ; ; ))
   do
     read -r -p $"${prompt}" cmd para1 para2
@@ -196,13 +200,11 @@ function prod () {
 	  gitCloneDocu
 	  dockerRun prod
           setConfig "running" "yes"
-          printCurrentConf "$YELLOW" "$LIGHTBLUE" "$NC"
           prompt=$(calcPrompt)
 	  ;;
 	"stop")
 	  dockerStop prod
           setConfig "running" "stopped"
-          printCurrentConf "$YELLOW" "$LIGHTBLUE" "$NC"
           prompt=$(calcPrompt)
 	  ;;
 	"rm")
@@ -227,7 +229,6 @@ function prod () {
                   dockerRm prod
                   gitRemove docu
 		  setConfig "running" "no"
-                  printCurrentConf "$YELLOW" "$LIGHTBLUE" "$NC"
                   prompt=$(calcPrompt)
                   ;;
                *) prodMan
@@ -239,7 +240,6 @@ function prod () {
 	  ;;
 	"leave")
           setEnvToIdle
-          printCurrentConf "$YELLOW" "$LIGHTBLUE" "$NC"
           prompt=$(calcPrompt)
 	  break
 	  ;;
@@ -254,7 +254,7 @@ function prod () {
 }
 
 function create () {
-  local prompt=$(calcPrompt)
+  prompt=$(calcPrompt)
   for (( ; ; ))
   do
     read -r -p $"${prompt}" cmd sub para1 para2
@@ -263,13 +263,11 @@ function create () {
           gitCloneDocu
           dockerRun dev
           setConfig "running" "yes"
-          printCurrentConf "$YELLOW" "$LIGHTBLUE" "$NC"
           prompt=$(calcPrompt)
           ;;
         "stop")
           dockerStop dev
           setConfig "running" "stopped"
-          printCurrentConf "$YELLOW" "$LIGHTBLUE" "$NC"
           prompt=$(calcPrompt)
           ;;
         "rm")
@@ -294,7 +292,6 @@ function create () {
                   dockerRm dev
                   gitRemove docu
                   setConfig "running" "no"
-                  printCurrentConf "$YELLOW" "$LIGHTBLUE" "$NC"
                   prompt=$(calcPrompt)
                   ;;
                *) createMan
@@ -306,7 +303,6 @@ function create () {
           ;;
         "leave")
           setEnvToIdle
-          printCurrentConf "$YELLOW" "$LIGHTBLUE" "$NC"
           prompt=$(calcPrompt)
           break
           ;;
@@ -321,7 +317,7 @@ function create () {
 }
 
 function dev () {
-  local prompt=$(calcPrompt)
+  prompt=$(calcPrompt)
   for (( ; ; ))
   do
     read -r -p $"${prompt}" cmd sub para1 para2
@@ -330,7 +326,6 @@ function dev () {
 	  gitClone drops
 	  dockerRun dev_ms_drops
           setConfig "running" "yes"
-          printCurrentConf "$YELLOW" "$LIGHTBLUE" "$NC"
           prompt=$(calcPrompt)
 	  ;;
 	"git")
@@ -359,7 +354,6 @@ function dev () {
 	  case "$sub" in
 		"up") dockerRun dev_ms_drops
                       setConfig "running" "yes"
-                      printCurrentConf "$YELLOW" "$LIGHTBLUE" "$NC"
                       prompt=$(calcPrompt)
 			;;
 		"rm")
@@ -382,7 +376,6 @@ function dev () {
 			  ;;
 			"") dockerRm dev_ms_drops
                             setConfig "running" "no"
-                            printCurrentConf "$YELLOW" "$LIGHTBLUE" "$NC"
                             prompt=$(calcPrompt)
 			  ;;
 			*) devMan $1
@@ -425,7 +418,6 @@ function dev () {
 	  ;;
 	"leave")
           setEnvToIdle
-          printCurrentConf "$YELLOW" "$LIGHTBLUE" "$NC"
           prompt=$(calcPrompt)
 	  break
 	  ;;
@@ -441,7 +433,7 @@ function dev () {
 }
 
 function infra () {
-  local prompt=$(calcPrompt)
+  prompt=$(calcPrompt)
   for (( ; ; ))
   do
     read -r -p $"${prompt}" cmd sub para1 para2
@@ -466,7 +458,6 @@ function infra () {
           "up")
                dockerRun infra
 	       setConfig "running" "yes"
-               printCurrentConf "$YELLOW" "$LIGHTBLUE" "$NC"
                prompt=$(calcPrompt)
                ;;
           "rm")
@@ -480,7 +471,6 @@ function infra () {
                "")
 		  dockerRm infra
                   setConfig "running" "no"
-                  printCurrentConf "$YELLOW" "$LIGHTBLUE" "$NC"
                   prompt=$(calcPrompt)
                   ;;
                *) infraMan;;
@@ -491,7 +481,6 @@ function infra () {
       ;;
       "leave")
         setEnvToIdle
-        printCurrentConf "$YELLOW" "$LIGHTBLUE" "$NC"
         prompt=$(calcPrompt)
         break
       ;;
@@ -501,4 +490,5 @@ function infra () {
   done
 }
 
+prompt=$(calcPrompt)
 init
