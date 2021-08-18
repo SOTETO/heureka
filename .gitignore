@@ -7,3 +7,6 @@
 .docker-conf/grav/config/media.yaml
 .docker-conf/grav/config/security.yaml
 .docker-conf/grav/config/versions.yaml
+
+# Heureka ignore list
+.heureka.conf
