@@ -36,5 +36,5 @@ function dropsAdmin () {
   source "$WORKDIR/.docker-conf/mode_$1/.env"
   read -p "Please enter the email of the user that becomes an admin: " email
   local update="UPDATE User SET roles='supporter,admin' WHERE id=(SELECT user_id FROM Profile WHERE email='$email');"
-  sudo docker exec -it drops-database mysql -u "$DROPS_DB_USER" -p "$DROPS_DB_NAME" -e "$update"
+  sudo docker exec -it drops-database mysql -u "$DROPS_DB_USER" -p"$DROPS_DB_PASS" "$DROPS_DB_NAME" -e "$update"
 }
