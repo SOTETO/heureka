@@ -271,9 +271,9 @@ function create () {
           prompt=$(calcPrompt)
           ;;
         "rm")
-          case "$para1" in
+          case "$sub" in
               "drops")
-                case "$para2" in
+                case "$para1" in
                     "volumes") dockerRmVolumes dev drops-database
                        ;;
                     *) createMan
@@ -281,7 +281,7 @@ function create () {
                 esac
                   ;;
               "dispenser")
-                case "$para2" in
+                case "$para1" in
                     "volumes") dockerRmVolumes dev dispenser-database
                        ;;
                     *) createMan

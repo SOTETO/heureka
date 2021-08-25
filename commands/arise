@@ -15,5 +15,6 @@ function ariseDown () {
 }
 
 function ariseMan () {
-  printf "Starting the ARISE frontend service should be done manually by the user to have full control. Open a new terminal window and change to '${gitPathes[base]}${gitPathes[arise]}'. Run the command 'npm run serve' and ARISE should start.\n"
+  arisePath=$(expandPath "${arise[path]}")
+  printf "Starting the ARISE frontend service should be done manually by the user to have full control. Open a new terminal window and change to \'$arisePath\'. Run the command 'npm run serve' and ARISE should start.\n"
 }
