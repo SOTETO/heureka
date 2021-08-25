@@ -104,5 +104,5 @@ location /docu {
 
 #Root
 location / {
-	return 301 /arise/#/signin/L2FyaXNlLyMvcHJvZmlsZQ==;
+	return 302 /arise/#/signin/L2FyaXNlLyMvcHJvZmlsZQ==;
 }
