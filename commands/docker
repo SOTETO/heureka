@@ -2,7 +2,7 @@
 set -e
 
 export WORKDIR=$(cd $(dirname $(dirname $0)) && pwd)
-. "$WORKDIR/common"
+. "$WORKDIR/commands/common"
 
 function composeSelection () {
   local environment="ENV_"${1^^}

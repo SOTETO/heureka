@@ -2,7 +2,7 @@
 set -e
 
 export WORKDIR=$(cd $(dirname $0) && pwd)
-. "$WORKDIR/common"
+. "$WORKDIR/commands/common"
 
 # $1 is the current mode ("prod", "dev", "infra" or "dev_ms_drops")
 function dropsUp () {
