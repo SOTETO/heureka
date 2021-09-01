@@ -197,7 +197,7 @@ function prod () {
     read -r -p $"${prompt}" cmd para1 para2
     case "$cmd" in
 	"up")
-	  gitCloneDocu
+	  gitClone docu
 	  dockerRun prod
           setConfig "running" "yes"
           prompt=$(calcPrompt)
@@ -227,7 +227,7 @@ function prod () {
                   ;;
                "")
                   dockerRm prod
-                  gitRemove docu
+                  gitRemove docu false
 		  setConfig "running" "no"
                   prompt=$(calcPrompt)
                   ;;
@@ -260,7 +260,7 @@ function create () {
     read -r -p $"${prompt}" cmd sub para1 para2
     case "$cmd" in
         "up")
-          gitCloneDocu
+          gitClone docu
           dockerRun dev
           setConfig "running" "yes"
           prompt=$(calcPrompt)
@@ -290,7 +290,7 @@ function create () {
                   ;;
                "")
                   dockerRm dev
-                  gitRemove docu
+                  gitRemove docu false
                   setConfig "running" "no"
                   prompt=$(calcPrompt)
                   ;;
@@ -335,11 +335,11 @@ function dev () {
 		"rm")
 		  case "$para1" in
 		    "docu")
-			gitRemove drops
-			gitRemove docu
+			gitRemove drops true
+			#gitRemove docu
 		    ;;
 		    "")
-			gitRemove drops
+			gitRemove drops false
 		    ;;
 		    *)
 			devMan $1
@@ -440,13 +440,13 @@ function infra () {
     case "$cmd" in
       "clone") gitClone infra;;
       "rm")
-        case "$para1" in
+        case "$sub" in
           "docu")
-             gitRemove infra
-             gitRemove docu
+             gitRemove infra true
+             #gitRemove docu
           ;;
           "")
-             gitRemove infra
+             gitRemove infra false
           ;;
           *)
              infraMan
