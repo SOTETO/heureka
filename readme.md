@@ -183,6 +183,17 @@ The `dev prod` environment provides the following commands:
 There are several configuration files to make the MS-architecture more save:
 
 ### Docker compose configuration
+The `docker-setup.cfg` describes all possible docker environments, like:
+```
+[ENV_PROD]
+compose_files=base.yml prod.yml
+
+[ENV_MS_DROPS]
+compose_files=base.yml ms_drops.yml
+```
+The example shows the two different environment `ENV_PROD` and `ENV_MS_DROPS`.
+
+- `docker-setup.cfg`
 - `base.yml`
 - `dev.yml`
 - `dev_ms_drops.yml`
@@ -194,7 +205,13 @@ There are several configuration files to make the MS-architecture more save:
 - `.docker-conf/mode_prod/.env`
 
 ### Git configuration
-The `git-setup.cfg` contains for every git repository the URL, the name and the branch that has to be selected. Additionally, you can set a local file system path for the repositories (default is `~/heureka/...`).
+The `git-setup.cfg` contains the URL, the name and the branch that has to be selected of every git repository. Additionally, you can set a local file system path for the repositories (default is `~/heureka/...`).
+Furthermore, you can define an microservice ("MS") by adding
+```
+[MS_<name>]
+set=list of repositories
+related=list of related MS that have to be cloned and removed, if the MS itself is cloned or removed
+```
 
 ### Play2 configuration
 The following files contain the configuration for the play2 apps:
