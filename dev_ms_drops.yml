@@ -4,7 +4,7 @@ services:
     ports:
       - 3306:3306
     volumes: 
-       - ./.docker-volumes/mode_dev_ms_drops/drops-database/:/var/lib/mysql/
+       - ./.docker-volumes/mode_ms_drops/drops-database/:/var/lib/mysql/
 
   #############
   # Dispenser #
@@ -12,14 +12,14 @@ services:
 
   dispenser:
     volumes:
-      - ./.docker-conf/mode_dev_ms_drops/dispenser/application.conf:/opt/docker/conf/application.conf
-      - ./.docker-conf/mode_dev_ms_drops/navigation/:/opt/docker/conf/navigation/jsons/
+      - ./.docker-conf/mode_ms_drops/dispenser/application.conf:/opt/docker/conf/application.conf
+      - ./.docker-conf/mode_ms_drops/navigation/:/opt/docker/conf/navigation/jsons/
     ports:
       - 7000:9000
 
   dispenser-database:
     volumes: 
-       - ./.docker-volumes/mode_dev_ms_drops/dispenser-database/:/data/db/
+       - ./.docker-volumes/mode_ms_drops/dispenser-database/:/data/db/
     # Required for access from local running dispenser
     ports:
        - 27017:27017
@@ -30,7 +30,7 @@ services:
 
   nginx-pool:
     volumes:
-      - ./.docker-conf/mode_dev_ms_drops/nginx/:/etc/nginx/conf.d/
+      - ./.docker-conf/mode_ms_drops/nginx/:/etc/nginx/conf.d/
     extra_hosts:
       # make 'localhost' ports available in nginx container by using 'host.docker.internal'
       - "host.docker.internal:host-gateway"

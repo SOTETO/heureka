@@ -1,6 +1,5 @@
 #!/bin/bash
 
-source "commands/init"
 source "commands/git-clone-rm"
 source "commands/docker"
 source "commands/drops"
@@ -352,7 +351,7 @@ function dev () {
 	  ;;
 	"docker")
 	  case "$sub" in
-		"up") dockerRun dev_ms_drops
+		"up") dockerRun ms_drops
                       setConfig "running" "yes"
                       prompt=$(calcPrompt)
 			;;
@@ -360,7 +359,7 @@ function dev () {
 		  case "$para1" in
 			"drops")
 			  case "$para2" in
-				"volumes") dockerRmVolumes dev_ms_drops drops-database
+				"volumes") dockerRmVolumes ms_drops drops-database
 					;;
 				*) devMan $1
 					;;
@@ -368,13 +367,13 @@ function dev () {
 			  ;;
 			"dispenser")
 			  case "$para2" in
-				"volumes") dockerRmVolumes dev_ms_drops dispenser-database
+				"volumes") dockerRmVolumes ms_drops dispenser-database
 					;;
 				*) devMan $1
 					;;
 			  esac
 			  ;;
-			"") dockerRm dev_ms_drops
+			"") dockerRm ms_drops
                             setConfig "running" "no"
                             prompt=$(calcPrompt)
 			  ;;
@@ -390,13 +389,13 @@ function dev () {
 	  case "$sub" in
 		"up")
 		  case "$para1" in
-			"man") dropsMan dev_ms_drops
+			"man") dropsMan ms_drops
 			  ;;
 			*) devMan $1
 			  ;;
 		  esac
 			;;
-		"admin") dropsAdmin dev_ms_drops
+		"admin") dropsAdmin ms_drops
 	  		;;
 		*) devMan $1
 			;;

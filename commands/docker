@@ -4,65 +4,44 @@ set -e
 export WORKDIR=$(cd $(dirname $(dirname $0)) && pwd)
 . "$WORKDIR/common"
 
-dev="-f base.yml -f dev.yml"
-dev_ms_drops="-f base.yml -f dev_ms_drops.yml"
-prod="-f base.yml -f prod.yml"
-infra="-f infra.yml"
+function composeSelection () {
+  local environment="ENV_"${1^^}
+  local compose_files=${environment}[compose_files]
+  local files=( "${!compose_files}" )
+  local file_list=""
+  for compose_file in $files; do
+    file_list="$file_list -f $compose_file"
+  done
+  echo "$file_list"
+}
 
-# $1 = selector for drops development environment (value "dev_ms_drops"), development of a new ms ("dev"), infrastructure development (value "infra") or production environment (value "prod")
+# $1 = selector for drops development environment (value "ms_drops"), development of a new ms ("dev"), infrastructure development (value "infra") or production environment (value "prod")
 function dockerPull () {
-  local compose=$dev_ms_drops
-  if [[ $1 == "prod" ]]; then
-    compose=$prod
-  elif [[ $1 == "infra" ]]; then
-    compose=$infra
-  elif [[ $1 == "dev" ]]; then
-    compose=$dev
-  fi
+  local compose=$( composeSelection $1 )
   sudo docker-compose $compose --env-file $WORKDIR/.docker-conf/mode_$1/.env pull
 }
 
-# $1 = selector for drops development environment (value "dev_ms_drops"), development of a new ms ("dev"), infrastructure development (value "infra") or production environment (value "prod")
+# $1 = selector for drops development environment (value "ms_drops"), development of a new ms ("dev"), infrastructure development (value "infra") or production environment (value "prod")
 function dockerRun () {
+  local compose=$( composeSelection $1 )
+
   dockerPull $1
-  local compose=$dev_ms_drops
-  if [[ $1 == "prod" ]]; then
-    compose=$prod
-  elif [[ $1 == "infra" ]]; then
-    compose=$infra
-  elif [[ $1 == "dev" ]]; then
-    compose=$dev
-  fi
   sudo docker-compose $compose --env-file $WORKDIR/.docker-conf/mode_$1/.env up -d
 }
 
-# $1 = selector for development environment (value "dev_ms_drops"), development of a new ms ("dev"), infrastructure development (value "infra") or production environment (value "prod")
+# $1 = selector for development environment (value "ms_drops"), development of a new ms ("dev"), infrastructure development (value "infra") or production environment (value "prod")
 function dockerStop () {
-  local compose=$dev_ms_drops
-  if [[ $1 == "prod" ]]; then
-    compose=$prod
-  elif [[ $1 == "infra" ]]; then
-    compose=$infra
-  elif [[ $1 == "dev" ]]; then
-    compose=$dev
-  fi
+  local compose=$( composeSelection $1 )
   sudo docker-compose $compose --env-file $WORKDIR/.docker-conf/mode_$1/.env stop
 }
 
-# $1 = selector for development environment (value "dev_ms_drops"), development of a new ms ("dev"), infrastructure development (value "infra") or production environment (value "prod")
+# $1 = selector for development environment (value "ms_drops"), development of a new ms ("dev"), infrastructure development (value "infra") or production environment (value "prod")
 function dockerRm () {
-  local compose=$dev_ms_drops
-  if [[ $1 == "prod" ]]; then
-    compose=$prod
-  elif [[ $1 == "infra" ]]; then
-    compose=$infra
-  elif [[ $1 == "dev" ]]; then
-    compose=$dev
-  fi
+  local compose=$( composeSelection $1 )
   sudo docker-compose $compose --env-file $WORKDIR/.docker-conf/mode_$1/.env rm -fs
 }
 
-# $1 = selector for development environment (value "dev_ms_drops"), infrastructure development (value "infra") or production environment (value "prod")
+# $1 = selector for development environment (value "ms_drops"), infrastructure development (value "infra") or production environment (value "prod")
 # $2 = database container name
 function dockerRmVolumes () {
   sudo rm -R $WORKDIR/.docker-volumes/mode_$1/$2/*
