@@ -8,11 +8,6 @@ export WORKDIR=$(cd $(dirname $0) && pwd)
 function dropsUp () {
   source "$WORKDIR/.docker-conf/mode_$1/.env"
   # TODO
-  # cd "${gitPathes[base]}${gitPathes[drops]}"
-  # sbt clean
-  # sbt compile
-  # sbt run &
-  # cd "$WORKDIR"
   echo "Not implemented yet!"
 }
 
