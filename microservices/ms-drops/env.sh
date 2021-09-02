@@ -21,7 +21,7 @@ function drops_description() {
 }
 
 function drops_man() {
-  msMan $(drops_name)
+  man "MS" $(drops_name)
 
   echo -e "
   up				Start the 'docker-compose up' considering the '.docker-conf/docker-compose/.env.dev.drops' file. Additionally, the documentation contents will be cloned from a git repository.

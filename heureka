@@ -1,98 +1,24 @@
 #!/bin/bash
 
+source "commands/colors"
+source "commands/manual"
 source "commands/git-clone-rm"
 source "commands/docker"
 source "commands/environment"
 source "commands/admin"
-source "microservices/ms-drops/env.sh"
+#source "microservices/ms-drops/env.sh"
+msEnvs=(microservices/*/env.sh)
+for file in "${msEnvs[@]}"; do
+  source "$file"
+done
+
+msDirs=(microservices/*)
+export MICROSERVICES=()
+for dir in "${msDirs[@]}"; do
+  MICROSERVICES+=$(echo "$dir" | sed s?microservices/ms-??)
+done
 
 export MAINWORKDIR=$(cd $(dirname $0) && pwd)
-
-RED='\033[0;31m'
-YELLOW='\033[1;33m'
-LIGHTBLUE='\033[1;34m'
-NC='\033[0m' # No Color
-
-function man () {
-  echo -e "
-${YELLOW}HEUREKA CLI${NC}
-Version: $(cat $MAINWORKDIR/VERSION)
-Usage: [command]
-Commands:
-  ${YELLOW}prod${NC}				Start production environment
-  ${YELLOW}dev new${NC}			Initiate a development environment for a complete new microservice.
-  dev $(drops_command)                     ${RED}Additional:${NC} $(drops_description)
-  dev infra                     ${RED}Additional:${NC} Initiate a development environment for infrastructure services and widget required to run the microservices.
-  ${YELLOW}exit${NC}                          Close console
-  ${YELLOW}*${NC}                             Help
-"
-}
-
-function prodMan () {
-  echo -e "
-${YELLOW}HEUREKA PROD-CLI${NC}
-Version: $(cat $MAINWORKDIR/VERSION)
-Usage: [command]
-Commands:
-  up				Start the 'docker-compose up' considering the '.docker-conf/mode_prod/.env' file. Additionally, the documentation contents will be cloned from a git repository.
-  stop				Stop all created containers.
-  rm				Stop and remove all docker containers described in the docker-compose files. Additionally, the documentation contents of the cloned repository will be removed.
-  rm drops volumes		Remove the drops volumes. That means the database contents.
-  rm dispenser volumes		Remove the dispenser volumes. That means the database contents.
-  admin				Sets admin access rights in DROPS for a specific user identified by its email address
-  leave                         Leave PROD environment
-  exit                          Close console
-  *                             Help
-"
-}
-
-function createMan () {
-  echo -e "
-${YELLOW}HEUREKA DEV-CLI${NC}
-CREATE A NEW MICROSERVICE
-Version: $(cat $MAINWORKDIR/VERSION)
-Usage: [command]
-Commands:
-  up                            Start the 'docker-compose up' considering the '.docker-conf/mode_dev/.env' file. Additionally, the documentation contents will be cloned from a git repository.
-  stop                          Stop all created containers.
-  rm                            Stop and remove all docker containers described in the docker-compose files. Additionally, the documentation contents of the cloned repository will be removed.
-  rm drops volumes              Remove the drops volumes. That means the database contents.
-  rm dispenser volumes          Remove the dispenser volumes. That means the database contents.
-  admin                         Sets admin access rights in DROPS for a specific user identified by its email address
-  leave                         Leave DEV environment
-  exit                          Close console
-  *                             Help
-"
-}
-
-
-function msMan () {
-  echo -e "
-${YELLOW}HEUREKA DEV-CLI${NC}
-MICROSERVICE: $1
-Version: $(cat $MAINWORKDIR/VERSION)
-Usage: [command]
-Commands:"
-}
-
-function infraMan () {
-  echo -e "
-${YELLOW}HEUREKA DEV-CLI${NC}
-INFRASTRUCTURE REQUIRED TO RUN MICROSERVICES
-Version: $(cat $MAINWORKDIR/VERSION)
-Usage: [command]
-Commands:
-  clone                         Clone the required git repositories
-  rm                        	Remove the git repositories excluding the documentatuin contents
-  rm docu                   	Remove the git repositories including the documentation contents
-  docker up                     Start the 'docker-compose up' considering the '.docker-conf/docker-compose/.env.infra' file (starts the dispenser database on localhost:27017)
-  docker rm                     Stop and remove all docker containers described in the docker-compose files
-  docker rm dispenser volumes   Remove the dispenser volumes. That means the database contents.
-  leave                         Leave DEV environment
-  exit                          Close console
-  *                             Help
-"
-}
 
 function calcPrompt () {
   local promptExt=$(getPromptExt "$YELLOW" "$LIGHTBLUE" "$RED" "$NC")
@@ -158,7 +84,7 @@ function initConsole () {
 	      create
 	      ;;
 	    *)
-	      man
+	      man "MAIN"
 	      ;;
 	  esac
 	  ;;
@@ -170,7 +96,7 @@ function initConsole () {
 	  exit 1
 	  ;;
 	*)
-	  man
+	  man "MAIN"
 	  ;;
     esac
   done
@@ -199,7 +125,7 @@ function prod () {
                 case "$para2" in
                     "volumes") dockerRmVolumes prod drops-database
                        ;;
-                    *) prodMan
+                    *) man "PROD"
                        ;;
                 esac
                   ;;
@@ -207,7 +133,7 @@ function prod () {
                 case "$para2" in
                     "volumes") dockerRmVolumes prod dispenser-database
                        ;;
-                    *) prodMan
+                    *) man "PROD"
                        ;;
                 esac
                   ;;
@@ -217,7 +143,7 @@ function prod () {
 		  setConfig "running" "no"
                   prompt=$(calcPrompt)
                   ;;
-               *) prodMan
+               *) man "PROD"
                   ;;
           esac
 	  ;;
@@ -233,7 +159,7 @@ function prod () {
 	  exit 1
 	  ;;
 	*)
-	  prodMan
+	  man "PROD"
 	  ;;
     esac
   done
@@ -262,7 +188,7 @@ function create () {
                 case "$para1" in
                     "volumes") dockerRmVolumes dev drops-database
                        ;;
-                    *) createMan
+                    *) man "NEW"
                        ;;
                 esac
                   ;;
@@ -270,7 +196,7 @@ function create () {
                 case "$para1" in
                     "volumes") dockerRmVolumes dev dispenser-database
                        ;;
-                    *) createMan
+                    *) man "NEW"
                        ;;
                 esac
                   ;;
@@ -280,7 +206,7 @@ function create () {
                   setConfig "running" "no"
                   prompt=$(calcPrompt)
                   ;;
-               *) createMan
+               *) man "NEW"
                   ;;
           esac
           ;;
@@ -296,7 +222,7 @@ function create () {
           exit 1
           ;;
         *)
-          createMan
+          man "NEW"
           ;;
     esac
   done
@@ -319,7 +245,7 @@ function infra () {
              gitRemove infra false
           ;;
           *)
-             infraMan
+             man "INFRA"
           ;;
         esac
       ;;
@@ -335,7 +261,7 @@ function infra () {
                "dispenser")
                   case "$para2" in
                     "volumes") dockerRmVolumes infra dispenser-database;;
-                    *) infraMan;;
+                    *) man "INFRA";;
                   esac
                ;;
                "")
@@ -343,10 +269,10 @@ function infra () {
                   setConfig "running" "no"
                   prompt=$(calcPrompt)
                   ;;
-               *) infraMan;;
+               *) man "INFRA";;
              esac
 	  ;;
-	  *) infraMan;;
+	  *) man "INFRA";;
 	esac
       ;;
       "leave")
@@ -355,7 +281,7 @@ function infra () {
         break
       ;;
       "exit") exit 1;;
-      *) infraMan;;
+      *) man "INFRA";;
     esac
   done
 }
