@@ -301,16 +301,12 @@ related=list of related MS that have to be cloned and removed, if the MS itself 
 The following files contain the configuration for the play2 apps:
 - `.docker-conf/mode_prod/drops/application.conf`
 - `.docker-conf/mode_dev/drops/application.conf`
-- `.docker-conf/mode_dev_ms_drops/drops/application.conf`
 - `.docker-conf/mode_prod/dispenser/application.conf`
 - `.docker-conf/mode_dev/dispenser/application.conf`
-- `.docker-conf/mode_dev_ms_drops/dispenser/application.conf`
 
 ### Navigation configuration
 - `.docker-conf/mode_dev/navigation/GlobalNav.json`
 - `.docker-conf/mode_dev/navigation/noSignIn.json`
-- `.docker-conf/mode_dev_ms_drops/navigation/GlobalNav.json`
-- `.docker-conf/mode_dev_ms_drops/navigation/noSignIn.json`
 - `.docker-conf/mode_prod/navigation/GlobalNav.json`
 - `.docker-conf/mode_prod/navigation/noSignIn.json`
 
@@ -318,10 +314,6 @@ The following files contain the configuration for the play2 apps:
 - `.docker-conf/mode_dev/nginx/default.conf`
 - `.docker-conf/mode_dev/nginx/location.pool`
 - `.docker-conf/mode_dev/nginx/pool2.upstream`
-
-- `.docker-conf/mode_dev_ms_drops/nginx/default.conf`
-- `.docker-conf/mode_dev_ms_drops/nginx/location.pool`
-- `.docker-conf/mode_dev_ms_drops/nginx/pool2.upstream`
 
 - `.docker-conf/mode_prod/nginx/default.conf`
 - `.docker-conf/mode_prod/nginx/location.pool`
