@@ -2,7 +2,7 @@
 set -e
 
 export WORKDIR=$(cd $(dirname $0) && pwd)
-. "$WORKDIR/common"
+. "$WORKDIR/commands/common"
 
 function clone() {
   #echo "git clone --branch $3 $2 $1"
@@ -13,68 +13,54 @@ function clone() {
   fi
 }
 
+#1 is the name of the MS (will be transformed into its ID: MS_<name>, while name will be uppercase)
 function gitClone () {
-  case "$1" in
-    "drops")
-      gitCloneDrops
-      # Always required to have a running local documentation
-      gitCloneDocu
-    ;;
-    "infra")
-      gitCloneInfra
-      # Always required to have a running local documentation
-      gitCloneDocu
-    ;;
-  esac
+  local id="MS_"${1^^}
+
+  local repo_set=${id}[set]
+  local related_ms=${id}[related]
+  gitCloneRepoList "${!repo_set}"
+
+  local related=( "${!related_ms}" )
+  for ms in $related; do
+    local ms_set=${ms}[set]
+    gitCloneRepoList "${!ms_set}"
+  done
 }
 
-function gitCloneDrops () {
-  clone $(expandPath "${drops[path]}") "${drops[url]}" "${drops[branch]}"
-  clone $(expandPath "${arise[path]}") "${arise[url]}" "${arise[branch]}"
-  clone $(expandPath "${widgetUser[path]}") "${widgetUser[url]}" "${widgetUser[branch]}"
-  clone $(expandPath "${oauthModule[path]}") "${oauthModule[url]}" "${oauthModule[branch]}"
+#1 list of repositories
+function gitCloneRepoList () {
+  repos=( "$1" )
+  for repo in $repos; do
+    local path=${repo}[path]
+    local url=${repo}[url]
+    local branch=${repo}[branch]
+    clone $(expandPath "${!path}") "${!url}" "${!branch}"
+  done
 }
 
-function gitCloneInfra () {
-  clone $(expandPath "${grav_dockerfile[path]}") "${grav_dockerfile[url]}" "${grav_dockerfile[branch]}"
-  clone $(expandPath "${dispenser[path]}") "${dispenser[url]}" "${dispenser[branch]}"
-  clone $(expandPath "${dispenser_navigation_widget[path]}") "${dispenser_navigation_widget[url]}" "${dispenser_navigation_widget[branch]}"
-  clone $(expandPath "${navigationWidget[path]}") "${navigationWidget[url]}" "${navigationWidget[branch]}"
-  clone $(expandPath "${vcaWidgetBase[path]}") "${vcaWidgetBase[url]}" "${vcaWidgetBase[branch]}"
-  clone $(expandPath "${heurekaWidgetNavigation[path]}") "${heurekaWidgetNavigation[url]}" "${heurekaWidgetNavigation[branch]}"
-}
-
-function gitCloneDocu () {
-  clone $(expandPath "${docu[path]}") "${docu[url]}" "${docu[branch]}"
-}
-
+#1 is the name of the MS (will be transformed into its ID: MS_<name>, while name will be uppercase)
+#2 a Boolean indicating if also the related MS have to be removed
 function gitRemove () {
-  case "$1" in
-    "drops") gitRemoveDrops;;
-    "infra") gitRemoveInfra;;
-    "docu") gitRemoveDocu;;
-  esac
+  local id="MS_"${1^^}
+  local repo_set=${id}[set]
+  gitRemoveRepoList "${!repo_set}"
+
+  if [ "$2" = true ]; then
+    local related_ms=${id}[related]
+    local related=( "${!related_ms}" )
+    for ms in $related; do
+      local ms_set=${ms}[set]
+      gitRemoveRepoList "${!ms_set}"
+    done
+  fi
 }
 
-function gitRemoveDocu () {
-  rm -rf $(expandPath "${docu[path]}")
-}
-
-function gitRemoveInfra () {
-grav-dockerfile
-  rm -rf $(expandPath "${grav_dockerfile[path]}")
-  rm -rf $(expandPath "${dispenser[path]}")
-  rm -rf $(expandPath "${dispenser_navigation_widget[path]}")
-  rm -rf $(expandPath "${navigationWidget[path]}")
-  rm -rf $(expandPath "${vcaWidgetBase[path]}")
-  rm -rf $(expandPath "${heurekaWidgetNavigation[path]}")
-}
-
-function gitRemoveDrops () {
-  rm -rf $(expandPath "${drops[path]}")
-  rm -rf $(expandPath "${arise[path]}")
-  rm -rf $(expandPath "${widgetUser[path]}")
-  rm -rf $(expandPath "${oauthModule[path]}")
-
-  # Todo: Remove all empty directories of the base path.
+#1 list of repositories
+function gitRemoveRepoList () {
+  repos=( "$1" )
+  for repo in $repos; do
+    local path=${repo}[path]
+    rm -rf $(expandPath "${!path}")
+  done
 }

@@ -1,0 +1,97 @@
+#!/bin/bash
+set -e
+
+function manHeader () {
+  local environment=""
+  if [ -n "$1" ]; then
+    environment=$1"-"
+  fi
+
+  local header=""
+  if [ -n "$2" ]; then
+    header="\n"$2
+  fi
+  echo -e "
+${YELLOW}HEUREKA ${environment}CLI${NC}${header}
+Version: $(cat $MAINWORKDIR/VERSION)
+Usage: [command]
+Commands:"
+}
+
+function generalMan () {
+  local ms_descs=""
+  for ms in "${MICROSERVICES[@]}"; do
+    local cmd_ms=$ms"_command"
+    local cmd_desc=$ms"_description"
+    ms_descs=$ms_descs"dev "$(eval $cmd_ms)"                     ${RED}Additional:${NC} "$(eval $cmd_desc)
+  done
+  manHeader
+  echo -e "
+  ${YELLOW}prod${NC}                            Start production environment
+  ${YELLOW}dev new${NC}                 Initiate a development environment for a complete new micros>
+  $ms_descs
+  dev infra                     ${RED}Additional:${NC} Initiate a development environment for infras>
+  ${YELLOW}exit${NC}                          Close console
+  ${YELLOW}*${NC}                             Help
+"
+}
+
+function msMan () {
+  manHeader "DEV" "MICROSERVICE: $1"
+}
+
+function prodMan () {
+  manHeader $1
+  echo -e "
+  up                            Start the 'docker-compose up' considering the '.docker-conf/mode_pro>
+  stop                          Stop all created containers.
+  rm                            Stop and remove all docker containers described in the docker-compos>
+  rm drops volumes              Remove the drops volumes. That means the database contents.
+  rm dispenser volumes          Remove the dispenser volumes. That means the database contents.
+  admin                         Sets admin access rights in DROPS for a specific user identified by >
+  leave                         Leave PROD environment
+  exit                          Close console
+  *                             Help
+"
+}
+
+function newMan () {
+  manHeader "DEV" "CREATE A NEW MICROSERVICE"
+  echo -e "
+  up                            Start the 'docker-compose up' considering the '.docker-conf/mode_dev>
+  stop                          Stop all created containers.
+  rm                            Stop and remove all docker containers described in the docker-compos>
+  rm drops volumes              Remove the drops volumes. That means the database contents.
+  rm dispenser volumes          Remove the dispenser volumes. That means the database contents.
+  admin                         Sets admin access rights in DROPS for a specific user identified by >
+  leave                         Leave DEV environment
+  exit                          Close console
+  *                             Help
+"
+}
+
+function infraMan () {
+  manHeader "DEV" "INFRASTRUCTURE REQUIRED TO RUN MICROSERVICES"
+  echo -e "
+  clone                         Clone the required git repositories
+  rm                            Remove the git repositories excluding the documentatuin contents
+  rm docu                       Remove the git repositories including the documentation contents
+  docker up                     Start the 'docker-compose up' considering the '.docker-conf/docker-c>
+  docker rm                     Stop and remove all docker containers described in the docker-compos>
+  docker rm dispenser volumes   Remove the dispenser volumes. That means the database contents.
+  leave                         Leave DEV environment
+  exit                          Close console
+  *                             Help
+"
+}
+
+function man () {
+  case "$1" in
+     "MAIN") generalMan;;
+     "PROD") prodMan $1;;
+     "NEW") newMan;;
+     "INFRA") infraMan;;
+     "MS") msMan $2;;
+  esac
+}
+
