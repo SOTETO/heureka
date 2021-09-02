@@ -51,13 +51,25 @@ function init () {
 	  setConfig "env" "INFRA"
           infra
 	  ;;
-	"DEV "$(drops_command_uppercase))
-          printf "${YELLOW}DEV $(drops_command_uppercase)${NC} environment has been selected automatically, since you've choosen it the last time. Use 'leave' to switch the environment.\n"
-	  setConfig "env" "DEV $(drops_command_uppercase)"
-          drops_env "$(drops_command_uppercase)"
-	  ;;
 	*)
-	  initConsole
+          local msEnv=false
+          # Check if the consoles state is not in the default environments (prod, dev, infra),
+          # but in the DEV environment of a microservice
+          for ms in "${MICROSERVICES[@]}"; do
+            local upperFunc=$ms"_command_uppercase"
+            local upper=$(eval $upperFunc)
+            if [[ "$selectedEnv" == "DEV $upper" ]]; then
+               msEnv=true
+               printf "${YELLOW}DEV $upper${NC} environment has been selected automatically, since you've choosen it the last time. Use 'leave' to switch the environment.\n"
+               setConfig "env" "DEV $upper"
+               local envCMD=$ms"_env"
+               eval $envCMD "$upper"
+            fi
+          done
+          # If the $selectedEnv does not identifies a microservices environment, load default cli
+          if [ $msEnv = false ]; then
+	    initConsole
+          fi
 	  ;;
   esac
   initConsole
@@ -71,10 +83,6 @@ function initConsole () {
     case "$environment" in
 	"dev")
 	  case "$ms" in
-	    $(drops_command))
-              setConfig "env" "DEV $(drops_command_uppercase)"
-	      drops_env "$(drops_command_uppercase)"
-	      ;;
 	    "infra")
               setConfig "env" "INFRA"
 	      infra
@@ -84,7 +92,25 @@ function initConsole () {
 	      create
 	      ;;
 	    *)
-	      man "MAIN"
+              local msEnv=false
+              # Check if the consoles state is not in the default environments (prod, dev, infra),
+              # but in the DEV environment of a microservice
+              for service in "${MICROSERVICES[@]}"; do
+                local commandFunc=$service"_command"
+                local upperFunc=$service"_command_uppercase"
+                local command=$(eval $commandFunc)
+                local upper=$(eval $upperFunc)
+                if [[ "$ms" == "$command" ]]; then
+                  msEnv=true
+                  setConfig "env" "DEV $upper"
+                  local envCMD=$service"_env"
+                  eval $envCMD "$upper"
+                fi
+              done
+              # If the $selectedEnv does not identifies a microservices environment, load default cli
+              if [ $msEnv = false ]; then
+	        man "MAIN"
+              fi
 	      ;;
 	  esac
 	  ;;
