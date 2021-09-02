@@ -12,8 +12,8 @@ services:
 
   dispenser:
     volumes:
-      - ./.docker-conf/mode_ms_drops/dispenser/application.conf:/opt/docker/conf/application.conf
-      - ./.docker-conf/mode_ms_drops/navigation/:/opt/docker/conf/navigation/jsons/
+      - ./microservices/ms-drops/.docker-conf/dispenser/application.conf:/opt/docker/conf/application.conf
+      - ./microservices/ms-drops/.docker-conf/navigation/:/opt/docker/conf/navigation/jsons/
     ports:
       - 7000:9000
 
@@ -30,7 +30,7 @@ services:
 
   nginx-pool:
     volumes:
-      - ./.docker-conf/mode_ms_drops/nginx/:/etc/nginx/conf.d/
+      - ./microservices/ms-drops/.docker-conf/nginx/:/etc/nginx/conf.d/
     extra_hosts:
       # make 'localhost' ports available in nginx container by using 'host.docker.internal'
       - "host.docker.internal:host-gateway"

@@ -15,30 +15,43 @@ function composeSelection () {
   echo "$file_list"
 }
 
+function getDockerEnv () {
+  local environment="ENV_"${1^^}
+  local env_file=${environment}[env_file]
+  local file_path=( "${!env_file}" )
+  echo "$file_path"
+}
+
 # $1 = selector for drops development environment (value "ms_drops"), development of a new ms ("dev"), infrastructure development (value "infra") or production environment (value "prod")
 function dockerPull () {
   local compose=$( composeSelection $1 )
-  sudo docker-compose $compose --env-file $WORKDIR/.docker-conf/mode_$1/.env pull
+  local envFile=$( getDockerEnv $1 )
+  sudo docker-compose $compose --env-file $envFile pull
 }
 
 # $1 = selector for drops development environment (value "ms_drops"), development of a new ms ("dev"), infrastructure development (value "infra") or production environment (value "prod")
 function dockerRun () {
   local compose=$( composeSelection $1 )
+  local envFile=$( getDockerEnv $1 )
 
   dockerPull $1
-  sudo docker-compose $compose --env-file $WORKDIR/.docker-conf/mode_$1/.env up -d
+  sudo docker-compose $compose --env-file $envFile up -d
 }
 
 # $1 = selector for development environment (value "ms_drops"), development of a new ms ("dev"), infrastructure development (value "infra") or production environment (value "prod")
 function dockerStop () {
   local compose=$( composeSelection $1 )
-  sudo docker-compose $compose --env-file $WORKDIR/.docker-conf/mode_$1/.env stop
+  local envFile=$( getDockerEnv $1 )
+
+  sudo docker-compose $compose --env-file $envFile stop
 }
 
 # $1 = selector for development environment (value "ms_drops"), development of a new ms ("dev"), infrastructure development (value "infra") or production environment (value "prod")
 function dockerRm () {
   local compose=$( composeSelection $1 )
-  sudo docker-compose $compose --env-file $WORKDIR/.docker-conf/mode_$1/.env rm -fs
+  local envFile=$( getDockerEnv $1 )
+
+  sudo docker-compose $compose --env-file $envFile rm -fs
 }
 
 # $1 = selector for development environment (value "ms_drops"), infrastructure development (value "infra") or production environment (value "prod")

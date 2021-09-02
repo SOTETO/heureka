@@ -5,7 +5,10 @@ stateFile=".state"
 
 declare -A gitPathes
 
-for file in "git-setup.cfg" "docker-setup.cfg"; do
+msConfigs=(microservices/*/*.cfg)
+configFiles=("git-setup.cfg" "docker-setup.cfg" "${msConfigs[@]}")
+
+for file in "${configFiles[@]}"; do
   while read line; do
     if [[ $line =~ ^"["(.+)"]"$ ]]; then
         arrname=${BASH_REMATCH[1]}

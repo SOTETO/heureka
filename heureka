@@ -2,9 +2,11 @@
 
 source "commands/git-clone-rm"
 source "commands/docker"
-source "commands/drops"
-source "commands/arise"
 source "commands/environment"
+source "commands/admin"
+source "microservices/ms-drops/env.sh"
+
+export MAINWORKDIR=$(cd $(dirname $0) && pwd)
 
 RED='\033[0;31m'
 YELLOW='\033[1;33m'
@@ -14,12 +16,12 @@ NC='\033[0m' # No Color
 function man () {
   echo -e "
 ${YELLOW}HEUREKA CLI${NC}
-Version: $(cat $(getDir)/VERSION)
+Version: $(cat $MAINWORKDIR/VERSION)
 Usage: [command]
 Commands:
   ${YELLOW}prod${NC}				Start production environment
   ${YELLOW}dev new${NC}			Initiate a development environment for a complete new microservice.
-  dev drops                     ${RED}Additional:${NC} Initiate a development environment for the MS-DROPS.
+  dev $(drops_command)                     ${RED}Additional:${NC} $(drops_description)
   dev infra                     ${RED}Additional:${NC} Initiate a development environment for infrastructure services and widget required to run the microservices.
   ${YELLOW}exit${NC}                          Close console
   ${YELLOW}*${NC}                             Help
@@ -29,7 +31,7 @@ Commands:
 function prodMan () {
   echo -e "
 ${YELLOW}HEUREKA PROD-CLI${NC}
-Version: $(cat $(getDir)/VERSION)
+Version: $(cat $MAINWORKDIR/VERSION)
 Usage: [command]
 Commands:
   up				Start the 'docker-compose up' considering the '.docker-conf/mode_prod/.env' file. Additionally, the documentation contents will be cloned from a git repository.
@@ -48,7 +50,7 @@ function createMan () {
   echo -e "
 ${YELLOW}HEUREKA DEV-CLI${NC}
 CREATE A NEW MICROSERVICE
-Version: $(cat $(getDir)/VERSION)
+Version: $(cat $MAINWORKDIR/VERSION)
 Usage: [command]
 Commands:
   up                            Start the 'docker-compose up' considering the '.docker-conf/mode_dev/.env' file. Additionally, the documentation contents will be cloned from a git repository.
@@ -64,35 +66,20 @@ Commands:
 }
 
 
-function devMan () {
+function msMan () {
   echo -e "
 ${YELLOW}HEUREKA DEV-CLI${NC}
 MICROSERVICE: $1
-Version: $(cat $(getDir)/VERSION)
+Version: $(cat $MAINWORKDIR/VERSION)
 Usage: [command]
-Commands:
-  up				Start the 'docker-compose up' considering the '.docker-conf/docker-compose/.env.dev.drops' file. Additionally, the documentation contents will be cloned from a git repository.
-  git clone   			Clone the required git repositories
-  git rm      			Remove the git repositories excluding the documentatuin contents
-  git rm docu                   Remove the git repositories including the documentation contents
-  docker up   			Start the 'docker-compose up' considering the '.docker-conf/docker-compose/.env.dev.drops' file
-  docker rm   			Stop and remove all docker containers described in the docker-compose files
-  docker rm drops volumes	Remove the drops volumes. That means the database contents.
-  docker rm dispenser volumes   Remove the dispenser volumes. That means the database contents.
-  drops up man			Shows a manual explaining how to setup the DROPS backend service
-  drops admin			Sets admin access rights in DROPS for a specific user identified by its email address
-  arise up man			Shows a manual explaining how to setup the ARISE frontend service
-  leave				Leave DEV environment
-  exit				Close console
-  *           			Help
-"
+Commands:"
 }
 
 function infraMan () {
   echo -e "
 ${YELLOW}HEUREKA DEV-CLI${NC}
 INFRASTRUCTURE REQUIRED TO RUN MICROSERVICES
-Version: $(cat $(getDir)/VERSION)
+Version: $(cat $MAINWORKDIR/VERSION)
 Usage: [command]
 Commands:
   clone                         Clone the required git repositories
@@ -138,10 +125,10 @@ function init () {
 	  setConfig "env" "INFRA"
           infra
 	  ;;
-	"DEV DROPS")
-          printf "${YELLOW}DEV DROPS${NC} environment has been selected automatically, since you've choosen it the last time. Use 'leave' to switch the environment.\n"
-	  setConfig "env" "DEV DROPS"
-          dev "DROPS"
+	"DEV "$(drops_command_uppercase))
+          printf "${YELLOW}DEV $(drops_command_uppercase)${NC} environment has been selected automatically, since you've choosen it the last time. Use 'leave' to switch the environment.\n"
+	  setConfig "env" "DEV $(drops_command_uppercase)"
+          drops_env "$(drops_command_uppercase)"
 	  ;;
 	*)
 	  initConsole
@@ -158,9 +145,9 @@ function initConsole () {
     case "$environment" in
 	"dev")
 	  case "$ms" in
-	    "drops")
-              setConfig "env" "DEV DROPS"
-	      dev "DROPS"
+	    $(drops_command))
+              setConfig "env" "DEV $(drops_command_uppercase)"
+	      drops_env "$(drops_command_uppercase)"
 	      ;;
 	    "infra")
               setConfig "env" "INFRA"
@@ -235,7 +222,7 @@ function prod () {
           esac
 	  ;;
 	"admin")
-	  dropsAdmin prod
+	  prodDropsAdmin prod
 	  ;;
 	"leave")
           setEnvToIdle
@@ -298,7 +285,7 @@ function create () {
           esac
           ;;
         "admin")
-          dropsAdmin dev
+          prodDropsAdmin dev
           ;;
         "leave")
           setEnvToIdle
@@ -311,122 +298,6 @@ function create () {
         *)
           createMan
           ;;
-    esac
-  done
-}
-
-function dev () {
-  prompt=$(calcPrompt)
-  for (( ; ; ))
-  do
-    read -r -p $"${prompt}" cmd sub para1 para2
-    case "$cmd" in
-	"up")
-	  gitClone drops
-	  dockerRun dev_ms_drops
-          setConfig "running" "yes"
-          prompt=$(calcPrompt)
-	  ;;
-	"git")
-	  case "$sub" in
-		"clone") gitClone drops
-			;;
-		"rm")
-		  case "$para1" in
-		    "docu")
-			gitRemove drops true
-			#gitRemove docu
-		    ;;
-		    "")
-			gitRemove drops false
-		    ;;
-		    *)
-			devMan $1
-		    ;;
-		  esac
-		;;
-	        *) devMan $1
-			;;
-	  esac
-	  ;;
-	"docker")
-	  case "$sub" in
-		"up") dockerRun ms_drops
-                      setConfig "running" "yes"
-                      prompt=$(calcPrompt)
-			;;
-		"rm")
-		  case "$para1" in
-			"drops")
-			  case "$para2" in
-				"volumes") dockerRmVolumes ms_drops drops-database
-					;;
-				*) devMan $1
-					;;
-			  esac
-			  ;;
-			"dispenser")
-			  case "$para2" in
-				"volumes") dockerRmVolumes ms_drops dispenser-database
-					;;
-				*) devMan $1
-					;;
-			  esac
-			  ;;
-			"") dockerRm ms_drops
-                            setConfig "running" "no"
-                            prompt=$(calcPrompt)
-			  ;;
-			*) devMan $1
-			  ;;
-		  esac
-			;;
-		*) devMan $1
-			;;
-	  esac
-	  ;;
-	"drops")
-	  case "$sub" in
-		"up")
-		  case "$para1" in
-			"man") dropsMan ms_drops
-			  ;;
-			*) devMan $1
-			  ;;
-		  esac
-			;;
-		"admin") dropsAdmin ms_drops
-	  		;;
-		*) devMan $1
-			;;
-	  esac
-	  ;;
-	"arise")
-	  case "$sub" in
-		"up")
-		  case "$para1" in
-			"man") ariseMan
-	  		  ;;
-			*) devMan $1
-			  ;;
-		  esac
-			;;
-		*) devMan $1
-			;;
-	  esac
-	  ;;
-	"leave")
-          setEnvToIdle
-          prompt=$(calcPrompt)
-	  break
-	  ;;
-	"exit")
-	  exit 1
-	  ;;
-	*)
-	  devMan $1
-	  ;;
-	# Todo: catch arrow up and down
     esac
   done
 }
