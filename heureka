@@ -6,19 +6,22 @@ source "commands/git-clone-rm"
 source "commands/docker"
 source "commands/environment"
 source "commands/admin"
-#source "microservices/ms-drops/env.sh"
-msEnvs=(microservices/*/env.sh)
-for file in "${msEnvs[@]}"; do
-  source "$file"
-done
-
-msDirs=(microservices/*)
-export MICROSERVICES=()
-for dir in "${msDirs[@]}"; do
-  MICROSERVICES+=$(echo "$dir" | sed s?microservices/ms-??)
-done
+source "commands/create"
 
 export MAINWORKDIR=$(cd $(dirname $0) && pwd)
+
+function initHeureka () {
+  msEnvs=(microservices/*/env.sh)
+  for file in "${msEnvs[@]}"; do
+    source "$file"
+  done
+
+  msDirs=(microservices/*)
+  export MICROSERVICES=()
+  for dir in "${msDirs[@]}"; do
+    MICROSERVICES+=($(echo "$dir" | sed s?microservices/ms-??))
+  done
+}
 
 function calcPrompt () {
   local promptExt=$(getPromptExt "$YELLOW" "$LIGHTBLUE" "$RED" "$NC")
@@ -29,10 +32,10 @@ function calcPrompt () {
 }
 
 function init () {
-  printf "Welcome to ${YELLOW}HEUREKA!${NC}\nSetup a development environment to implement microservices for the HEUREKA platform."
+#  printf "Welcome to ${YELLOW}HEUREKA!${NC}\nSetup a development environment to implement microservices for the HEUREKA platform."
   readHeurekaConf
-  printCurrentConf "$YELLOW" "$LIGHTBLUE" "$NC"
-  printf "\n"
+#  printCurrentConf "$YELLOW" "$LIGHTBLUE" "$NC"
+#  printf "\n"
 
   local selectedEnv=$(getEnv)
   case $selectedEnv in
@@ -40,11 +43,6 @@ function init () {
 	  printf "${YELLOW}PROD${NC} environment has been selected automatically, since you've choosen it the last time. Use 'leave' to switch the environment.\n"
 	  setConfig "env" "PROD"
           prod
-	  ;;
-	"NEW")
-          printf "${YELLOW}NEW${NC} environment has been selected automatically, since you've choosen it the last time. Use 'leave' to switch the environment.\n"
-	  setConfig "env" "NEW"
-          create
 	  ;;
 	"INFRA")
           printf "${YELLOW}INFRA${NC} environment has been selected automatically, since you've choosen it the last time. Use 'leave' to switch the environment.\n"
@@ -86,8 +84,7 @@ function initConsole () {
           infra
           ;;
         "new")
-          setConfig "env" "NEW"
-          create
+          createNewMS
           ;;
 	"prod")
           setConfig "env" "PROD"
@@ -184,69 +181,6 @@ function prod () {
   done
 }
 
-function create () {
-  prompt=$(calcPrompt)
-  for (( ; ; ))
-  do
-    read -r -p $"${prompt}" cmd sub para1 para2
-    case "$cmd" in
-        "up")
-          gitClone docu
-          dockerRun dev
-          setConfig "running" "yes"
-          prompt=$(calcPrompt)
-          ;;
-        "stop")
-          dockerStop dev
-          setConfig "running" "stopped"
-          prompt=$(calcPrompt)
-          ;;
-        "rm")
-          case "$sub" in
-              "drops")
-                case "$para1" in
-                    "volumes") dockerRmVolumes dev drops-database
-                       ;;
-                    *) man "NEW"
-                       ;;
-                esac
-                  ;;
-              "dispenser")
-                case "$para1" in
-                    "volumes") dockerRmVolumes dev dispenser-database
-                       ;;
-                    *) man "NEW"
-                       ;;
-                esac
-                  ;;
-               "")
-                  dockerRm dev
-                  gitRemove docu false
-                  setConfig "running" "no"
-                  prompt=$(calcPrompt)
-                  ;;
-               *) man "NEW"
-                  ;;
-          esac
-          ;;
-        "admin")
-          prodDropsAdmin dev
-          ;;
-        "leave")
-          setEnvToIdle
-          prompt=$(calcPrompt)
-          break
-          ;;
-        "exit")
-          exit 1
-          ;;
-        *)
-          man "NEW"
-          ;;
-    esac
-  done
-}
-
 function infra () {
   prompt=$(calcPrompt)
   for (( ; ; ))
@@ -305,5 +239,6 @@ function infra () {
   done
 }
 
+initHeureka
 prompt=$(calcPrompt)
 init

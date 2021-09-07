@@ -121,7 +121,7 @@ function drops_env() {
                           ;;
                   esac
                         ;;
-                "admin") devDropsAdmin
+                "admin") prodDropsAdmin drops
                         ;;
                 *) drops_man
                         ;;
