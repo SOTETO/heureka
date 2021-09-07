@@ -1,0 +1,120 @@
+#!/bin/bash
+set -e
+
+function createNewMS() {
+  local name
+  local upper
+  local dirName
+
+  printf "START MS CREATION WIZARD\n"
+  # Read name of new MS
+  read -r -p $"What is the name of your new microservice? " name
+  dirName="ms-$name"
+  upper=${name^^}
+
+  # Create directory
+  mkdir microservices/"$dirName"
+  mkdir microservices/"$dirName"/.docker-conf
+  printf "Directories have been created.\n"
+
+  # Touch required files
+  touch microservices/"$dirName"/env.sh
+  touch microservices/"$dirName"/docker-setup.cfg
+  touch microservices/"$dirName"/git-setup.cfg
+  touch microservices/"$dirName"/readme.md
+  touch microservices/"$dirName"/ms_"$name".yml
+
+  # Copy required files from NEW environment
+  cp -r .docker-conf/mode_dev/* microservices/"$dirName"/.docker-conf
+
+  printf "Required files have been created and copied from NEW environment.\n"
+
+  # Write contents of docker-compose file (NEW environment) to newly created one
+  cp dev.yml microservices/"$dirName"/ms_"$name".yml
+  printf "Docker compose file has been created.\n"
+
+  # Write docker-setup.cfg
+  echo "[ENV_MS_$upper]" >> microservices/"$dirName"/docker-setup.cfg
+  echo "compose_files=base.yml microservices/$dirName/ms_$name.yml" >> microservices/"$dirName"/docker-setup.cfg
+  echo "env_file=microservices/$dirName/.docker-conf/.env" >> microservices/"$dirName"/docker-setup.cfg
+  printf "Docker setup config has been written.\n\n"
+
+  # Read and write GIT config
+  declare -a repos
+  local gitRepos="n"
+  read -r -p $"Do you want to add some git repositories? (y / n) " gitRepos
+  if [[ $gitRepos = "y" || $gitRepos = "Y" || $gitRepos = "yes" || $gitRepos == "Yes" ]]; then
+    printf "Enter the git repositories!\n\n"
+    for (( ; ; ))
+    do
+      local gitName
+      local gitUrl
+      local gitBranch
+      local gitPath
+      local gitID
+      read -r -p $"Name of the git repository: " gitName
+      read -r -p $"URL of the git repository: " gitUrl
+      read -r -p $"Branch of the git repository: " gitBranch
+      read -p $"Path of the git repository: " gitPath
+      gitID=$(echo "$gitName" | sed -r 's/[^A-Za-z]/_/g')
+
+      echo "[$gitID]" >> microservices/"$dirName"/git-setup.cfg
+      echo "url=$gitUrl" >> microservices/"$dirName"/git-setup.cfg
+      echo "branch=$gitBranch" >> microservices/"$dirName"/git-setup.cfg
+      echo "name=$gitName" >> microservices/"$dirName"/git-setup.cfg
+      echo "path=$gitPath" >> microservices/"$dirName"/git-setup.cfg
+
+      repos+=($gitID)
+
+      printf "\nGit repository $gitName has been added.\n\n"
+
+      read -r -p $"Do you want to add more repositories (y / n) " gitRepos
+      if [[ $gitRepos = "n" || $gitRepos = "N" || $gitRepos = "no" || $gitRepos == "No" ]]; then
+        break
+      fi
+    done
+  fi
+
+  local related
+  printf "The other microservices are: "
+  for i in "${MICROSERVICES[@]}"; do printf "MS_${i^^} "; done
+  printf "\n"
+  read -r -p $"Please, name all related microservices (separated by space; press [Enter] if there are no related services): " related
+
+  echo "[MS_$upper]" >> microservices/"$dirName"/git-setup.cfg
+  echo "set=${repos[*]}" >> microservices/"$dirName"/git-setup.cfg
+  if [[ $related != "" ]]; then
+    echo "related=$related" >> microservices/"$dirName"/git-setup.cfg
+  fi
+  printf "Git setup config has been written.\n\n"
+
+  writeEnvScript $name $dirName
+}
+
+function writeEnvScript() {
+  local name=$1
+  local dirName=$2
+  local scriptFile="microservices/$dirName/env.sh"
+
+  echo "#!/bin/bash" >> "$scriptFile"
+  echo -e "set -e\n" >> "$scriptFile"
+  echo "function "$name"_command () {" >> "$scriptFile"
+  echo "  echo \"$name\"" >> "$scriptFile"
+  echo -e "}\n" >> "$scriptFile"
+
+  echo "function "$name"_command_uppercase () {" >> "$scriptFile"
+  echo "  local cmd=\"\$("$name"_command)\"" >> "$scriptFile"
+  echo "  echo \${cmd^^}" >> "$scriptFile"
+  echo -e "}\n" >> "$scriptFile"
+
+  echo "function "$name"_description () {" >> "$scriptFile"
+  echo "  local name=\"MS-\$("$name"_command_uppercase)\"" >> "$scriptFile"
+  echo "  echo \"Initiate a development environment for the \$"$name".\"" >> "$scriptFile"
+  echo -e "}\n" >> "$scriptFile"
+
+  echo "function "$name"_env () {" >> "$scriptFile"
+  echo "  # TODO - Copy from microservices/ms-drops/env.sh for an example" >> "$scriptFile"
+  echo "  echo \"TODO - Implement the console for MS-\$("$name"_command_uppercase)\"" >> "$scriptFile"
+  echo -e "}\n" >> "$scriptFile"
+
+}

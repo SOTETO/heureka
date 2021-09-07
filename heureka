@@ -6,7 +6,7 @@ source "commands/git-clone-rm"
 source "commands/docker"
 source "commands/environment"
 source "commands/admin"
-#source "microservices/ms-drops/env.sh"
+source "commands/create"
 msEnvs=(microservices/*/env.sh)
 for file in "${msEnvs[@]}"; do
   source "$file"
@@ -15,7 +15,7 @@ done
 msDirs=(microservices/*)
 export MICROSERVICES=()
 for dir in "${msDirs[@]}"; do
-  MICROSERVICES+=$(echo "$dir" | sed s?microservices/ms-??)
+  MICROSERVICES+=($(echo "$dir" | sed s?microservices/ms-??))
 done
 
 export MAINWORKDIR=$(cd $(dirname $0) && pwd)
@@ -86,8 +86,9 @@ function initConsole () {
           infra
           ;;
         "new")
-          setConfig "env" "NEW"
-          create
+          #setConfig "env" "NEW"
+          #create
+          createNewMS
           ;;
 	"prod")
           setConfig "env" "PROD"
