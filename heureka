@@ -41,9 +41,9 @@ function init () {
 	  setConfig "env" "PROD"
           prod
 	  ;;
-	"DEV NEW")
-          printf "${YELLOW}DEV NEW${NC} environment has been selected automatically, since you've choosen it the last time. Use 'leave' to switch the environment.\n"
-	  setConfig "env" "DEV NEW"
+	"NEW")
+          printf "${YELLOW}NEW${NC} environment has been selected automatically, since you've choosen it the last time. Use 'leave' to switch the environment.\n"
+	  setConfig "env" "NEW"
           create
 	  ;;
 	"INFRA")
@@ -58,10 +58,10 @@ function init () {
           for ms in "${MICROSERVICES[@]}"; do
             local upperFunc=$ms"_command_uppercase"
             local upper=$(eval $upperFunc)
-            if [[ "$selectedEnv" == "DEV $upper" ]]; then
+            if [[ "$selectedEnv" == "$upper" ]]; then
                msEnv=true
-               printf "${YELLOW}DEV $upper${NC} environment has been selected automatically, since you've choosen it the last time. Use 'leave' to switch the environment.\n"
-               setConfig "env" "DEV $upper"
+               printf "${YELLOW}$upper${NC} environment has been selected automatically, since you've choosen it the last time. Use 'leave' to switch the environment.\n"
+               setConfig "env" "$upper"
                local envCMD=$ms"_env"
                eval $envCMD "$upper"
             fi
@@ -81,39 +81,14 @@ function initConsole () {
   do
     read -r -p $"${prompt}" environment ms
     case "$environment" in
-	"dev")
-	  case "$ms" in
-	    "infra")
-              setConfig "env" "INFRA"
-	      infra
-	      ;;
-	    "new")
-              setConfig "env" "DEV NEW"
-	      create
-	      ;;
-	    *)
-              local msEnv=false
-              # Check if the consoles state is not in the default environments (prod, dev, infra),
-              # but in the DEV environment of a microservice
-              for service in "${MICROSERVICES[@]}"; do
-                local commandFunc=$service"_command"
-                local upperFunc=$service"_command_uppercase"
-                local command=$(eval $commandFunc)
-                local upper=$(eval $upperFunc)
-                if [[ "$ms" == "$command" ]]; then
-                  msEnv=true
-                  setConfig "env" "DEV $upper"
-                  local envCMD=$service"_env"
-                  eval $envCMD "$upper"
-                fi
-              done
-              # If the $selectedEnv does not identifies a microservices environment, load default cli
-              if [ $msEnv = false ]; then
-	        man "MAIN"
-              fi
-	      ;;
-	  esac
-	  ;;
+        "infra")
+          setConfig "env" "INFRA"
+          infra
+          ;;
+        "new")
+          setConfig "env" "NEW"
+          create
+          ;;
 	"prod")
           setConfig "env" "PROD"
 	  prod
@@ -121,9 +96,27 @@ function initConsole () {
 	"exit")
 	  exit 1
 	  ;;
-	*)
-	  man "MAIN"
-	  ;;
+        *)
+          local msEnv=false
+          # Check if the consoles state is not in the default environments (prod, dev, infra),
+          # but in the DEV environment of a microservice
+          for service in "${MICROSERVICES[@]}"; do
+            local commandFunc=$service"_command"
+            local upperFunc=$service"_command_uppercase"
+            local command=$(eval $commandFunc)
+            local upper=$(eval $upperFunc)
+            if [[ "$environment" == "$command" ]]; then
+              msEnv=true
+              setConfig "env" "$upper"
+              local envCMD=$service"_env"
+              eval $envCMD "$upper"
+            fi
+          done
+          # If the $selectedEnv does not identifies a microservices environment, load default cli
+          if [ $msEnv = false ]; then
+            man "MAIN"
+          fi
+          ;;
     esac
   done
 }

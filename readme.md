@@ -25,9 +25,9 @@ Due to a [known issue](https://github.com/SOTETO/grav-dockerfile/issues/1), ther
 ## Manual
 Please choose the environment you want to setup:
 - `prod`      - A production environment.
-- `dev new`   - Initiate a development environment for a complete new microservice.
-- `dev drops` - *Additional:* Initiate a development environment for the MS-DROPS.
-- `dev infra` - *Additional:* Initiate a development environment for infrastructure services and widget required to run the microservices.
+- `new`   - Initiate a development environment for a complete new microservice.
+- `drops` - *Additional:* Initiate a development environment for the MS-DROPS.
+- `infra` - *Additional:* Initiate a development environment for infrastructure services and widget required to run the microservices.
 
 You can also use `exit` to quit the console.
 
@@ -40,7 +40,7 @@ Setting up the environment to develop a new microservice requires a bit of confi
 Follow the upcoming steps to create your development environment:
 
 1. `bash ./heureka`
-2. `dev new` to enter the development environment of the CLI
+2. `new` to enter the development environment of the CLI
 3. Start your application using all required ports except the ports used in `dev.yml` (heureka uses ports 80, 443, 9000 and 4222 by default).
 4. Edit the placeholder upstream `new` in `.docker-conf/mode_dev/nginx/pool2.upstream` and add more required upstreams (the ports at the localhost used by your application).
 5. Use the new / updated upstreams in `.docker-conf/mode_dev/nginx/location.pool` by introducing new pathes or editing the plaeholder path `/new`.
@@ -65,14 +65,14 @@ After all, your microservice will be available by calling `http://localhost/new`
 - After a successful deployment, the proxy [Nginx](https://www.nginx.com/) will redirect the server to `/arise/#/signin/L2FyaXNlLyMvcHJvZmlsZQ==`. Thus, this redirect is part of the [Nginx](https://www.nginx.com/) configuration.
 
 #### List of commands
-The `dev drops` environment provides the following commands:
+The `new` environment provides the following commands:
 - `up` - Start the `docker-compose up` considering the `.docker-conf/mode_dev/.env` file
 - `stop` - Stop all created containers.
 - `rm` - Stop and remove all docker containers described in the docker-compose files
 - `rm drops volumes` - Remove the drops volumes. That means the database contents.
 - `rm dispenser volumes` - Remove the dispenser volumes. That means the database contents.
 - `admin` - Sets admin access rights in DROPS for a specific user identified by its email address
-- `leave` - Leave `DEV` environment
+- `leave` - Leave `NEW` environment
 - `exit` - Close console
 - \* - Help
 
@@ -84,20 +84,20 @@ Follow the upcoming steps to create your infrastructure development environment:
 
 1. Enter the local file system pathes of the git repositories that will be created to `git-setup.cfg>
 2. `bash ./heureka`
-3. `dev infra` to enter the infrastructure environment of the CLI
+3. `infra` to enter the infrastructure environment of the CLI
 4. `clone`
 5. `docker up`
 6. Configure the local `application.conf` in your dispenser repository to listen to `localhost:27017` (or another port, if you have changed it in your `infra.yml`)
 
 #### List of commands
-The `dev infra` environment provides the following commands:
+The `infra` environment provides the following commands:
 
 - `clone` - Clone the required git repositories
 - `rm` - Remove the git repositories
 - `docker up` - Start the `docker-compose up` considering the `.docker-conf/mode_infra/.env` file (starts the dispenser database on `localhost:27017`)
 - `docker rm` - Stop and remove all docker containers described in the docker-compose file
 - `docker rm dispenser volumes` - Remove the dispenser volumes. That means the database contents.
-- `leave` - Leave `DEV` environment
+- `leave` - Leave `INFRA` environment
 - `exit` - close the Heureka console
 - \* - Help
 
@@ -106,7 +106,7 @@ The `dev infra` environment provides the following commands:
 #### Deployment
 Follow the upcoming steps to create your production environment:
 1. `bash ./heureka`
-2. `dev prod` to enter the production environment of the CLI
+2. `prod` to enter the production environment of the CLI
 3. `up`
 4. Create an account by using the registration view on `http://localhost`.
 5. Use `admin` to grant admin rights to your newly created user.
@@ -125,7 +125,7 @@ Follow the upcoming steps to create your production environment:
 - After a successful deployment, the proxy [Nginx](https://www.nginx.com/) will redirect the server to `/arise/#/signin/L2FyaXNlLyMvcHJvZmlsZQ==`. Thus, this redirect is part of the [Nginx](https://www.nginx.com/) configuration.
 
 #### List of commands
-The `dev prod` environment provides the following commands:
+The `prod` environment provides the following commands:
 
 - `up` - Start the `docker-compose up` considering the `.docker-conf/mode_prod/.env` file
 - `stop` - Stop all created containers.
@@ -137,11 +137,11 @@ The `dev prod` environment provides the following commands:
 - `exit` - Close console
 - \* - Help
 
-## Known Microservices
+## Running existing microservices
 Since the Heureka-CLI has been implemented to handle microservices architectures, it also allows you to add your own services. [At the end of this article adding a new microservice will be explained](#how-to-add-a-new-microservice). Subsequently, a list of default microservices is given:
 - MS-DROPS (see [microservices/ms-drops/readme.md](microservices/ms-drops/readme.md))
 
-### How to add a new microservice
+## How to add a new microservice
 Start by creating a new directory for your microservice in the `microservices/` directory:
 ```
 mkdir microservices/ms-<name>

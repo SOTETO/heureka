@@ -23,32 +23,32 @@ function generalMan () {
   for ms in "${MICROSERVICES[@]}"; do
     local cmd_ms=$ms"_command"
     local cmd_desc=$ms"_description"
-    ms_descs=$ms_descs"dev "$(eval $cmd_ms)"                     ${RED}Additional:${NC} "$(eval $cmd_desc)
+    ms_descs=$ms_descs""$(eval $cmd_ms)"                     ${RED}Additional:${NC} "$(eval $cmd_desc)
   done
   manHeader
   echo -e "
-  ${YELLOW}prod${NC}                            Start production environment
-  ${YELLOW}dev new${NC}                 Initiate a development environment for a complete new micros>
+  ${YELLOW}prod${NC}                      Start production environment
+  ${YELLOW}new${NC}                       Initiate a development environment for a complete new microservice
   $ms_descs
-  dev infra                     ${RED}Additional:${NC} Initiate a development environment for infras>
-  ${YELLOW}exit${NC}                          Close console
-  ${YELLOW}*${NC}                             Help
+  infra                     ${RED}Additional:${NC} Initiate a development environment for infrastructure services
+  ${YELLOW}exit${NC}                      Close console
+  ${YELLOW}*${NC}                         Help
 "
 }
 
 function msMan () {
-  manHeader "DEV" "MICROSERVICE: $1"
+  manHeader "DEVELOPMENT" "MICROSERVICE: $1"
 }
 
 function prodMan () {
-  manHeader $1
+  manHeader "PRODUCTION"
   echo -e "
-  up                            Start the 'docker-compose up' considering the '.docker-conf/mode_pro>
+  up                            Start the `docker-compose up` considering the `.docker-conf/mode_prod/.env` file
   stop                          Stop all created containers.
-  rm                            Stop and remove all docker containers described in the docker-compos>
+  rm                            Stop and remove all docker containers described in the docker-compose files
   rm drops volumes              Remove the drops volumes. That means the database contents.
   rm dispenser volumes          Remove the dispenser volumes. That means the database contents.
-  admin                         Sets admin access rights in DROPS for a specific user identified by >
+  admin                         Sets admin access rights in DROPS for a specific user identified by its email address
   leave                         Leave PROD environment
   exit                          Close console
   *                             Help
@@ -56,30 +56,30 @@ function prodMan () {
 }
 
 function newMan () {
-  manHeader "DEV" "CREATE A NEW MICROSERVICE"
+  manHeader "DEVELOPMENT" "CREATE A NEW MICROSERVICE"
   echo -e "
-  up                            Start the 'docker-compose up' considering the '.docker-conf/mode_dev>
+  up                            Start the `docker-compose up` considering the `.docker-conf/mode_dev/.env` file
   stop                          Stop all created containers.
-  rm                            Stop and remove all docker containers described in the docker-compos>
+  rm                            Stop and remove all docker containers described in the docker-compose files
   rm drops volumes              Remove the drops volumes. That means the database contents.
   rm dispenser volumes          Remove the dispenser volumes. That means the database contents.
-  admin                         Sets admin access rights in DROPS for a specific user identified by >
-  leave                         Leave DEV environment
+  admin                         Sets admin access rights in DROPS for a specific user identified by its email address
+  leave                         Leave NEW environment
   exit                          Close console
   *                             Help
 "
 }
 
 function infraMan () {
-  manHeader "DEV" "INFRASTRUCTURE REQUIRED TO RUN MICROSERVICES"
+  manHeader "DEVELOPMENT" "INFRASTRUCTURE REQUIRED TO RUN MICROSERVICES"
   echo -e "
   clone                         Clone the required git repositories
   rm                            Remove the git repositories excluding the documentatuin contents
   rm docu                       Remove the git repositories including the documentation contents
-  docker up                     Start the 'docker-compose up' considering the '.docker-conf/docker-c>
-  docker rm                     Stop and remove all docker containers described in the docker-compos>
+  docker up                     Start the `docker-compose up` considering the `.docker-conf/mode_infra/.env` file (starts the dispenser database on `localhost:27017`)
+  docker rm                     Stop and remove all docker containers described in the docker-compose file
   docker rm dispenser volumes   Remove the dispenser volumes. That means the database contents.
-  leave                         Leave DEV environment
+  leave                         Leave INFRA environment
   exit                          Close console
   *                             Help
 "
