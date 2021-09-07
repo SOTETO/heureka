@@ -14,7 +14,6 @@ function createNewMS() {
 
   # Create directory
   mkdir microservices/"$dirName"
-  mkdir microservices/"$dirName"/.docker-conf
   printf "Directories have been created.\n"
 
   # Touch required files
@@ -25,7 +24,7 @@ function createNewMS() {
   touch microservices/"$dirName"/ms_"$name".yml
 
   # Copy required files from NEW environment
-  cp -r .docker-conf/mode_dev/* microservices/"$dirName"/.docker-conf
+  cp -r .docker-conf/mode_dev microservices/"$dirName"/.docker-conf
 
   printf "Required files have been created and copied from NEW environment.\n"
 
@@ -109,12 +108,51 @@ function writeEnvScript() {
 
   echo "function "$name"_description () {" >> "$scriptFile"
   echo "  local name=\"MS-\$("$name"_command_uppercase)\"" >> "$scriptFile"
-  echo "  echo \"Initiate a development environment for the \$"$name".\"" >> "$scriptFile"
+  echo "  echo \"Initiate a development environment for the \$name.\"" >> "$scriptFile"
   echo -e "}\n" >> "$scriptFile"
 
   echo "function "$name"_env () {" >> "$scriptFile"
   echo "  # TODO - Copy from microservices/ms-drops/env.sh for an example" >> "$scriptFile"
   echo "  echo \"TODO - Implement the console for MS-\$("$name"_command_uppercase)\"" >> "$scriptFile"
+  echo "  prompt=\$(calcPrompt)" >> "$scriptFile"
+  echo "  for (( ; ; ))" >> "$scriptFile"
+  echo "  do" >> "$scriptFile"
+  echo "    read -r -p \$\"\${prompt}\" cmd" >> "$scriptFile"
+  echo "    case \"\$cmd\" in" >> "$scriptFile"
+  echo "        \"up\")" >> "$scriptFile"
+  echo "          gitClone "$name >> "$scriptFile"
+  echo "          dockerRun ms_"$name >> "$scriptFile"
+  echo "          setConfig \"running\" \"yes\"" >> "$scriptFile"
+  echo "          prompt=\$(calcPrompt)" >> "$scriptFile"
+  echo "        ;;" >> "$scriptFile"
+  echo "       \"rm\")" >> "$scriptFile"
+  echo "          dockerRm ms_"$name >> "$scriptFile"
+  echo "          setConfig \"running\" \"no\"" >> "$scriptFile"
+  echo "          prompt=\$(calcPrompt)" >> "$scriptFile"
+  echo "        ;;" >> "$scriptFile"
+  echo "       \"leave\")" >> "$scriptFile"
+  echo "          setEnvToIdle" >> "$scriptFile"
+  echo "          prompt=\$(calcPrompt)" >> "$scriptFile"
+  echo "          break" >> "$scriptFile"
+  echo "        ;;" >> "$scriptFile"
+  echo "        \"exit\")" >> "$scriptFile"
+  echo "         exit 1" >> "$scriptFile"
+  echo "        ;;" >> "$scriptFile"
+  echo "        *)" >> "$scriptFile"
+  echo "          "$name"_man" >> "$scriptFile"
+  echo "        ;;" >> "$scriptFile"
+  echo "    esac" >> "$scriptFile"
+  echo "  done" >> "$scriptFile"
   echo -e "}\n" >> "$scriptFile"
 
+  echo "function "$name"_man() {" >> "$scriptFile"
+  echo "man \"MS\" \$("$name"_name)" >> "$scriptFile"
+  echo "echo -e \"" >> "$scriptFile"
+  echo " up                            Start the \'docker-compose up\' and clones all specified GIT repositories." >> "$scriptFile"
+  echo " rm                            Stop and removes all docker containers" >> "$scriptFile"
+  echo " leave                         Leave DEV environment" >> "$scriptFile"
+  echo " exit                          Close console" >> "$scriptFile"
+  echo " *                             Help" >> "$scriptFile"
+  echo "\"" >> "$scriptFile"
+  echo "}" >> "$scriptFile"
 }

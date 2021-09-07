@@ -23,13 +23,13 @@ function generalMan () {
   for ms in "${MICROSERVICES[@]}"; do
     local cmd_ms=$ms"_command"
     local cmd_desc=$ms"_description"
-    ms_descs=$ms_descs""$(eval $cmd_ms)"                     ${RED}Additional:${NC} "$(eval $cmd_desc)
+    ms_descs=$ms_descs"  "$(eval $cmd_ms)"                     ${RED}Additional:${NC} "$(eval $cmd_desc)"\n"
   done
   manHeader
   echo -e "
   ${YELLOW}prod${NC}                      Start production environment
   ${YELLOW}new${NC}                       Initiate a development environment for a complete new microservice
-  $ms_descs
+$ms_descs
   infra                     ${RED}Additional:${NC} Initiate a development environment for infrastructure services
   ${YELLOW}exit${NC}                      Close console
   ${YELLOW}*${NC}                         Help
