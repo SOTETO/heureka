@@ -22,11 +22,14 @@ function createNewMS() {
   touch microservices/"$dirName"/readme.md
   touch microservices/"$dirName"/ms_"$name".yml
 
+  # Copy readme.md
+  cp templates/readme.md microservices/"$dirName"/readme.md
+
   # Copy required files from NEW environment
   cp -r .docker-conf/mode_dev microservices/"$dirName"/.docker-conf
 
   # Write contents of docker-compose file (NEW environment) to newly created one
-  cp dev.yml microservices/"$dirName"/ms_"$name".yml
+  cp templates/dev.yml microservices/"$dirName"/ms_"$name".yml
 
   # Write docker-setup.cfg
   echo "[ENV_MS_$upper]" >> microservices/"$dirName"/docker-setup.cfg
@@ -81,7 +84,7 @@ function createNewMS() {
 
   writeEnvScript $name $dirName
   printf "\nNew MS-$upper has been successfully created!\n\n"
-  initHeureka
+  exec bash heureka
 }
 
 function writeEnvScript() {

@@ -32,10 +32,10 @@ function calcPrompt () {
 }
 
 function init () {
-  printf "Welcome to ${YELLOW}HEUREKA!${NC}\nSetup a development environment to implement microservices for the HEUREKA platform."
+#  printf "Welcome to ${YELLOW}HEUREKA!${NC}\nSetup a development environment to implement microservices for the HEUREKA platform."
   readHeurekaConf
-  printCurrentConf "$YELLOW" "$LIGHTBLUE" "$NC"
-  printf "\n"
+#  printCurrentConf "$YELLOW" "$LIGHTBLUE" "$NC"
+#  printf "\n"
 
   local selectedEnv=$(getEnv)
   case $selectedEnv in

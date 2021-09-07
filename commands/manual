@@ -25,7 +25,7 @@ function generalMan () {
     local cmd_desc=$ms"_description"
     ms_descs=$ms_descs"  "$(eval $cmd_ms)"                     ${RED}Microservice:${NC} "$(eval $cmd_desc)"\n"
   done
-  manHeader
+  manHeader "" "Setup a development environment to implement microservices for the HEUREKA platform.\n$(printCurrentConf $YELLOW $LIGHTBLUE $NC)\n"
   echo -e "
   ${YELLOW}prod${NC}                      Start production environment
   ${YELLOW}new${NC}                       Starts a wizard to initiate a development environment for a new microservice
