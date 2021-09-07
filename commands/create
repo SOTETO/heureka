@@ -14,7 +14,6 @@ function createNewMS() {
 
   # Create directory
   mkdir microservices/"$dirName"
-  printf "Directories have been created.\n"
 
   # Touch required files
   touch microservices/"$dirName"/env.sh
@@ -26,17 +25,13 @@ function createNewMS() {
   # Copy required files from NEW environment
   cp -r .docker-conf/mode_dev microservices/"$dirName"/.docker-conf
 
-  printf "Required files have been created and copied from NEW environment.\n"
-
   # Write contents of docker-compose file (NEW environment) to newly created one
   cp dev.yml microservices/"$dirName"/ms_"$name".yml
-  printf "Docker compose file has been created.\n"
 
   # Write docker-setup.cfg
   echo "[ENV_MS_$upper]" >> microservices/"$dirName"/docker-setup.cfg
   echo "compose_files=base.yml microservices/$dirName/ms_$name.yml" >> microservices/"$dirName"/docker-setup.cfg
   echo "env_file=microservices/$dirName/.docker-conf/.env" >> microservices/"$dirName"/docker-setup.cfg
-  printf "Docker setup config has been written.\n\n"
 
   # Read and write GIT config
   declare -a repos
@@ -65,8 +60,6 @@ function createNewMS() {
 
       repos+=($gitID)
 
-      printf "\nGit repository $gitName has been added.\n\n"
-
       read -r -p $"Do you want to add more repositories (y / n) " gitRepos
       if [[ $gitRepos = "n" || $gitRepos = "N" || $gitRepos = "no" || $gitRepos == "No" ]]; then
         break
@@ -75,19 +68,20 @@ function createNewMS() {
   fi
 
   local related
-  printf "The other microservices are: "
+  printf "\nDoes your microservice is related to another one ( "
   for i in "${MICROSERVICES[@]}"; do printf "MS_${i^^} "; done
-  printf "\n"
-  read -r -p $"Please, name all related microservices (separated by space; press [Enter] if there are no related services): " related
+  printf ")?\n"
+  read -r -p $"Separate related microservices by space ([Enter] no related services): " related
 
   echo "[MS_$upper]" >> microservices/"$dirName"/git-setup.cfg
   echo "set=${repos[*]}" >> microservices/"$dirName"/git-setup.cfg
   if [[ $related != "" ]]; then
     echo "related=$related" >> microservices/"$dirName"/git-setup.cfg
   fi
-  printf "Git setup config has been written.\n\n"
 
   writeEnvScript $name $dirName
+  printf "\nNew MS-$upper has been successfully created!\n\n"
+  initHeureka
 }
 
 function writeEnvScript() {
@@ -97,6 +91,11 @@ function writeEnvScript() {
 
   echo "#!/bin/bash" >> "$scriptFile"
   echo -e "set -e\n" >> "$scriptFile"
+
+  echo "function "$name"_name () {" >> "$scriptFile"
+  echo "  echo \"MS-\"\$("$name"_command_uppercase)" >> "$scriptFile"
+  echo -e "}\n" >> "$scriptFile"
+
   echo "function "$name"_command () {" >> "$scriptFile"
   echo "  echo \"$name\"" >> "$scriptFile"
   echo -e "}\n" >> "$scriptFile"
@@ -130,6 +129,9 @@ function writeEnvScript() {
   echo "          setConfig \"running\" \"no\"" >> "$scriptFile"
   echo "          prompt=\$(calcPrompt)" >> "$scriptFile"
   echo "        ;;" >> "$scriptFile"
+  echo "       \"admin\")" >> "$scriptFile"
+  echo "          prodDropsAdmin $name" >> "$scriptFile"
+  echo "        ;;" >> "$scriptFile"
   echo "       \"leave\")" >> "$scriptFile"
   echo "          setEnvToIdle" >> "$scriptFile"
   echo "          prompt=\$(calcPrompt)" >> "$scriptFile"
@@ -148,8 +150,9 @@ function writeEnvScript() {
   echo "function "$name"_man() {" >> "$scriptFile"
   echo "man \"MS\" \$("$name"_name)" >> "$scriptFile"
   echo "echo -e \"" >> "$scriptFile"
-  echo " up                            Start the \'docker-compose up\' and clones all specified GIT repositories." >> "$scriptFile"
+  echo " up                            Start the 'docker-compose up' and clones all specified GIT repositories." >> "$scriptFile"
   echo " rm                            Stop and removes all docker containers" >> "$scriptFile"
+  echo " admin                         If the system is running, you can name admins" >> "$scriptFile"
   echo " leave                         Leave DEV environment" >> "$scriptFile"
   echo " exit                          Close console" >> "$scriptFile"
   echo " *                             Help" >> "$scriptFile"
