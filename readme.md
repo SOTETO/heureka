@@ -25,81 +25,13 @@ Due to a [known issue](https://github.com/SOTETO/grav-dockerfile/issues/1), ther
 ## Manual
 Please choose the environment you want to setup:
 - `prod`      - A production environment.
-- `new`   - Initiate a development environment for a complete new microservice.
-- `drops` - *Additional:* Initiate a development environment for the MS-DROPS.
+- `new`   - Starts a wizard to initiate a development environment for a new microservice.
+- `drops` - *Microservice:* Initiate a development environment for the MS-DROPS.
 - `infra` - *Additional:* Initiate a development environment for infrastructure services and widget required to run the microservices.
 
 You can also use `exit` to quit the console.
 
 _Configuration:_ As a best practice, the configuration should always be edited _before_ the console will be used. Otherwise, the state of the console could become invalid.
-
-### Development environment - Create a new microservice
-Setting up the environment to develop a new microservice requires a bit of configuration effort.
-
-#### Deployment
-Follow the upcoming steps to create your development environment:
-
-1. `bash ./heureka`
-2. `new` to enter the development environment of the CLI
-3. Start your application using all required ports except the ports used in `dev.yml` (heureka uses ports 80, 443, 9000 and 4222 by default).
-4. Edit the placeholder upstream `new` in `.docker-conf/mode_dev/nginx/pool2.upstream` and add more required upstreams (the ports at the localhost used by your application).
-5. Use the new / updated upstreams in `.docker-conf/mode_dev/nginx/location.pool` by introducing new pathes or editing the plaeholder path `/new`.
-6. `up`
-7. Call `http://localhost/drops/` to initiate the drops DB. Notice that the server requires up to 30 seconds to answer this call.
-8. Create an account by using the registration view on `http://localhost`.
-9. Use `admin` to grant admin rights to your newly created user.
-10. Request `/docu` to initiate an admin account for your local Grav CMS instance.
-11. Initiate the navigation by calling `http://localhost/dispenser/navigation/init`. In case of a whitescreen, the call has been successfully.
-
-After all, your microservice will be available by calling `http://localhost/new` (or the pathes that you have introduced. Using the default `dev.yml`, the REST-API of MS-DROPS will be available by calling `http://localhost/drops/<endpoint>` or `http://localhost:9000/<endpoint>` and the NATS listens to `localhost:4222`. Keep in mind that you have to configure an API user to call the REST-API of MS-DROPS or execute the OAuth handshake.
-
-#### Best practice for DEV configuration
-1. Setup the required git repositories for your new MS.
-2. Optional: Add the repositories to the `git-setup.cfg`.
-3. Change the database configurations for MS-DROPS (`DROPS_DB_*`) and other existing microservices in `.docker-conf/mode_dev/.env`.
-4. Add an nginx upstream for your local new MS in `.docker-conf/mode_dev/nginx/pool2.upstream` (see new or arise and drops as an example).
-5. Add new locations to the nginx `.docker-conf/mode_dev/nginx/location.pool` file (using the new upstreams).
-
-#### Hints for the deployment
-- If no SMTP-Server has been configured to send emails, the confirmation email of the MS-DROPS backend is logged. Thus, search in the logs for the confirmation email (see the end of this readme).
-- After a successful deployment, the proxy [Nginx](https://www.nginx.com/) will redirect the server to `/arise/#/signin/L2FyaXNlLyMvcHJvZmlsZQ==`. Thus, this redirect is part of the [Nginx](https://www.nginx.com/) configuration.
-
-#### List of commands
-The `new` environment provides the following commands:
-- `up` - Start the `docker-compose up` considering the `.docker-conf/mode_dev/.env` file
-- `stop` - Stop all created containers.
-- `rm` - Stop and remove all docker containers described in the docker-compose files
-- `rm drops volumes` - Remove the drops volumes. That means the database contents.
-- `rm dispenser volumes` - Remove the dispenser volumes. That means the database contents.
-- `admin` - Sets admin access rights in DROPS for a specific user identified by its email address
-- `leave` - Leave `NEW` environment
-- `exit` - Close console
-- \* - Help
-
-### Infrastructure development environment
-Required to clone all git repositories for the development of infrastructure services like `dispenser` or `vca-widget-base`.
-
-#### Deployment
-Follow the upcoming steps to create your infrastructure development environment:
-
-1. Enter the local file system pathes of the git repositories that will be created to `git-setup.cfg>
-2. `bash ./heureka`
-3. `infra` to enter the infrastructure environment of the CLI
-4. `clone`
-5. `docker up`
-6. Configure the local `application.conf` in your dispenser repository to listen to `localhost:27017` (or another port, if you have changed it in your `infra.yml`)
-
-#### List of commands
-The `infra` environment provides the following commands:
-
-- `clone` - Clone the required git repositories
-- `rm` - Remove the git repositories
-- `docker up` - Start the `docker-compose up` considering the `.docker-conf/mode_infra/.env` file (starts the dispenser database on `localhost:27017`)
-- `docker rm` - Stop and remove all docker containers described in the docker-compose file
-- `docker rm dispenser volumes` - Remove the dispenser volumes. That means the database contents.
-- `leave` - Leave `INFRA` environment
-- `exit` - close the Heureka console
-- \* - Help
 
 ### Production environment
 
@@ -137,11 +69,52 @@ The `prod` environment provides the following commands:
 - `exit` - Close console
 - \* - Help
 
+### Infrastructure development environment
+Required to clone all git repositories for the development of infrastructure services like `dispenser` or `vca-widget-base`.
+
+#### Deployment
+Follow the upcoming steps to create your infrastructure development environment:
+
+1. Enter the local file system pathes of the git repositories that will be created to `git-setup.cfg>
+2. `bash ./heureka`
+3. `infra` to enter the infrastructure environment of the CLI
+4. `clone`
+5. `docker up`
+6. Configure the local `application.conf` in your dispenser repository to listen to `localhost:27017` (or another port, if you have changed it in your `infra.yml`)
+
+#### List of commands
+The `infra` environment provides the following commands:
+
+- `clone` - Clone the required git repositories
+- `rm` - Remove the git repositories
+- `docker up` - Start the `docker-compose up` considering the `.docker-conf/mode_infra/.env` file (starts the dispenser database on `localhost:27017`)
+- `docker rm` - Stop and remove all docker containers described in the docker-compose file
+- `docker rm dispenser volumes` - Remove the dispenser volumes. That means the database contents.
+- `leave` - Leave `INFRA` environment
+- `exit` - close the Heureka console
+- \* - Help
+
 ## Running existing microservices
 Since the Heureka-CLI has been implemented to handle microservices architectures, it also allows you to add your own services. [At the end of this article adding a new microservice will be explained](#how-to-add-a-new-microservice). Subsequently, a list of default microservices is given:
 - MS-DROPS (see [microservices/ms-drops/readme.md](microservices/ms-drops/readme.md))
 
 ## How to add a new microservice
+The `new` command starts a wizard that creates a new microservice in the `microservice` directory. Alternatively, you can create the microservice manually.
+
+The wizard also creates the `env.sh` file for your new microservice, implementing very basic commands for your setup:
+
+- `up` - Clones the defined git repositories and starts the docker services by using the configured docker-compose setup.
+- `rm` - Stops and removes the Docker container that have been started.
+- `admin` - If the system is running, you can name admins.
+- `leave` - Leave the environment
+- `exit` - close the Heureka console
+- \* - Help
+
+If you want to add more docker container to your setup, change the created docker-compose file (`ms_<name>.yml`) or add more compose files in `docker-setup.cfg`.
+
+More information about the configuration of your newly created microservice can be found in the `readme.md` file, that is created in your microservices directory.
+
+### Creating a new microservice manually
 Start by creating a new directory for your microservice in the `microservices/` directory:
 ```
 mkdir microservices/ms-<name>
@@ -327,5 +300,6 @@ sudo docker logs <container-name>
 to show the logs of a container. See `docker ps --format '{{.Names}}'` to print the names of the running container.
 ```
 # Print log of MS-DROPS backend service (drops)
+```
 sudo docker logs drops
 ```

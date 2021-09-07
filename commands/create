@@ -1,0 +1,164 @@
+#!/bin/bash
+set -e
+
+function createNewMS() {
+  local name
+  local upper
+  local dirName
+
+  printf "START MS CREATION WIZARD\n"
+  # Read name of new MS
+  read -r -p $"What is the name of your new microservice? " name
+  dirName="ms-$name"
+  upper=${name^^}
+
+  # Create directory
+  mkdir microservices/"$dirName"
+
+  # Touch required files
+  touch microservices/"$dirName"/env.sh
+  touch microservices/"$dirName"/docker-setup.cfg
+  touch microservices/"$dirName"/git-setup.cfg
+  touch microservices/"$dirName"/readme.md
+  touch microservices/"$dirName"/ms_"$name".yml
+
+  # Copy readme.md
+  cp templates/readme.md microservices/"$dirName"/readme.md
+
+  # Copy required files from NEW environment
+  cp -r .docker-conf/mode_dev microservices/"$dirName"/.docker-conf
+
+  # Write contents of docker-compose file (NEW environment) to newly created one
+  cp templates/dev.yml microservices/"$dirName"/ms_"$name".yml
+
+  # Write docker-setup.cfg
+  echo "[ENV_MS_$upper]" >> microservices/"$dirName"/docker-setup.cfg
+  echo "compose_files=base.yml microservices/$dirName/ms_$name.yml" >> microservices/"$dirName"/docker-setup.cfg
+  echo "env_file=microservices/$dirName/.docker-conf/.env" >> microservices/"$dirName"/docker-setup.cfg
+
+  # Read and write GIT config
+  declare -a repos
+  local gitRepos="n"
+  read -r -p $"Do you want to add some git repositories? (y / n) " gitRepos
+  if [[ $gitRepos = "y" || $gitRepos = "Y" || $gitRepos = "yes" || $gitRepos == "Yes" ]]; then
+    printf "Enter the git repositories!\n\n"
+    for (( ; ; ))
+    do
+      local gitName
+      local gitUrl
+      local gitBranch
+      local gitPath
+      local gitID
+      read -r -p $"Name of the git repository: " gitName
+      read -r -p $"URL of the git repository: " gitUrl
+      read -r -p $"Branch of the git repository: " gitBranch
+      read -p $"Path of the git repository: " gitPath
+      gitID=$(echo "$gitName" | sed -r 's/[^A-Za-z]/_/g')
+
+      echo "[$gitID]" >> microservices/"$dirName"/git-setup.cfg
+      echo "url=$gitUrl" >> microservices/"$dirName"/git-setup.cfg
+      echo "branch=$gitBranch" >> microservices/"$dirName"/git-setup.cfg
+      echo "name=$gitName" >> microservices/"$dirName"/git-setup.cfg
+      echo "path=$gitPath" >> microservices/"$dirName"/git-setup.cfg
+
+      repos+=($gitID)
+
+      read -r -p $"Do you want to add more repositories (y / n) " gitRepos
+      if [[ $gitRepos = "n" || $gitRepos = "N" || $gitRepos = "no" || $gitRepos == "No" ]]; then
+        break
+      fi
+    done
+  fi
+
+  local related
+  printf "\nDoes your microservice is related to another one ( "
+  for i in "${MICROSERVICES[@]}"; do printf "MS_${i^^} "; done
+  printf ")?\n"
+  read -r -p $"Separate related microservices by space ([Enter] no related services): " related
+
+  echo "[MS_$upper]" >> microservices/"$dirName"/git-setup.cfg
+  echo "set=${repos[*]}" >> microservices/"$dirName"/git-setup.cfg
+  if [[ $related != "" ]]; then
+    echo "related=$related" >> microservices/"$dirName"/git-setup.cfg
+  fi
+
+  writeEnvScript $name $dirName
+  printf "\nNew MS-$upper has been successfully created!\n\n"
+  exec bash heureka
+}
+
+function writeEnvScript() {
+  local name=$1
+  local dirName=$2
+  local scriptFile="microservices/$dirName/env.sh"
+
+  echo "#!/bin/bash" >> "$scriptFile"
+  echo -e "set -e\n" >> "$scriptFile"
+
+  echo "function "$name"_name () {" >> "$scriptFile"
+  echo "  echo \"MS-\"\$("$name"_command_uppercase)" >> "$scriptFile"
+  echo -e "}\n" >> "$scriptFile"
+
+  echo "function "$name"_command () {" >> "$scriptFile"
+  echo "  echo \"$name\"" >> "$scriptFile"
+  echo -e "}\n" >> "$scriptFile"
+
+  echo "function "$name"_command_uppercase () {" >> "$scriptFile"
+  echo "  local cmd=\"\$("$name"_command)\"" >> "$scriptFile"
+  echo "  echo \${cmd^^}" >> "$scriptFile"
+  echo -e "}\n" >> "$scriptFile"
+
+  echo "function "$name"_description () {" >> "$scriptFile"
+  echo "  local name=\"MS-\$("$name"_command_uppercase)\"" >> "$scriptFile"
+  echo "  echo \"Initiate a development environment for the \$name.\"" >> "$scriptFile"
+  echo -e "}\n" >> "$scriptFile"
+
+  echo "function "$name"_env () {" >> "$scriptFile"
+  echo "  # TODO - Copy from microservices/ms-drops/env.sh for an example" >> "$scriptFile"
+  echo "  echo \"TODO - Implement the console for MS-\$("$name"_command_uppercase)\"" >> "$scriptFile"
+  echo "  prompt=\$(calcPrompt)" >> "$scriptFile"
+  echo "  for (( ; ; ))" >> "$scriptFile"
+  echo "  do" >> "$scriptFile"
+  echo "    read -r -p \$\"\${prompt}\" cmd" >> "$scriptFile"
+  echo "    case \"\$cmd\" in" >> "$scriptFile"
+  echo "        \"up\")" >> "$scriptFile"
+  echo "          gitClone "$name >> "$scriptFile"
+  echo "          dockerRun ms_"$name >> "$scriptFile"
+  echo "          setConfig \"running\" \"yes\"" >> "$scriptFile"
+  echo "          prompt=\$(calcPrompt)" >> "$scriptFile"
+  echo "        ;;" >> "$scriptFile"
+  echo "       \"rm\")" >> "$scriptFile"
+  echo "          dockerRm ms_"$name >> "$scriptFile"
+  echo "          setConfig \"running\" \"no\"" >> "$scriptFile"
+  echo "          prompt=\$(calcPrompt)" >> "$scriptFile"
+  echo "        ;;" >> "$scriptFile"
+  echo "       \"admin\")" >> "$scriptFile"
+  echo "          prodDropsAdmin $name" >> "$scriptFile"
+  echo "        ;;" >> "$scriptFile"
+  echo "       \"leave\")" >> "$scriptFile"
+  echo "          setEnvToIdle" >> "$scriptFile"
+  echo "          prompt=\$(calcPrompt)" >> "$scriptFile"
+  echo "          break" >> "$scriptFile"
+  echo "        ;;" >> "$scriptFile"
+  echo "        \"exit\")" >> "$scriptFile"
+  echo "         exit 1" >> "$scriptFile"
+  echo "        ;;" >> "$scriptFile"
+  echo "        *)" >> "$scriptFile"
+  echo "          "$name"_man" >> "$scriptFile"
+  echo "        ;;" >> "$scriptFile"
+  echo "    esac" >> "$scriptFile"
+  echo "  done" >> "$scriptFile"
+  echo -e "}\n" >> "$scriptFile"
+
+  echo "function "$name"_man() {" >> "$scriptFile"
+  echo "man \"MS\" \$("$name"_name)" >> "$scriptFile"
+  echo "echo -e \"" >> "$scriptFile"
+  echo " up                            Start the 'docker-compose up' and clones all specified GIT repositories." >> "$scriptFile"
+  echo " rm                            Stop and removes all docker containers" >> "$scriptFile"
+  echo " admin                         If the system is running, you can name admins" >> "$scriptFile"
+  echo " leave                         Leave DEV environment" >> "$scriptFile"
+  echo " exit                          Close console" >> "$scriptFile"
+  echo " *                             Help" >> "$scriptFile"
+  echo "\"" >> "$scriptFile"
+  echo "}" >> "$scriptFile"
+}

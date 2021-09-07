@@ -23,13 +23,13 @@ function generalMan () {
   for ms in "${MICROSERVICES[@]}"; do
     local cmd_ms=$ms"_command"
     local cmd_desc=$ms"_description"
-    ms_descs=$ms_descs""$(eval $cmd_ms)"                     ${RED}Additional:${NC} "$(eval $cmd_desc)
+    ms_descs=$ms_descs"  "$(eval $cmd_ms)"                     ${RED}Microservice:${NC} "$(eval $cmd_desc)"\n"
   done
-  manHeader
+  manHeader "" "Setup a development environment to implement microservices for the HEUREKA platform.\n$(printCurrentConf $YELLOW $LIGHTBLUE $NC)\n"
   echo -e "
   ${YELLOW}prod${NC}                      Start production environment
-  ${YELLOW}new${NC}                       Initiate a development environment for a complete new microservice
-  $ms_descs
+  ${YELLOW}new${NC}                       Starts a wizard to initiate a development environment for a new microservice
+$ms_descs
   infra                     ${RED}Additional:${NC} Initiate a development environment for infrastructure services
   ${YELLOW}exit${NC}                      Close console
   ${YELLOW}*${NC}                         Help
@@ -55,21 +55,6 @@ function prodMan () {
 "
 }
 
-function newMan () {
-  manHeader "DEVELOPMENT" "CREATE A NEW MICROSERVICE"
-  echo -e "
-  up                            Start the `docker-compose up` considering the `.docker-conf/mode_dev/.env` file
-  stop                          Stop all created containers.
-  rm                            Stop and remove all docker containers described in the docker-compose files
-  rm drops volumes              Remove the drops volumes. That means the database contents.
-  rm dispenser volumes          Remove the dispenser volumes. That means the database contents.
-  admin                         Sets admin access rights in DROPS for a specific user identified by its email address
-  leave                         Leave NEW environment
-  exit                          Close console
-  *                             Help
-"
-}
-
 function infraMan () {
   manHeader "DEVELOPMENT" "INFRASTRUCTURE REQUIRED TO RUN MICROSERVICES"
   echo -e "
@@ -89,7 +74,6 @@ function man () {
   case "$1" in
      "MAIN") generalMan;;
      "PROD") prodMan $1;;
-     "NEW") newMan;;
      "INFRA") infraMan;;
      "MS") msMan $2;;
   esac
