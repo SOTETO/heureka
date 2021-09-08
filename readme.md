@@ -1,5 +1,5 @@
 # Heureka
-A Command-Line-Interface (CLI) to start the microservice MS-DROPS. It is the base for the user management of the microservice architecture.
+A Command-Line-Interface (CLI) to start the microservice environment *Heureka*. It uses the concepts of OAuth2, widgets, RESTful webservices, and the Object Event System (OES) to connect collaboration services and build a microservice platform.
 
 ## Pre-Requirements
 - Install Git ([https://git-scm.com/](https://git-scm.com/))
@@ -9,7 +9,7 @@ A Command-Line-Interface (CLI) to start the microservice MS-DROPS. It is the bas
 - The Heureka-CLI is a [GNU Bash](https://www.gnu.org/software/bash/)-Script. Thus, make sure your OS has the newest version of bash installed (5.1.8 at the moment of writing).
 - The Heureka-CLI requires `sudo` operations. Thus, make sure your user has `sudo` access rights.
 
->**Hardware:** You should have at least 4 GB working memory for using the `dev drops` environment.
+>**Hardware:** You should have at least 4 GB working memory for using the `drops` environment of MS-DROPS.
 
 >**Versions:** Please use always the newest versions of `git` (latest release: 2.32.0 at the moment of writing), `docker` (latest release: 20.10.8 at the moment of writing), `docker-compose` (latest release: 1.29.2 at the moment of writing) and Bash (latest release: 5.1.8 at the moment of writing)! Keep in mind that official repositories for your OS are maybe older.
 
@@ -118,9 +118,9 @@ The wizard also creates the `env.sh` file for your new microservice, implementin
 
 If you want to add more docker container to your setup, change the created docker-compose file (`ms_<name>.yml`) or add more compose files in `docker-setup.cfg`.
 
-> **Best practice:** Since Heureka uses Docker containers, it s strongly recommended to use a separated Docker container to run a database.
+> **Best practice:** Since Heureka uses Docker containers, it is strongly recommended to use a separated Docker container to run a database.
 
-> **Next Step:** More information about the configuration of your newly created microservice can be found in the `readme.md` file, that is created in your microservices directory.
+> **Next Step:** More information about the configuration of your newly created microservice can be found in the `readme.md` file, that has been created in your microservices directory.
 
 ### Creating a new microservice manually
 Start by creating a new directory for your microservice in the `microservices/` directory:
@@ -296,7 +296,7 @@ sudo docker logs <container-name>
 ```
 to show the logs of a container. See `docker ps --format '{{.Names}}'` to print the names of the running container.
 
-# Print log of MS-DROPS backend service (drops)
+Print log of MS-DROPS backend service (drops):
 ```
 sudo docker logs drops
 ```
