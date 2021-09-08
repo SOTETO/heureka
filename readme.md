@@ -250,14 +250,11 @@ compose_files=base.yml ms_drops.yml
 ```
 The example shows the two different environment `ENV_PROD` and `ENV_MS_DROPS`.
 
+Additionally, the following files hold the docker configuration for the different environments:
 - `docker-setup.cfg`
 - `base.yml`
-- `dev.yml`
-- `dev_ms_drops.yml`
 - `prod.yml`
 - `ìnfra.yml`
-- `.docker-conf/mode_dev/.env`
-- `.docker-conf/mode_dev_ms_drops/.env`
 - `.docker-conf/mode_infra/.env`
 - `.docker-conf/mode_prod/.env`
 
@@ -273,21 +270,13 @@ related=list of related MS that have to be cloned and removed, if the MS itself 
 ### Play2 configuration
 The following files contain the configuration for the play2 apps:
 - `.docker-conf/mode_prod/drops/application.conf`
-- `.docker-conf/mode_dev/drops/application.conf`
 - `.docker-conf/mode_prod/dispenser/application.conf`
-- `.docker-conf/mode_dev/dispenser/application.conf`
 
 ### Navigation configuration
-- `.docker-conf/mode_dev/navigation/GlobalNav.json`
-- `.docker-conf/mode_dev/navigation/noSignIn.json`
 - `.docker-conf/mode_prod/navigation/GlobalNav.json`
 - `.docker-conf/mode_prod/navigation/noSignIn.json`
 
 ### Nginx configuration
-- `.docker-conf/mode_dev/nginx/default.conf`
-- `.docker-conf/mode_dev/nginx/location.pool`
-- `.docker-conf/mode_dev/nginx/pool2.upstream`
-
 - `.docker-conf/mode_prod/nginx/default.conf`
 - `.docker-conf/mode_prod/nginx/location.pool`
 - `.docker-conf/mode_prod/nginx/pool2.upstream`
