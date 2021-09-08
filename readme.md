@@ -300,3 +300,11 @@ to show the logs of a container. See `docker ps --format '{{.Names}}'` to print 
 ```
 sudo docker logs drops
 ```
+
+## Troubleshooting
+### Error `502` in browser
+If you are continously receiving `502` errors, maybe one or more docker container are continously restarting. It sometimes happens that container get corrupted. 
+
+__Solution__
+Check, if there are continously restarting docker container by `sudo docker ps` in your terminal. If there are some container, check their logs for more information. If you see no problem, try a restart:
+Use `rm` on your Heureka-CLI and `up` afterwards. In most cases this will solve the trouble.
