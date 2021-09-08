@@ -13,7 +13,7 @@ Follow the upcoming steps to create your development environment:
 5. Use the new / updated upstreams in `.docker-conf/mode_dev/nginx/location.pool` by introducing new pathes or editing the plaeholder path `/new`.
 6. `up`
 7. Call `http://localhost/drops/` to initiate the drops DB. Notice that the server requires up to 30 seconds to answer this call.
-8. Create an account by using the registration view on `http://localhost`.
+8. Create an account by using the registration view on `http://localhost` (see [Hints for the deployment](#hints-for-the-deployment) - you will probably not receive a confirmation email, but it is logged).
 9. Use `admin` to grant admin rights to your newly created user.
 10. Initiate the navigation by calling `http://localhost/dispenser/navigation/init`. In case of a whitescreen, the call has been successfully.
 

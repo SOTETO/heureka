@@ -45,7 +45,7 @@ Follow the upcoming steps to create your production environment:
 1. `bash ./heureka`
 2. `prod` to enter the production environment of the CLI
 3. `up`
-4. Create an account by using the registration view on `http://localhost`.
+4. Create an account by using the registration view on `http://localhost` (see [Hints for the deployment](#hints-for-the-deployment) - you will probably not receive a confirmation email, but it is logged).
 5. Use `admin` to grant admin rights to your newly created user.
 6. Request `/docu` to initiate an admin account for your local Grav CMS instance, the base for the documentation.
 7. Initiate the navigation by calling `/dispenser/navigation/init`. In case of a whitescreen, the call has been successfully.
