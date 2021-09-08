@@ -112,6 +112,8 @@ The wizard also creates the `env.sh` file for your new microservice, implementin
 
 If you want to add more docker container to your setup, change the created docker-compose file (`ms_<name>.yml`) or add more compose files in `docker-setup.cfg`.
 
+> **Best practice:** Since Heureka uses Docker containers, it s strongly recommended to use a separated Docker container to run a database.
+
 More information about the configuration of your newly created microservice can be found in the `readme.md` file, that is created in your microservices directory.
 
 ### Creating a new microservice manually

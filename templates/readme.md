@@ -26,6 +26,8 @@ After all, your microservice will be available by calling `http://localhost/new`
 
 If you want to add more docker container to your setup, change the created docker-compose file (`ms_<name>.yml`) or add more compose files in `docker-setup.cfg`.
 
+> **Best practice:** Since Heureka uses Docker containers, it s strongly recommended to use a separated Docker container to run a database.
+
 ## Hints for the deployment
 - If no SMTP-Server has been configured to send emails, the confirmation email of the MS-DROPS backend is logged. Thus, search in the logs for the confirmation email (see the end of this readme).
 - After a successful deployment, the proxy [Nginx](https://www.nginx.com/) will redirect the server to `/arise/#/signin/L2FyaXNlLyMvcHJvZmlsZQ==`. Thus, this redirect is part of the [Nginx](https://www.nginx.com/) configuration.
