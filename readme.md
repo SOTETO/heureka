@@ -15,7 +15,7 @@ A Command-Line-Interface (CLI) to start the microservice MS-DROPS. It is the bas
 
 >**macOS:** It is required to use volumes in docker. Thus, the [file sharing directives regarding docker have to be set](https://stackoverflow.com/questions/57819352/docker-desktop-for-macos-cant-addusr-local-folder-in-preferences-file-sharing). Just add `\/home\/user\/heureka` to the `filesharingDirectories` array in `~/Library/Group\ Containers/group.com.docker/settings.json` and restart docker afterwards.
 
->**Windows 10:** You can install the Ubuntu terminal (including Bash, other shells, and native tools) on Windows 10: (https://ubuntu.com/tutorials/ubuntu-on-windows#1-overview)[https://ubuntu.com/tutorials/ubuntu-on-windows#1-overview]
+>**Windows 10:** You can install the Ubuntu terminal (including Bash, other shells, and native tools) on Windows 10: [https://ubuntu.com/tutorials/ubuntu-on-windows#1-overview](https://ubuntu.com/tutorials/ubuntu-on-windows#1-overview)
 ## Installation
 The Heureka-CLI is a script library. Thus, you just have to clone it to use it.
 ```
