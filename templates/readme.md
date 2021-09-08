@@ -50,7 +50,7 @@ Currently, the Heureka-CLI just uses the [logging implemented by Docker](https:/
 sudo docker logs <container-name>
 ```
 to show the logs of a container. See `docker ps --format '{{.Names}}'` to print the names of the running container.
-```
+
 # Print log of MS-DROPS backend service (drops)
 ```
 sudo docker logs drops
