@@ -6,14 +6,15 @@ A Command-Line-Interface (CLI) to start the microservice MS-DROPS. It is the bas
 - *Optional: Configure your [GitHub account](https://docs.github.com/en/github/getting-started-with-github/set-up-git). Save a SSH public key of your systems user in your GitHub account.*
 - Install docker ([https://docs.docker.com/get-docker/](https://docs.docker.com/get-docker/) - Please follow dockers instructions to install all required features!)
 - Install docker-compose ([https://docs.docker.com/compose/install/](https://docs.docker.com/compose/install/))
-- The Heureka-CLI is a [GNU Bash](https://www.gnu.org/software/bash/)-Script. Thus, make sure your OS has bash installed.
+- The Heureka-CLI is a [GNU Bash](https://www.gnu.org/software/bash/)-Script. Thus, make sure your OS has the newest version of bash installed (5.1.8 at the moment of writing).
 - The Heureka-CLI requires `sudo` operations. Thus, make sure your user has `sudo` access rights.
 
 >**Hardware:** You should have at least 4 GB working memory for using the `dev drops` environment.
 
->**Versions:** Please use always the newest versions of `git` (latest release: 2.32.0 at the moment of writing), `docker` (latest release: 20.10.8 at the moment of writing) and `docker-compose` (latest release: 1.29.2 at the moment of writing)! Keep in mind that official repositories for your OS are maybe older.
+>**Versions:** Please use always the newest versions of `git` (latest release: 2.32.0 at the moment of writing), `docker` (latest release: 20.10.8 at the moment of writing), `docker-compose` (latest release: 1.29.2 at the moment of writing) and Bash (latest release: 5.1.8 at the moment of writing)! Keep in mind that official repositories for your OS are maybe older.
 
 >**macOS:** It is required to use volumes in docker. Thus, the [file sharing directives regarding docker have to be set](https://stackoverflow.com/questions/57819352/docker-desktop-for-macos-cant-addusr-local-folder-in-preferences-file-sharing). Just add `\/home\/user\/heureka` to the `filesharingDirectories` array in `~/Library/Group\ Containers/group.com.docker/settings.json` and restart docker afterwards.
+> Furthermore, you should probably update your Bash.
 
 >**Windows 10:** You can install the Ubuntu terminal (including Bash, other shells, and native tools) on Windows 10: [https://ubuntu.com/tutorials/ubuntu-on-windows#1-overview](https://ubuntu.com/tutorials/ubuntu-on-windows#1-overview)
 ## Installation
