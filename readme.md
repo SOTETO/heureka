@@ -48,6 +48,7 @@ Follow the upcoming steps to create your production environment:
 4. Create an account by using the registration view on `http://localhost` (see [Hints for the deployment](#hints-for-the-deployment) - you will probably not receive a confirmation email, but it is logged).
 5. Use `admin` to grant admin rights to your newly created user.
 6. Request `/docu` to initiate an admin account for your local Grav CMS instance, the base for the documentation.
+> Since the Grav CMS is currently not completely integrated, the Grav CMS admin account is not the same as the admin account in Heureka.
 7. Initiate the navigation by calling `/dispenser/navigation/init`. In case of a whitescreen, the call has been successfully.
 
 #### Best practice for PROD configuration
