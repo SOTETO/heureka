@@ -13,7 +13,7 @@ Follow the upcoming steps to create your development environment:
 5. Use the new / updated upstreams in `.docker-conf/mode_dev/nginx/location.pool` by introducing new pathes or editing the plaeholder path `/new`.
 6. `up`
 7. Call `http://localhost/drops/` to initiate the drops DB. Notice that the server requires up to 30 seconds to answer this call.
-8. Create an account by using the registration view on `http://localhost` (see [Hints for the deployment](#hints-for-the-deployment) - you will probably not receive a confirmation email, but it is logged).
+8. Create an account by using the registration view on `http://localhost` 	(see [Hints for the deployment](#hints-for-the-deployment) - you will probably not receive a confirmation email, but it is logged).
 9. Use `admin` to grant admin rights to your newly created user.
 10. Initiate the navigation by calling `http://localhost/dispenser/navigation/init`. In case of a whitescreen, the call has been successfully.
 
@@ -55,3 +55,8 @@ to show the logs of a container. See `docker ps --format '{{.Names}}'` to print 
 ```
 sudo docker logs drops
 ```
+
+# Publishing
+Create a new branch that names your new microservice configuration and push it to GitHub. Afterwards, you can create a pull request into the `dev` branch on GitHub and your new microservice configuration will be reviewed and merged after a successful review.
+
+For a production environment, you should keep in mind that docker images are required and no development mode can be used.
