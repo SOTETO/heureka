@@ -1,6 +1,8 @@
 # Heureka-CLI environment of a new microservice
 The newly created environment to develop or integrate a new microservice requires a bit of configuration effort.
 
+> The following readme uses the placeholder `<name>` for the name of your microservice. So, replace it by the name that you have defined in the wizard or while creating it by hand.
+
 ## Deployment
 Follow the upcoming steps to create your development environment:
 
@@ -11,11 +13,13 @@ Follow the upcoming steps to create your development environment:
 5. Use the new / updated upstreams in `.docker-conf/mode_dev/nginx/location.pool` by introducing new pathes or editing the plaeholder path `/new`.
 6. `up`
 7. Call `http://localhost/drops/` to initiate the drops DB. Notice that the server requires up to 30 seconds to answer this call.
-8. Create an account by using the registration view on `http://localhost`.
-9. Use `admin` to grant admin rights to your newly created user.
+8. Create an account by using the registration view on `http://localhost` 	(see [Hints for the deployment](#hints-for-the-deployment) - you will probably not receive a confirmation email, but it is logged).
+9. Use the `admin` command of the Heureka-CLI to grant admin rights to your newly created user.
 10. Initiate the navigation by calling `http://localhost/dispenser/navigation/init`. In case of a whitescreen, the call has been successfully.
 
-After all, your microservice will be available by calling `http://localhost/new` (or the pathes that you have introduced). Using the default `ms_<name>.yml`, the REST-API of MS-DROPS will be available by calling `http://localhost/drops/<endpoint>` or `http://localhost:9000/<endpoint>` and the NATS listens to `localhost:4222`. Keep in mind that you have to configure an API user to call the REST-API of MS-DROPS or execute the OAuth handshake.
+> **Base path:** After all, your microservice will be available by calling `http://localhost/new` (or the pathes that you have introduced). Your application has to know the base path to generate appropriate server repsonses and interprete the given path of HTTP requests. Thus, you have to configure it, if you are running your application behind a base path like `/new`.
+
+Using the default `ms_<name>.yml`, the REST-API of MS-DROPS will be available by calling `http://localhost/drops/<endpoint>` or `http://localhost:9000/<endpoint>` and the NATS listens to `localhost:4222`. Keep in mind that you have to configure an API user to call the REST-API of MS-DROPS or execute the OAuth handshake.
 
 ## Best practice for development of new MS
 1. Setup the required git repositories for your new MS.
@@ -25,6 +29,8 @@ After all, your microservice will be available by calling `http://localhost/new`
 5. Add new locations to the nginx `.docker-conf/mode_dev/nginx/location.pool` file (using the new upstreams).
 
 If you want to add more docker container to your setup, change the created docker-compose file (`ms_<name>.yml`) or add more compose files in `docker-setup.cfg`.
+
+> **Best practice:** Since Heureka uses Docker containers, it is strongly recommended to use a separated Docker container to run a database.
 
 ## Hints for the deployment
 - If no SMTP-Server has been configured to send emails, the confirmation email of the MS-DROPS backend is logged. Thus, search in the logs for the confirmation email (see the end of this readme).
@@ -44,8 +50,13 @@ Currently, the Heureka-CLI just uses the [logging implemented by Docker](https:/
 sudo docker logs <container-name>
 ```
 to show the logs of a container. See `docker ps --format '{{.Names}}'` to print the names of the running container.
-```
-# Print log of MS-DROPS backend service (drops)
+
+Print log of MS-DROPS backend service (drops):
 ```
 sudo docker logs drops
 ```
+
+# Publishing
+Create a new branch that names your new microservice configuration and push it to GitHub. Afterwards, you can create a pull request into the `dev` branch on GitHub and your new microservice configuration will be reviewed and merged after a successful review.
+
+For a production environment, you should keep in mind that docker images are required and no development mode can be used.

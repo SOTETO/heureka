@@ -1,17 +1,22 @@
 # Heureka
-A Command-Line-Interface (CLI) to start the microservice MS-DROPS. It is the base for the user management of the microservice architecture.
+A Command-Line-Interface (CLI) to start the microservice environment *Heureka*. It uses the concepts of OAuth2, widgets, RESTful webservices, and the Object Event System (OES) to connect collaboration services and build a microservice platform.
 
 ## Pre-Requirements
 - Install Git ([https://git-scm.com/](https://git-scm.com/))
 - *Optional: Configure your [GitHub account](https://docs.github.com/en/github/getting-started-with-github/set-up-git). Save a SSH public key of your systems user in your GitHub account.*
-- Install docker ([https://docs.docker.com/get-docker/](https://docs.docker.com/get-docker/) - Please follow dockers instructions to install all required features!)
+- Install docker ([https://docs.docker.com/get-docker/](https://docs.docker.com/get-docker/) - Please follow dockers instructions to install all required features!).
 - Install docker-compose ([https://docs.docker.com/compose/install/](https://docs.docker.com/compose/install/))
-- The Heureka-CLI is a [GNU Bash](https://www.gnu.org/software/bash/)-Script. Thus, make sure your OS has bash installed.
+- The Heureka-CLI is a [GNU Bash](https://www.gnu.org/software/bash/)-Script. Thus, make sure your OS has the newest version of bash installed (5.1.8 at the moment of writing).
 - The Heureka-CLI requires `sudo` operations. Thus, make sure your user has `sudo` access rights.
 
-*Hardware:* You should have at least 4 GB working memory for using the `dev drops` environment.
-*Versions:* Please use always the newest versions of `git` (latest release: 2.32.0 at the moment of writing), `docker` (latest release: 20.10.8 at the moment of writing) and `docker-compose` (latest release: 1.29.2 at the moment of writing)! Keep in mind that official repositories for your OS are maybe older.
+>**Hardware:** You should have at least 4 GB working memory for using the `drops` environment of MS-DROPS.
 
+>**Versions:** Please use always the newest versions of `git` (latest release: 2.32.0 at the moment of writing), `docker` (latest release: 20.10.8 at the moment of writing), `docker-compose` (latest release: 1.29.2 at the moment of writing) and Bash (latest release: 5.1.8 at the moment of writing)! Keep in mind that official repositories for your OS are maybe older.
+
+>**macOS:** It is required to use volumes in docker. Thus, the [file sharing directives regarding docker have to be set](https://stackoverflow.com/questions/57819352/docker-desktop-for-macos-cant-addusr-local-folder-in-preferences-file-sharing). Just add `\/home\/user\/heureka` to the `filesharingDirectories` array in `~/Library/Group\ Containers/group.com.docker/settings.json` and restart docker afterwards.
+> Furthermore, you should probably update your Bash.
+
+>**Windows 10:** You can install the Ubuntu terminal (including Bash, other shells, and native tools) on Windows 10: [https://ubuntu.com/tutorials/ubuntu-on-windows#1-overview](https://ubuntu.com/tutorials/ubuntu-on-windows#1-overview)
 ## Installation
 The Heureka-CLI is a script library. Thus, you just have to clone it to use it.
 ```
@@ -40,9 +45,10 @@ Follow the upcoming steps to create your production environment:
 1. `bash ./heureka`
 2. `prod` to enter the production environment of the CLI
 3. `up`
-4. Create an account by using the registration view on `http://localhost`.
-5. Use `admin` to grant admin rights to your newly created user.
+4. Create an account by using the registration view on `http://localhost` (see [Hints for the deployment](#hints-for-the-deployment) - you will probably not receive a confirmation email, but it is logged).
+5. Use the `admin` command of the Heureka-CLI to grant admin rights to your newly created user.
 6. Request `/docu` to initiate an admin account for your local Grav CMS instance, the base for the documentation.
+> Since the Grav CMS is currently not completely integrated, the Grav CMS admin account is not the same as the admin account in Heureka.
 7. Initiate the navigation by calling `/dispenser/navigation/init`. In case of a whitescreen, the call has been successfully.
 
 #### Best practice for PROD configuration
@@ -112,7 +118,9 @@ The wizard also creates the `env.sh` file for your new microservice, implementin
 
 If you want to add more docker container to your setup, change the created docker-compose file (`ms_<name>.yml`) or add more compose files in `docker-setup.cfg`.
 
-More information about the configuration of your newly created microservice can be found in the `readme.md` file, that is created in your microservices directory.
+> **Best practice:** Since Heureka uses Docker containers, it is strongly recommended to use a separated Docker container to run a database.
+
+> **Next Step:** More information about the configuration of your newly created microservice can be found in the `readme.md` file, that has been created in your microservices directory.
 
 ### Creating a new microservice manually
 Start by creating a new directory for your microservice in the `microservices/` directory:
@@ -288,7 +296,15 @@ sudo docker logs <container-name>
 ```
 to show the logs of a container. See `docker ps --format '{{.Names}}'` to print the names of the running container.
 
-# Print log of MS-DROPS backend service (drops)
+Print log of MS-DROPS backend service (drops):
 ```
 sudo docker logs drops
 ```
+
+## Troubleshooting
+### Error `502` in browser
+If you are continously receiving `502` errors, maybe one or more docker container are continously restarting. It sometimes happens that container get corrupted. 
+
+__Solution__
+Check, if there are continously restarting docker container by `sudo docker ps` in your terminal. If there are some container, check their logs for more information. If you see no problem, try a restart:
+Use `rm` on your Heureka-CLI and `up` afterwards. In most cases this will solve the trouble.
