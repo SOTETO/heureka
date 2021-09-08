@@ -119,7 +119,7 @@ If you want to add more docker container to your setup, change the created docke
 
 > **Best practice:** Since Heureka uses Docker containers, it s strongly recommended to use a separated Docker container to run a database.
 
-More information about the configuration of your newly created microservice can be found in the `readme.md` file, that is created in your microservices directory.
+> **Next Step:** More information about the configuration of your newly created microservice can be found in the `readme.md` file, that is created in your microservices directory.
 
 ### Creating a new microservice manually
 Start by creating a new directory for your microservice in the `microservices/` directory:

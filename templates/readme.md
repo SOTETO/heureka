@@ -1,6 +1,8 @@
 # Heureka-CLI environment of a new microservice
 The newly created environment to develop or integrate a new microservice requires a bit of configuration effort.
 
+> The following readme uses the placeholder `<name>` for the name of your microservice. So, replace it by the name that you have defined in the wizard or while creating it by hand.
+
 ## Deployment
 Follow the upcoming steps to create your development environment:
 
@@ -15,7 +17,9 @@ Follow the upcoming steps to create your development environment:
 9. Use `admin` to grant admin rights to your newly created user.
 10. Initiate the navigation by calling `http://localhost/dispenser/navigation/init`. In case of a whitescreen, the call has been successfully.
 
-After all, your microservice will be available by calling `http://localhost/new` (or the pathes that you have introduced). Using the default `ms_<name>.yml`, the REST-API of MS-DROPS will be available by calling `http://localhost/drops/<endpoint>` or `http://localhost:9000/<endpoint>` and the NATS listens to `localhost:4222`. Keep in mind that you have to configure an API user to call the REST-API of MS-DROPS or execute the OAuth handshake.
+> **Base path:** After all, your microservice will be available by calling `http://localhost/new` (or the pathes that you have introduced). Your application has to know the base path to generate appropriate server repsonses and interprete the given path of HTTP requests. Thus, you have to configure it, if you are running your application behind a base path like `/new`.
+
+Using the default `ms_<name>.yml`, the REST-API of MS-DROPS will be available by calling `http://localhost/drops/<endpoint>` or `http://localhost:9000/<endpoint>` and the NATS listens to `localhost:4222`. Keep in mind that you have to configure an API user to call the REST-API of MS-DROPS or execute the OAuth handshake.
 
 ## Best practice for development of new MS
 1. Setup the required git repositories for your new MS.
