@@ -301,18 +301,89 @@ There are always three files:
 > **IP addresses and ports:** You can change IP addresses and ports in the `pool2.upstream` as you want, but keep in mind that these directives are pointing to webservers running in the docker container or on port different to 80 and 443 on the host machine. Thus, if you're changing the IP addresses and ports, you have to ensure that also the webservers are running on the new IP addresses and ports (e.g. by just starting them at the new configuration or manipulating the docker-compose configuration).
 
 ### Play2 configuration
-The following files contain the configuration for the play2 apps:
+The following files contain the configuration for the play2 apps for the `ENV_PROD` and `ENV_INFRA` environment:
 - `.docker-conf/mode_prod/drops/application.conf`
 - `.docker-conf/mode_prod/dispenser/application.conf`
+- `.docker-conf/mode_infra/drops/application.conf`
+- `.docker-conf/mode_infra/dispenser/application.conf`
+
+For a microservice environment, the files are saved here: `microservices/ms-<name>/.docker-conf/drops/` and `microservices/ms-<name>/.docker-conf/dispenser/`
+
+#### Configure databases
+Change the following lines in `drops/application.conf` to setup a new database or change the IP address or port of the database container for MS-DROPS:
+```
+slick.dbs.default.db.user = "<user>"
+slick.dbs.default.db.password = "<password>"
+slick.dbs.default.db.url = "jdbc:mysql://<ip-address>:<port>/<database-name>"
+```
+
+Editing the database setup of the Dispenser service requires to change the following line in the `dispenser/application.conf`:
+```
+mongodb.uri = "mongodb://<ip-address>:<port>/<name>"
+```
+
+#### Changing `location` directive in Nginx
+If you're changing the `location` in your [Nginx configuration](#nginx-configuration) for MS-DROPS or the dispenser service, you also have to configure the base path in the `application.conf` files. Change the follwoing line:
+```
+play.http.context = "/<base-path>"
+```
+
+#### Changing IP addresses of other services
+If you change the IP address or the port of Nats, you have to update the `application.conf` of MS-Drops and the dispenser service:
+```
+nats.endpoint="nats://<ip-address>:<port>"
+```
+
+If you change the IP address or the base path of the dispenser service itself, you have to update the following line in the `dispenser/application.conf`:
+```
+ms.host="http://<ip-address>/<base-path>"
+```
+If you change the IP address or the base path of the MS-DROPS, you have to update the follwoing line in `dispenser/application.conf`:
+```
+drops.url.base="http://<ip-address>/<base-path>"
+```
+#### Dispenser OAuth configuration
+After setting up an OAuth client for dispenser, you have to add it to the `dispenser/application.conf`:
+```
+drops.client_id="<dispenser-client_id>"
+drops.client_secret="<dispenser-client_secret>"
+```
+
+#### Drops Mail service
+If you're running a mail server, you can configure it by changing the following lines in the `drops/application.conf`:
+```
+mail.from="Drops <mailrobot@drops.vivaconagua.org>"
+mail.reply="No reply <noreply@drops.vivaconagua.org>"
+
+play.mailer {
+  mock = true #(defaults to no, will only log all the email properties instead of sending an email)
+  #host = localhost #(mandatory)
+  # port (defaults to 25)
+  # ssl (defaults to no)
+  # tls (defaults to no)
+  # user (optional)
+  # password (optional)
+  # debug (defaults to no, to take effect you also need to set the log level to "DEBUG" for the application logger)
+  # timeout (defaults to 60s in milliseconds)
+  # connectiontimeout (defaults to 60s in milliseconds)
+}
+```
+
+#### Changing server name
+If you're deploying the microservice environment on a new server with a new name, you have to configure the CORS allows hosts directives at least for the `dispenser/application.conf`. Add the new name here:
+```
+play.filters.hosts.allowed=["<server-name>"]
+```
 
 ### Navigation configuration
 - `.docker-conf/mode_prod/navigation/GlobalNav.json`
 - `.docker-conf/mode_prod/navigation/noSignIn.json`
 
-### Nginx configuration
-- `.docker-conf/mode_prod/nginx/default.conf`
-- `.docker-conf/mode_prod/nginx/location.pool`
-- `.docker-conf/mode_prod/nginx/pool2.upstream`
+### Server name
+Setting up a server name has to consider several configuration files due to a valid CORS configuration of the microservice environment. You have to set the server name in the following files:
+- `nginx/default.conf` (see [Nginx configuration](#nginx-configuration))
+- `drops/application.conf` (see [Play2 configuration](#play2-configuration))
+- `dispenser/application.conf` (see [Play2 configuration](#play2-configuration))
 
 ## Logging
 Currently, the Heureka-CLI just uses the [logging implemented by Docker](https://docs.docker.com/config/containers/logging/). Thus, leave the Heureka-CLI and enter
