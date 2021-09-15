@@ -36,7 +36,9 @@ Please choose the environment you want to setup:
 
 You can also use `exit` to quit the console.
 
-_Configuration:_ As a best practice, the configuration should always be edited _before_ the console will be used. Otherwise, the state of the console could become invalid.
+> **Configuration:** As a best practice, the configuration should always be edited _before_ the console will be used. Otherwise, the state of the console could become invalid.
+
+> **Host system effects:** Starting Heureka basically binds the port 80 (and 443 if SSL is configured) and runs several docker container (using CPU and working memory). Additionally, a virtual docker network is initiated and thus, in the most basic case, no more port binding on the host are required. Furthermore, it uses disk space for some cloned GIT repositories.
 
 ### Production environment
 
