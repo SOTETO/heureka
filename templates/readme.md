@@ -16,6 +16,7 @@ Follow the upcoming steps to create your development environment:
 8. Create an account by using the registration view on `http://localhost` 	(see [Hints for the deployment](#hints-for-the-deployment) - you will probably not receive a confirmation email, but it is logged).
 9. Use the `admin` command of the Heureka-CLI to grant admin rights to your newly created user.
 10. Initiate the navigation by calling `http://localhost/dispenser/navigation/init`. In case of a whitescreen, the call has been successfully.
+11. Setup an OAuth client using the Heureka web-ui and add the new `client_id` and `client_secret` to the configuration of the dispenser service, as it is explained in [the configuration of the Play2 apps](https://github.com/SOTETO/heureka#dispenser-oauth-configuration).
 
 > **Base path:** After all, your microservice will be available by calling `http://localhost/new` (or the pathes that you have introduced). Your application has to know the base path to generate appropriate server repsonses and interprete the given path of HTTP requests. Thus, you have to configure it, if you are running your application behind a base path like `/new`.
 

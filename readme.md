@@ -52,6 +52,7 @@ Follow the upcoming steps to create your production environment:
 6. Request `/docu` to initiate an admin account for your local Grav CMS instance, the base for the documentation.
 > Since the Grav CMS is currently not completely integrated, the Grav CMS admin account is not the same as the admin account in Heureka.
 7. Initiate the navigation by calling `/dispenser/navigation/init`. In case of a whitescreen, the call has been successfully.
+8. Setup an OAuth client using the Heureka web-ui and add the new `client_id` and `client_secret` to the configuration of the dispenser service, as it is explained in [the configuration of the Play2 apps](#dispenser-oauth-configuration).
 
 #### Best practice for PROD configuration
 0. Enter the local file system pathes of the git repositories that will be created to `git-setup.cfg` (default is `~/heureka/...`). If you change the default path, also change the path value of the `GRAV_PATH` variable in `.docker-conf/mode_dev/.env` file.
