@@ -9,8 +9,8 @@ Follow the upcoming steps to create your development environment:
 1. `bash ./heureka`
 2. `<name>` to enter the development environment of the CLI
 3. Start your application using all required ports except the ports used in `ms_<name>.yml` (heureka uses ports 80, 443, 9000 and 4222 by default).
-4. Edit the placeholder upstream `new` in `.docker-conf/mode_dev/nginx/pool2.upstream` and add more required upstreams (the ports at the localhost used by your application).
-5. Use the new / updated upstreams in `.docker-conf/mode_dev/nginx/location.pool` by introducing new pathes or editing the plaeholder path `/new`.
+4. Edit the placeholder upstream `new` in `.docker-conf/nginx/pool2.upstream` and add more required upstreams (the ports at the localhost used by your application).
+5. Use the new / updated upstreams in `.docker-conf/nginx/location.pool` by introducing new pathes or editing the plaeholder path `/new`.
 6. `up`
 7. Call `http://localhost/drops/` to initiate the drops DB. Notice that the server requires up to 30 seconds to answer this call.
 8. Create an account by using the registration view on `http://localhost` 	(see [Hints for the deployment](#hints-for-the-deployment) - you will probably not receive a confirmation email, but it is logged).
@@ -24,12 +24,12 @@ Using the default `ms_<name>.yml`, the REST-API of MS-DROPS will be available by
 
 ## Best practice for development of new MS
 1. Setup the required git repositories for your new MS.
-2. Add the repositories to the `git-setup.cfg`.
+2. Add the repositories to the `default.conf`.
 3. Change the database configurations for MS-DROPS (`DROPS_DB_*`) and other existing microservices in `.docker-conf/.env`.
 4. Add an nginx upstream for your local new MS in `.docker-conf/nginx/pool2.upstream` (see new or arise and drops as an example).
-5. Add new locations to the nginx `.docker-conf/mode_dev/nginx/location.pool` file (using the new upstreams).
+5. Add new locations to the nginx `.docker-conf/nginx/location.pool` file (using the new upstreams).
 
-If you want to add more docker container to your setup, change the created docker-compose file (`ms_<name>.yml`) or add more compose files in `docker-setup.cfg`. See [Docker Compose Docs](https://docs.docker.com/compose/) for more information.
+If you want to add more docker container to your setup, change the created docker-compose file (`ms_<name>.yml`) or add more compose files in `default.conf`. See [Docker Compose Docs](https://docs.docker.com/compose/) for more information.
 
 In the case you want to merge or add your own docker compose file, please also consider [the hints in the general Heureka-CLI documentation](https://github.com/SOTETO/heureka#docker-compose-configuration). Furthermore, you should also keep in mind that relative pathes in docker compose files have their origin in the path that is used to *run* docker compose (the Heureka base directory). Thus, all relative pathes should be relative to the Heureka base directory.
 

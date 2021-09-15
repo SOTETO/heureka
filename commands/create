@@ -17,8 +17,7 @@ function createNewMS() {
 
   # Touch required files
   touch microservices/"$dirName"/env.sh
-  touch microservices/"$dirName"/docker-setup.cfg
-  touch microservices/"$dirName"/git-setup.cfg
+  touch microservices/"$dirName"/default.conf
   touch microservices/"$dirName"/readme.md
   touch microservices/"$dirName"/ms_"$name".yml
 
@@ -32,15 +31,25 @@ function createNewMS() {
   cp templates/dev.yml microservices/"$dirName"/ms_"$name".yml
 
   # Write docker-setup.cfg
-  echo "[ENV_MS_$upper]" >> microservices/"$dirName"/docker-setup.cfg
-  echo "compose_files=base.yml microservices/$dirName/ms_$name.yml" >> microservices/"$dirName"/docker-setup.cfg
-  echo "env_file=microservices/$dirName/.docker-conf/.env" >> microservices/"$dirName"/docker-setup.cfg
+  echo "##############################################" >> microservices/"$dirName"/default.conf
+  echo "# KNOWN ENVIRONMENTS THAT HEUREKA CAN DEPLOY #" >> microservices/"$dirName"/default.conf
+  echo "##############################################" >> microservices/"$dirName"/default.conf
+  echo "" >> microservices/"$dirName"/default.conf
+  echo "[ENV_MS_$upper]" >> microservices/"$dirName"/default.conf
+  echo "compose_files=base.yml microservices/$dirName/ms_$name.yml" >> microservices/"$dirName"/default.conf
+  echo "env_file=microservices/$dirName/.docker-conf/.env" >> microservices/"$dirName"/default.conf
 
   # Read and write GIT config
   declare -a repos
   local gitRepos="n"
   read -r -p $"Do you want to add some git repositories? (y / n) " gitRepos
   if [[ $gitRepos = "y" || $gitRepos = "Y" || $gitRepos = "yes" || $gitRepos == "Yes" ]]; then
+    echo "" >> microservices/"$dirName"/default.conf
+    echo "#########################################" >> microservices/"$dirName"/default.conf
+    echo "# GIT repositories of the microservices #" >> microservices/"$dirName"/default.conf
+    echo "#########################################" >> microservices/"$dirName"/default.conf
+    echo "" >> microservices/"$dirName"/default.conf
+
     printf "Enter the git repositories!\n\n"
     for (( ; ; ))
     do
@@ -55,11 +64,12 @@ function createNewMS() {
       read -p $"Path of the git repository: " gitPath
       gitID=$(echo "$gitName" | sed -r 's/[^A-Za-z]/_/g')
 
-      echo "[$gitID]" >> microservices/"$dirName"/git-setup.cfg
-      echo "url=$gitUrl" >> microservices/"$dirName"/git-setup.cfg
-      echo "branch=$gitBranch" >> microservices/"$dirName"/git-setup.cfg
-      echo "name=$gitName" >> microservices/"$dirName"/git-setup.cfg
-      echo "path=$gitPath" >> microservices/"$dirName"/git-setup.cfg
+      echo "[$gitID]" >> microservices/"$dirName"/default.conf
+      echo "url=$gitUrl" >> microservices/"$dirName"/default.conf
+      echo "branch=$gitBranch" >> microservices/"$dirName"/default.conf
+      echo "name=$gitName" >> microservices/"$dirName"/default.conf
+      echo "path=$gitPath" >> microservices/"$dirName"/default.conf
+      echo "" >> microservices/"$dirName"/default.conf
 
       repos+=($gitID)
 
@@ -76,10 +86,15 @@ function createNewMS() {
   printf ")?\n"
   read -r -p $"Separate related microservices by space ([Enter] no related services): " related
 
-  echo "[MS_$upper]" >> microservices/"$dirName"/git-setup.cfg
-  echo "set=${repos[*]}" >> microservices/"$dirName"/git-setup.cfg
+  echo "#############################################" >> microservices/"$dirName"/default.conf
+  echo "# MICROSERVICES AS COMPOSITION OF GIT REPOS #" >> microservices/"$dirName"/default.conf
+  echo "###############################################" >> microservices/"$dirName"/default.conf
+  echo "" >> microservices/"$dirName"/default.conf
+
+  echo "[MS_$upper]" >> microservices/"$dirName"/default.conf
+  echo "set=${repos[*]}" >> microservices/"$dirName"/default.conf
   if [[ $related != "" ]]; then
-    echo "related=$related" >> microservices/"$dirName"/git-setup.cfg
+    echo "related=$related" >> microservices/"$dirName"/default.conf
   fi
 
   writeEnvScript $name $dirName

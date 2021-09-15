@@ -5,14 +5,16 @@ stateFile=".state"
 
 declare -A gitPathes
 
-msConfigs=(microservices/*/*.cfg)
-configFiles=("git-setup.cfg" "docker-setup.cfg" "${msConfigs[@]}")
+msConfigs=(microservices/*/default.conf)
+configFiles=("default.conf" "${msConfigs[@]}")
 
 for file in "${configFiles[@]}"; do
   while read line; do
     if [[ $line =~ ^"["(.+)"]"$ ]]; then
         arrname=${BASH_REMATCH[1]}
         declare -A $arrname
+    elif [[ $line = \#* ]]; then
+        continue
     elif [[ $line =~ ^([_[:alpha:]][_[:alnum:]]*)"="(.*) ]]; then
         declare ${arrname}[${BASH_REMATCH[1]}]="${BASH_REMATCH[2]}"
     fi

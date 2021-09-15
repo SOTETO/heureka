@@ -43,7 +43,7 @@ function msMan () {
 function prodMan () {
   manHeader "PRODUCTION"
   echo -e "
-  up                            Start the `docker-compose up` considering the `.docker-conf/mode_prod/.env` file
+  up                            Start the 'docker-compose up' considering the '.docker-conf/mode_prod/.env' file
   stop                          Stop all created containers.
   rm                            Stop and remove all docker containers described in the docker-compose files
   rm drops volumes              Remove the drops volumes. That means the database contents.
@@ -61,7 +61,7 @@ function infraMan () {
   clone                         Clone the required git repositories
   rm                            Remove the git repositories excluding the documentatuin contents
   rm docu                       Remove the git repositories including the documentation contents
-  docker up                     Start the `docker-compose up` considering the `.docker-conf/mode_infra/.env` file (starts the dispenser database on `localhost:27017`)
+  docker up                     Start the 'docker-compose up' considering the '.docker-conf/mode_infra/.env' file (starts the dispenser database on 'localhost:27017')
   docker rm                     Stop and remove all docker containers described in the docker-compose file
   docker rm dispenser volumes   Remove the dispenser volumes. That means the database contents.
   leave                         Leave INFRA environment
