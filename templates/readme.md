@@ -44,6 +44,9 @@ If you want to add more docker container to your setup, change the created docke
 - `exit` - close the Heureka console
 - \* - Help
 
+# Configuration
+Take a look at the [main Readme file](https://github.com/SOTETO/heureka#configuration-files) to learn more about the docker, nginx and general confguration of your environment.
+
 # Logging
 Currently, the Heureka-CLI just uses the [logging implemented by Docker](https://docs.docker.com/config/containers/logging/). Thus, leave the Heureka-CLI and enter
 ```

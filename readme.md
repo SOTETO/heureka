@@ -258,13 +258,20 @@ compose_files=base.yml ms_drops.yml
 ```
 The example shows the two different environment `ENV_PROD` and `ENV_MS_DROPS`.
 
-Additionally, the following files hold the docker configuration for the different environments:
+Additionally, the following files hold the docker configuration for the `ENV_PROD` and `ENV_INFRA` environments:
 - `docker-setup.cfg`
 - `base.yml`
 - `prod.yml`
 - `ìnfra.yml`
 - `.docker-conf/mode_infra/.env`
 - `.docker-conf/mode_prod/.env`
+
+For a microservice environment these files are saved in a location relative to the microservices base directory (`microservices/ms-<name>`):
+- `docker-setup.cfg` - by default the file uses the `base.yml` (in the directory of the Heureka-CLI) as a base for the docker-compose configuration that is extended by `ms_<name>.yml`
+- `ms_<name>.yml` - contains the docker-compose specific configuration required for the setup of your microservices environment
+- `.docker-conf/.env` - contains variables like used versions, ports and (internal) IP addresses used to setup the microservices environment
+
+> **IP addresses and ports:** You can change the IP addresses and ports as you want, but keep in mind, that these values also have to be updated in the Nginx configuration as it is explained in the [Nginx configuration](#nginx-configuration).
 
 ### Git configuration
 The `git-setup.cfg` contains the URL, the name and the branch that has to be selected of every git repository. Additionally, you can set a local file system path for the repositories (default is `~/heureka/...`).
@@ -274,6 +281,22 @@ Furthermore, you can define an microservice ("MS") by adding
 set=list of repositories
 related=list of related MS that have to be cloned and removed, if the MS itself is cloned or removed
 ```
+
+### Nginx configuration
+All environments implement their own Nginx configuration. Thus, you can change the Nginx config for one environment without side effects regarding the Nginx configuration used in another one. So, the configuration for your new microservice will not be used when you start the environment of another microservice or the production environment.
+
+The nginx configuration for the `ENV_PROD` and `ENV_INFRA` environment are saved here:
+- `.docker-conf/mode_prod/nginx/` and
+- `.docker-conf/mode_infra/nginx/`
+
+For a microservice environment, it is saved here: `microservices/ms-<name>/.docker-conf/nginx/`
+
+There are always three files: 
+- `default.conf` - contains the basic port binding (80 and 443), SSL config, and the `server_name` directive
+- `location.pool` - defines the `location` directives for the nginx and thus, it separates the different systems used in the environment
+- `pool2.upstream` - defines the `upstream` directives to the proxied server that are deployed by the different microservices
+
+> **IP addresses and ports:** You can change IP addresses and ports in the `pool2.upstream` as you want, but keep in mind that these directives are pointing to webservers running in the docker container or on port different to 80 and 443 on the host machine. Thus, if you're changing the IP addresses and ports, you have to ensure that also the webservers are running on the new IP addresses and ports (e.g. by just starting them at the new configuration or manipulating the docker-compose configuration).
 
 ### Play2 configuration
 The following files contain the configuration for the play2 apps:
