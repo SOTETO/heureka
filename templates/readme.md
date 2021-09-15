@@ -28,7 +28,7 @@ Using the default `ms_<name>.yml`, the REST-API of MS-DROPS will be available by
 4. Add an nginx upstream for your local new MS in `.docker-conf/nginx/pool2.upstream` (see new or arise and drops as an example).
 5. Add new locations to the nginx `.docker-conf/mode_dev/nginx/location.pool` file (using the new upstreams).
 
-If you want to add more docker container to your setup, change the created docker-compose file (`ms_<name>.yml`) or add more compose files in `docker-setup.cfg`.
+If you want to add more docker container to your setup, change the created docker-compose file (`ms_<name>.yml`) or add more compose files in `docker-setup.cfg`. See [Docker Compose Docs](https://docs.docker.com/compose/) for more information.
 
 > **Best practice:** Since Heureka uses Docker containers, it is strongly recommended to use a separated Docker container to run a database. Furthermore, use a restarting directive (`unless-stopped` or `always` - see [Docker Docs](https://docs.docker.com/config/containers/start-containers-automatically/)) to have the database available without manually starting it every time.
 
