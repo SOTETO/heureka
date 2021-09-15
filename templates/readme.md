@@ -30,7 +30,7 @@ Using the default `ms_<name>.yml`, the REST-API of MS-DROPS will be available by
 
 If you want to add more docker container to your setup, change the created docker-compose file (`ms_<name>.yml`) or add more compose files in `docker-setup.cfg`.
 
-> **Best practice:** Since Heureka uses Docker containers, it is strongly recommended to use a separated Docker container to run a database.
+> **Best practice:** Since Heureka uses Docker containers, it is strongly recommended to use a separated Docker container to run a database. Furthermore, use a restarting directive (`unless-stopped` or `always` - see [Docker Docs](https://docs.docker.com/config/containers/start-containers-automatically/)) to have the database available without manually starting it every time.
 
 ## Hints for the deployment
 - If no SMTP-Server has been configured to send emails, the confirmation email of the MS-DROPS backend is logged. Thus, search in the logs for the confirmation email (see the end of this readme).
