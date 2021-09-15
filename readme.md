@@ -273,6 +273,8 @@ For a microservice environment these files are saved in a location relative to t
 
 > **IP addresses and ports:** You can change the IP addresses and ports as you want, but keep in mind, that these values also have to be updated in the Nginx configuration as it is explained in the [Nginx configuration](#nginx-configuration).
 
+> **Docker network:** The `base.yml` introduces an virtual docker network that is used to separate the docker container and move the internal communication to the save network. If you remove the docker network, port conflicts could emerge and handling SSL certificate handshake between microservices becomes required.
+
 ### Git configuration
 The `git-setup.cfg` contains the URL, the name and the branch that has to be selected of every git repository. Additionally, you can set a local file system path for the repositories (default is `~/heureka/...`).
 Furthermore, you can define an microservice ("MS") by adding
