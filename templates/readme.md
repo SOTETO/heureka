@@ -16,6 +16,7 @@ Follow the upcoming steps to create your development environment:
 8. Create an account by using the registration view on `http://localhost` 	(see [Hints for the deployment](#hints-for-the-deployment) - you will probably not receive a confirmation email, but it is logged).
 9. Use the `admin` command of the Heureka-CLI to grant admin rights to your newly created user.
 10. Initiate the navigation by calling `http://localhost/dispenser/navigation/init`. In case of a whitescreen, the call has been successfully.
+11. Setup an OAuth client using the Heureka web-ui and add the new `client_id` and `client_secret` to the configuration of the dispenser service, as it is explained in [the configuration of the Play2 apps](https://github.com/SOTETO/heureka#dispenser-oauth-configuration).
 
 > **Base path:** After all, your microservice will be available by calling `http://localhost/new` (or the pathes that you have introduced). Your application has to know the base path to generate appropriate server repsonses and interprete the given path of HTTP requests. Thus, you have to configure it, if you are running your application behind a base path like `/new`.
 
@@ -28,9 +29,11 @@ Using the default `ms_<name>.yml`, the REST-API of MS-DROPS will be available by
 4. Add an nginx upstream for your local new MS in `.docker-conf/nginx/pool2.upstream` (see new or arise and drops as an example).
 5. Add new locations to the nginx `.docker-conf/mode_dev/nginx/location.pool` file (using the new upstreams).
 
-If you want to add more docker container to your setup, change the created docker-compose file (`ms_<name>.yml`) or add more compose files in `docker-setup.cfg`.
+If you want to add more docker container to your setup, change the created docker-compose file (`ms_<name>.yml`) or add more compose files in `docker-setup.cfg`. See [Docker Compose Docs](https://docs.docker.com/compose/) for more information.
 
-> **Best practice:** Since Heureka uses Docker containers, it is strongly recommended to use a separated Docker container to run a database.
+In the case you want to merge or add your own docker compose file, please also consider [the hints in the general Heureka-CLI documentation](https://github.com/SOTETO/heureka#docker-compose-configuration). Furthermore, you should also keep in mind that relative pathes in docker compose files have their origin in the path that is used to *run* docker compose (the Heureka base directory). Thus, all relative pathes should be relative to the Heureka base directory.
+
+> **Best practice:** Since Heureka uses Docker containers, it is strongly recommended to use a separated Docker container to run a database. Furthermore, use a restarting directive (`unless-stopped` or `always` - see [Docker Docs](https://docs.docker.com/config/containers/start-containers-automatically/)) to have the database available without manually starting it every time.
 
 ## Hints for the deployment
 - If no SMTP-Server has been configured to send emails, the confirmation email of the MS-DROPS backend is logged. Thus, search in the logs for the confirmation email (see the end of this readme).
@@ -43,6 +46,9 @@ If you want to add more docker container to your setup, change the created docke
 - `leave` - Leave the environment
 - `exit` - close the Heureka console
 - \* - Help
+
+# Configuration
+Take a look at the [main Readme file](https://github.com/SOTETO/heureka#configuration-files) to learn more about the docker, nginx and general confguration of your environment.
 
 # Logging
 Currently, the Heureka-CLI just uses the [logging implemented by Docker](https://docs.docker.com/config/containers/logging/). Thus, leave the Heureka-CLI and enter

@@ -36,7 +36,9 @@ Please choose the environment you want to setup:
 
 You can also use `exit` to quit the console.
 
-_Configuration:_ As a best practice, the configuration should always be edited _before_ the console will be used. Otherwise, the state of the console could become invalid.
+> **Configuration:** As a best practice, the configuration should always be edited _before_ the console will be used. Otherwise, the state of the console could become invalid.
+
+> **Host system effects:** Starting Heureka basically binds the port 80 (and 443 if SSL is configured) and runs several docker container (using CPU and working memory). Additionally, a virtual docker network is initiated and thus, in the most basic case, no more port binding on the host are required. Furthermore, it uses disk space for some cloned GIT repositories.
 
 ### Production environment
 
@@ -50,6 +52,7 @@ Follow the upcoming steps to create your production environment:
 6. Request `/docu` to initiate an admin account for your local Grav CMS instance, the base for the documentation.
 > Since the Grav CMS is currently not completely integrated, the Grav CMS admin account is not the same as the admin account in Heureka.
 7. Initiate the navigation by calling `/dispenser/navigation/init`. In case of a whitescreen, the call has been successfully.
+8. Setup an OAuth client using the Heureka web-ui and add the new `client_id` and `client_secret` to the configuration of the dispenser service, as it is explained in [the configuration of the Play2 apps](#dispenser-oauth-configuration).
 
 #### Best practice for PROD configuration
 0. Enter the local file system pathes of the git repositories that will be created to `git-setup.cfg` (default is `~/heureka/...`). If you change the default path, also change the path value of the `GRAV_PATH` variable in `.docker-conf/mode_dev/.env` file.
@@ -258,13 +261,22 @@ compose_files=base.yml ms_drops.yml
 ```
 The example shows the two different environment `ENV_PROD` and `ENV_MS_DROPS`.
 
-Additionally, the following files hold the docker configuration for the different environments:
+Additionally, the following files hold the docker configuration for the `ENV_PROD` and `ENV_INFRA` environments:
 - `docker-setup.cfg`
 - `base.yml`
 - `prod.yml`
 - `ìnfra.yml`
 - `.docker-conf/mode_infra/.env`
 - `.docker-conf/mode_prod/.env`
+
+For a microservice environment these files are saved in a location relative to the microservices base directory (`microservices/ms-<name>`):
+- `docker-setup.cfg` - by default the file uses the `base.yml` (in the directory of the Heureka-CLI) as a base for the docker-compose configuration that is extended by `ms_<name>.yml`
+- `ms_<name>.yml` - contains the docker-compose specific configuration required for the setup of your microservices environment
+- `.docker-conf/.env` - contains variables like used versions, ports and (internal) IP addresses used to setup the microservices environment
+
+> **IP addresses and ports:** You can change the IP addresses and ports as you want, but keep in mind, that these values also have to be updated in the Nginx configuration as it is explained in the [Nginx configuration](#nginx-configuration).
+
+> **Docker network:** The `base.yml` introduces an virtual docker network that is used to separate the docker container and move the internal communication to the save network. If you remove the docker network, port conflicts could emerge and handling SSL certificate handshake between microservices becomes required.
 
 ### Git configuration
 The `git-setup.cfg` contains the URL, the name and the branch that has to be selected of every git repository. Additionally, you can set a local file system path for the repositories (default is `~/heureka/...`).
@@ -275,19 +287,106 @@ set=list of repositories
 related=list of related MS that have to be cloned and removed, if the MS itself is cloned or removed
 ```
 
+### Nginx configuration
+All environments implement their own Nginx configuration. Thus, you can change the Nginx config for one environment without side effects regarding the Nginx configuration used in another one. So, the configuration for your new microservice will not be used when you start the environment of another microservice or the production environment.
+
+The nginx configuration for the `ENV_PROD` and `ENV_INFRA` environment are saved here:
+- `.docker-conf/mode_prod/nginx/` and
+- `.docker-conf/mode_infra/nginx/`
+
+For a microservice environment, it is saved here: `microservices/ms-<name>/.docker-conf/nginx/`
+
+There are always three files: 
+- `default.conf` - contains the basic port binding (80 and 443), SSL config, and the `server_name` directive
+- `location.pool` - defines the `location` directives for the nginx and thus, it separates the different systems used in the environment
+- `pool2.upstream` - defines the `upstream` directives to the proxied server that are deployed by the different microservices
+
+> **IP addresses and ports:** You can change IP addresses and ports in the `pool2.upstream` as you want, but keep in mind that these directives are pointing to webservers running in the docker container or on port different to 80 and 443 on the host machine. Thus, if you're changing the IP addresses and ports, you have to ensure that also the webservers are running on the new IP addresses and ports (e.g. by just starting them at the new configuration or manipulating the docker-compose configuration).
+
 ### Play2 configuration
-The following files contain the configuration for the play2 apps:
+The following files contain the configuration for the play2 apps for the `ENV_PROD` and `ENV_INFRA` environment:
 - `.docker-conf/mode_prod/drops/application.conf`
 - `.docker-conf/mode_prod/dispenser/application.conf`
+- `.docker-conf/mode_infra/drops/application.conf`
+- `.docker-conf/mode_infra/dispenser/application.conf`
+
+For a microservice environment, the files are saved here: `microservices/ms-<name>/.docker-conf/drops/` and `microservices/ms-<name>/.docker-conf/dispenser/`
+
+#### Configure databases
+Change the following lines in `drops/application.conf` to setup a new database or change the IP address or port of the database container for MS-DROPS:
+```
+slick.dbs.default.db.user = "<user>"
+slick.dbs.default.db.password = "<password>"
+slick.dbs.default.db.url = "jdbc:mysql://<ip-address>:<port>/<database-name>"
+```
+
+Editing the database setup of the Dispenser service requires to change the following line in the `dispenser/application.conf`:
+```
+mongodb.uri = "mongodb://<ip-address>:<port>/<name>"
+```
+
+#### Changing `location` directive in Nginx
+If you're changing the `location` in your [Nginx configuration](#nginx-configuration) for MS-DROPS or the dispenser service, you also have to configure the base path in the `application.conf` files. Change the follwoing line:
+```
+play.http.context = "/<base-path>"
+```
+
+#### Changing IP addresses of other services
+If you change the IP address or the port of Nats, you have to update the `application.conf` of MS-Drops and the dispenser service:
+```
+nats.endpoint="nats://<ip-address>:<port>"
+```
+
+If you change the IP address or the base path of the dispenser service itself, you have to update the following line in the `dispenser/application.conf`:
+```
+ms.host="http://<ip-address>/<base-path>"
+```
+If you change the IP address or the base path of the MS-DROPS, you have to update the follwoing line in `dispenser/application.conf`:
+```
+drops.url.base="http://<ip-address>/<base-path>"
+```
+#### Dispenser OAuth configuration
+After setting up an OAuth client for dispenser, you have to add it to the `dispenser/application.conf`:
+```
+drops.client_id="<dispenser-client_id>"
+drops.client_secret="<dispenser-client_secret>"
+```
+
+#### Drops Mail service
+If you're running a mail server, you can configure it by changing the following lines in the `drops/application.conf`:
+```
+mail.from="Drops <mailrobot@drops.vivaconagua.org>"
+mail.reply="No reply <noreply@drops.vivaconagua.org>"
+
+play.mailer {
+  mock = true #(defaults to no, will only log all the email properties instead of sending an email)
+  #host = localhost #(mandatory)
+  # port (defaults to 25)
+  # ssl (defaults to no)
+  # tls (defaults to no)
+  # user (optional)
+  # password (optional)
+  # debug (defaults to no, to take effect you also need to set the log level to "DEBUG" for the application logger)
+  # timeout (defaults to 60s in milliseconds)
+  # connectiontimeout (defaults to 60s in milliseconds)
+}
+```
+
+#### Changing server name
+If you're deploying the microservice environment on a new server with a new name, you have to configure the CORS allows hosts directives at least for the `dispenser/application.conf`. Add the new name here:
+```
+play.filters.hosts.allowed=["<server-name>"]
+```
 
 ### Navigation configuration
 - `.docker-conf/mode_prod/navigation/GlobalNav.json`
 - `.docker-conf/mode_prod/navigation/noSignIn.json`
 
-### Nginx configuration
-- `.docker-conf/mode_prod/nginx/default.conf`
-- `.docker-conf/mode_prod/nginx/location.pool`
-- `.docker-conf/mode_prod/nginx/pool2.upstream`
+### Server name
+Setting up a server name has to consider several configuration files due to a valid CORS configuration of the microservice environment. You have to set the server name in the following files:
+- `nginx/default.conf` (see [Nginx configuration](#nginx-configuration))
+- `drops/application.conf` (see [Play2 configuration](#play2-configuration))
+- `dispenser/application.conf` (see [Play2 configuration](#play2-configuration))
 
 ## Logging
 Currently, the Heureka-CLI just uses the [logging implemented by Docker](https://docs.docker.com/config/containers/logging/). Thus, leave the Heureka-CLI and enter
