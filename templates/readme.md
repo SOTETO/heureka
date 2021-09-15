@@ -30,6 +30,8 @@ Using the default `ms_<name>.yml`, the REST-API of MS-DROPS will be available by
 
 If you want to add more docker container to your setup, change the created docker-compose file (`ms_<name>.yml`) or add more compose files in `docker-setup.cfg`. See [Docker Compose Docs](https://docs.docker.com/compose/) for more information.
 
+In the case you want to merge or add your own docker compose file, please also consider [the hints in the general Heureka-CLI documentation](https://github.com/SOTETO/heureka#docker-compose-configuration). Furthermore, you should also keep in mind that relative pathes in docker compose files have their origin in the path that is used to *run* docker compose (the Heureka base directory). Thus, all relative pathes should be relative to the Heureka base directory.
+
 > **Best practice:** Since Heureka uses Docker containers, it is strongly recommended to use a separated Docker container to run a database. Furthermore, use a restarting directive (`unless-stopped` or `always` - see [Docker Docs](https://docs.docker.com/config/containers/start-containers-automatically/)) to have the database available without manually starting it every time.
 
 ## Hints for the deployment
