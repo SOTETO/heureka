@@ -27,6 +27,9 @@ function createNewMS() {
   # Copy required files from NEW environment
   cp -r templates/.docker-conf microservices/"$dirName"/.docker-conf
 
+  # Use MS name in .env file
+  fillPlaceholderEnvConf "$dirName" "$name"
+
   # Write contents of docker-compose file (NEW environment) to newly created one
   cp templates/dev.yml microservices/"$dirName"/ms_"$name".yml
 
@@ -100,6 +103,13 @@ function createNewMS() {
   writeEnvScript $name $dirName
   printf "\nNew MS-$upper has been successfully created!\n\n"
   exec bash heureka
+}
+
+function fillPlaceholderEnvConf() {
+  #local MS_DIR="$1"
+  #local MS_NAME="$2"
+  local ENV_FILE=microservices/"$1"/.docker-conf/.env
+  MS_NAME="$2" MS_DIR="$1" envsubst < "$ENV_FILE" > "$ENV_FILE.tmp" && mv "$ENV_FILE.tmp" "$ENV_FILE"
 }
 
 function writeEnvScript() {
