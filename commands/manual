@@ -31,6 +31,7 @@ function generalMan () {
   ${YELLOW}new${NC}                       Starts a wizard to initiate a development environment for a new microservice
 $ms_descs
   infra                     ${RED}Additional:${NC} Initiate a development environment for infrastructure services
+  ${YELLOW}reload${NC}                    Reload the console and thus also the configuration
   ${YELLOW}exit${NC}                      Close console
   ${YELLOW}*${NC}                         Help
 "

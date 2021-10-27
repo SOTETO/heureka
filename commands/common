@@ -21,6 +21,34 @@ for file in "${configFiles[@]}"; do
   done < "$file"
 done
 
+#1 name of the MS the config has to be reloaded for (lowercase)
+function reloadMSConfig () {
+  local DOCKER_CONF_FILE=microservices/ms-$1/.docker-conf/.env
+  local CONF_ID="DOCKER_ENV_MS_"${1^^}
+  reloadConfig "$CONF_ID" "$DOCKER_CONF_FILE"
+}
+
+#1 name of the environment (lowercase)
+function reloadGlobalConfig () {
+  local DOCKER_CONF_FILE=.docker-conf/mode_$1/.env
+  local CONF_ID="DOCKER_ENV_"${1^^}
+  reloadConfig "$CONF_ID" "$DOCKER_CONF_FILE"
+}
+
+#1 name of the associative array holding env config; #2 path of the .env file
+function reloadConfig () {
+  local DOCKER_CONF_FILE=$2
+  local CONF_ID=$1
+
+  eval local CONF_KEYS=\( \${!${CONF_ID}[@]} \)
+  for CONF_VAR in "${CONF_KEYS[@]}"
+  do
+    local NEW_VALUE=${CONF_ID}[$CONF_VAR]
+    # echo "$CONF_VAR should get the value ${!NEW_VALUE}"
+    sed -i "s+$CONF_VAR=.*+$CONF_VAR=${!NEW_VALUE}+" "$DOCKER_CONF_FILE"
+  done
+}
+
 function getDir () {
   # Taken from https://stackoverflow.com/questions/59895/how-can-i-get-the-source-directory-of-a-bash-script-from-within-the-script-itsel
   local SOURCE="${BASH_SOURCE[0]}"

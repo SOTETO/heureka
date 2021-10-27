@@ -28,7 +28,7 @@ function createNewMS() {
   cp -r templates/.docker-conf microservices/"$dirName"/.docker-conf
 
   # Use MS name in .env file
-  fillPlaceholderEnvConf "$dirName" "$name"
+  fillPlaceholderEnvConf "$dirName" "$name" "MS_$upper"
 
   # Write contents of docker-compose file (NEW environment) to newly created one
   cp templates/dev.yml microservices/"$dirName"/ms_"$name".yml
@@ -106,10 +106,12 @@ function createNewMS() {
 }
 
 function fillPlaceholderEnvConf() {
-  #local MS_DIR="$1"
-  #local MS_NAME="$2"
+  local ENV_TEMPLATE=templates/.docker-conf/.env
   local ENV_FILE=microservices/"$1"/.docker-conf/.env
-  MS_NAME="$2" MS_DIR="$1" envsubst < "$ENV_FILE" > "$ENV_FILE.tmp" && mv "$ENV_FILE.tmp" "$ENV_FILE"
+  local DEFAULT_MS_CONF=microservices/"$1"/default.conf
+  echo "[DOCKER_ENV_$3]" >> "$DEFAULT_MS_CONF"
+  # Replace placeholder variables by the DIR name of the new ms and its name; Append the config to the default.conf; and copy the docker config to the .docker-conf/.env file
+  MS_NAME_PLACEHOLDER="$2" MS_DIR_PLACEHOLDER="$1" envsubst < "$ENV_TEMPLATE" > "$ENV_FILE.tmp" && cat "$ENV_FILE.tmp" >> "$DEFAULT_MS_CONF" && mv "$ENV_FILE.tmp" "$ENV_FILE"
 }
 
 function writeEnvScript() {
@@ -141,6 +143,7 @@ function writeEnvScript() {
   echo "function "$name"_env () {" >> "$scriptFile"
   echo "  # TODO - Copy from microservices/ms-drops/env.sh for an example" >> "$scriptFile"
   echo "  echo \"TODO - Implement the console for MS-\$("$name"_command_uppercase)\"" >> "$scriptFile"
+  echo "  reloadMSConfig "$name >> "$scriptFile"
   echo "  prompt=\$(calcPrompt)" >> "$scriptFile"
   echo "  for (( ; ; ))" >> "$scriptFile"
   echo "  do" >> "$scriptFile"

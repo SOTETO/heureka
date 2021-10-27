@@ -34,7 +34,7 @@ Please choose the environment you want to setup:
 - `drops` - *Microservice:* Initiate a development environment for the MS-DROPS.
 - `infra` - *Additional:* Initiate a development environment for infrastructure services and widget required to run the microservices.
 
-You can also use `exit` to quit the console.
+You can also use `reload` to reload the console (and its configuration) and `exit` to quit the console.
 
 > **Configuration:** As a best practice, the configuration should always be edited _before_ the console will be used. Otherwise, the state of the console could become invalid.
 
@@ -157,9 +157,7 @@ Edit or add to the file:
 [ENV_MS_<NAME>]
 compose_files=base.yml microservices/ms-<name>/ms_<name>.yml
 env_file=microservices/ms-<name>/.docker-conf/.env
-```
-and
-```
+
 [<name>_backend]
 url=https://github.com/.../<name>_backend.git
 branch=develop
@@ -182,8 +180,48 @@ path=~/heureka/ms-<name>/<name>_widget
 set=<name>_backend <name>_frontend <name>_widget
 related=MS_DOCU
 ```
-While the first three examples describe different git repositories, the last entry ([MS_<NAME>]) configures that all repositories named by the attribute `set` are the systems used as parts of the microservice. Thus, these systems are tightly coupled.
+While the three examples starting with `<name>` describe different git repositories, the last entry ([MS_<NAME>]) configures that all repositories named by the attribute `set` are the systems used as parts of the microservice. Thus, these systems are tightly coupled.
 The attribute `related` names a list of all microservices that have to be cloned together with the repositories of the new microservice.
+
+Furthermore, a basic docker configuration is required. Thus, add the following:
+```
+COMPOSE_PROJECT_NAME=heureka-<name>
+
+ARISE_TAG=0.8.43
+ARISE_IP=172.3.0.3
+
+DROPS_TAG=0.36.67
+DROPS_IP=172.3.0.2
+
+DROPS_DB_TAG=latest
+DROPS_DB_ROOT_PASS=drops
+DROPS_DB_USER=drops
+DROPS_DB_PASS=drops
+DROPS_DB_NAME=drops
+DROPS_DB_IP=172.3.200.1
+
+DISPENSER_TAG=latest
+DISPENSER_IP=172.3.100.4
+
+DISPENSER_DB_TAG=latest
+DISPENSER_IP=172.3.100.4
+
+DISPENSER_DB_TAG=latest
+DISPENSER_DB_IP=172.3.200.4
+
+NGINX_POOL_TAG=1.21.1-alpine
+NGINX_POOL_IP=172.3.10.2
+
+NATS_TAG=1.0.6
+NATS_IP=172.3.150.1
+
+GRAV_TAG=latest
+GRAV_PATH=/home/user/heureka/infrastructure/docu
+GRAV_IP=172.3.150.2
+GRAV_UNIX_GROUP_ID=1000
+
+NETWORK_SUBNET=172.3.0.0/16
+```
 
 #### Required functions in `env.sh`
 The `env.sh` script has to implement the following functions:
@@ -249,28 +287,34 @@ If required, you can create as many additional scripts (e.g. in `/commands`) as 
 There are several configuration files to make the MS-architecture more save:
 
 ### Docker compose configuration
-The `docker-setup.cfg` describes all possible docker environments, like:
+The `default.conf` describes all possible docker environments, like:
 ```
 [ENV_PROD]
 compose_files=base.yml prod.yml
 
-[ENV_MS_DROPS]
-compose_files=base.yml ms_drops.yml
+[ENV_INFRA]
+compose_files=infra.yml
+
+[DOCKER_ENV_PROD]
+...
+
+[DOCKER_ENV_INFRA]
+...
 ```
-The example shows the two different environment `ENV_PROD` and `ENV_MS_DROPS`.
+The example shows the two different environment `ENV_PROD` and `ENV_INFRA`.
 
 Additionally, the following files hold the docker configuration for the `ENV_PROD` and `ENV_INFRA` environments:
 - `default.conf` -- Every entry beneath an `[ENV_*]` line
 - `base.yml`
 - `prod.yml`
 - `ìnfra.yml`
-- `.docker-conf/mode_infra/.env`
-- `.docker-conf/mode_prod/.env`
+- `.docker-conf/mode_infra/.env` - The variables of the `[DOCKER_ENV_INFRA]` section of the `default.conf` are mirrored. So, change the values only in the `default.conf`!
+- `.docker-conf/mode_prod/.env` - The variables of the `[DOCKER_ENV_PROD]` section of the `default.conf` are mirrored. So, change the values only in the `default.conf`!
 
 For a microservice environment these files are saved in a location relative to the microservices base directory (`microservices/ms-<name>`):
 - `default.conf` - Every entry beneath an `[ENV_*]` line: By default the file uses the `base.yml` (in the directory of the Heureka-CLI) as a base for the docker-compose configuration that is extended by `ms_<name>.yml`.
 - `ms_<name>.yml` - contains the docker-compose specific configuration required for the setup of your microservices environment
-- `.docker-conf/.env` - contains variables like used versions, ports and (internal) IP addresses used to setup the microservices environment
+- `.docker-conf/.env` - Mirrored by teh `[DOCKER_ENV_MS_<name>]` section in `default.conf`. Change the values only in the `default.conf`! Contains variables like used versions, ports and (internal) IP addresses used to setup the microservices environment
 
 > **IP addresses and ports:** You can change the IP addresses and ports as you want, but keep in mind, that these values also have to be updated in the Nginx configuration as it is explained in the [Nginx configuration](#nginx-configuration).
 
