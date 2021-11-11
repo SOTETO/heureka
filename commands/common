@@ -5,19 +5,93 @@ stateFile=".state"
 
 declare -A gitPathes
 
-msConfigs=(microservices/*/*.cfg)
-configFiles=("git-setup.cfg" "docker-setup.cfg" "${msConfigs[@]}")
+msConfigs=(microservices/*/default.conf)
+configFiles=("default.conf" "${msConfigs[@]}")
 
 for file in "${configFiles[@]}"; do
   while read line; do
     if [[ $line =~ ^"["(.+)"]"$ ]]; then
         arrname=${BASH_REMATCH[1]}
         declare -A $arrname
+    elif [[ $line = \#* ]]; then
+        continue
     elif [[ $line =~ ^([_[:alpha:]][_[:alnum:]]*)"="(.*) ]]; then
         declare ${arrname}[${BASH_REMATCH[1]}]="${BASH_REMATCH[2]}"
     fi
   done < "$file"
 done
+
+#1 name of the MS the config has to be reloaded for (lowercase)
+function reloadMSConfig () {
+  local CONF_ID="ENV_MS_"${1^^}
+  local MS_DIR=microservices/ms-$1/
+
+  local DOCKER_CONF_FILE=$MS_DIR.docker-conf/.env
+  local DOCKER_CONF_ID="DOCKER_ENV_MS_"${1^^}
+  reloadConfig "$DOCKER_CONF_ID" "$DOCKER_CONF_FILE"
+
+  reloadServerName "$CONF_ID" "$MS_DIR.docker-conf/"
+}
+
+#1 name of the environment (lowercase)
+function reloadGlobalConfig () {
+  local CONF_ID="ENV_"${1^^}
+  local MODE_DIR=.docker-conf/mode_$1/
+
+  local DOCKER_CONF_FILE=$MODE_DIR.env
+  local DOCKER_CONF_ID="DOCKER_$CONF_ID"
+  reloadConfig "$DOCKER_CONF_ID" "$DOCKER_CONF_FILE"
+
+  reloadServerName "$CONF_ID" "$MODE_DIR"
+}
+
+#1 name of the associative array holding env config; #2 path of the .env file
+function reloadConfig () {
+  local DOCKER_CONF_FILE=$2
+  local CONF_ID=$1
+
+  eval local CONF_KEYS=\( \${!${CONF_ID}[@]} \)
+  for CONF_VAR in "${CONF_KEYS[@]}"
+  do
+    local NEW_VALUE=${CONF_ID}[$CONF_VAR]
+    # echo "$CONF_VAR should get the value ${!NEW_VALUE}"
+    sed -i "s+$CONF_VAR=.*+$CONF_VAR=${!NEW_VALUE}+" "$DOCKER_CONF_FILE"
+  done
+}
+
+#1 name of the associative array holding env config; #2 path directory containing all configuration files
+function reloadServerName () {
+  local CONF_ID=$1
+  local CONF_DIR=$2
+
+  eval local CONF_KEYS=\( \${!${CONF_ID}[@]} \)
+  for CONF_VAR in "${CONF_KEYS[@]}"
+  do
+    case "$CONF_VAR" in
+      "server_name")
+        local NEW_SERVER_NAMES=${CONF_ID}[$CONF_VAR]
+        NEW_SERVER_NAMES="${!NEW_SERVER_NAMES}"
+
+        local PLAY_NEW_SERVER_NAMES=$(echo "$NEW_SERVER_NAMES" | sed 's|\s\s*|\", \"|g')
+        PLAY_NEW_SERVER_NAMES="[\"$PLAY_NEW_SERVER_NAMES\"]"
+        local DISPENSER_SERVER_NAMES_KEY="play.filters.hosts.allowed"
+        local DISPENSER_CONF_FILE="$CONF_DIR""dispenser/application.conf"
+        if [[ -f "$DISPENSER_CONF_FILE" ]]; then
+          sed -i "s+$DISPENSER_SERVER_NAMES_KEY=.*$+$DISPENSER_SERVER_NAMES_KEY=$PLAY_NEW_SERVER_NAMES+" "$DISPENSER_CONF_FILE"
+        fi
+
+        local NGINX_DEFAULT="$CONF_DIR""nginx/default.conf"
+        if [[ -f "$NGINX_DEFAULT" ]]; then
+          sed -i "/^\s*server_name\s\s*.*;$/d" "$NGINX_DEFAULT"
+          for SERVER_NAME in $NEW_SERVER_NAMES
+          do
+            sed -i "/^\s*listen\s\s*\[\:\:\]\:80\;/a \ \ \ \ \ \ \ \ server_name $SERVER_NAME;" "$NGINX_DEFAULT"
+          done
+        fi
+        ;;
+    esac
+  done
+}
 
 function getDir () {
   # Taken from https://stackoverflow.com/questions/59895/how-can-i-get-the-source-directory-of-a-bash-script-from-within-the-script-itsel

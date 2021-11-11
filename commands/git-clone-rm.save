@@ -1,0 +1,66 @@
+#!/bin/bash
+set -e
+
+export WORKDIR=$(cd $(dirname $0) && pwd)
+. "$WORKDIR/common"
+
+function clone() {
+  #echo "git clone --branch $3 $2 $1"
+  if [[ -d "$1" && "$(ls -A $1)" ]]; then
+    printf "Directory $1 is not empty.\n"
+  else
+    git clone --branch $3 $2 $1
+  fi
+}
+
+function gitClone () {
+  case "$1" in
+    "drops")
+      #gitCloneDrops
+      gitCloneRepoList "${MS_DROPS[set]}"
+
+      local related=( "${MS_DROPS[related]}" )
+local related=( "${MS_DROPS[related]}" )
+      for ms in $related; do
+        local ms_set=${related}[set]
+        gitCloneRepoList "${!ms_set}"
+      done      for ms in $related; do
+        local ms_set=${related}[set]
+        gitCloneRepoList "${!ms_set}"
+      done
+    ;;
+    "infra")
+      gitCloneRepoList "${MS_INFRA[set]}"
+      # Always required to have a running local documentation
+      gitCloneRepoList "${MS_DOCU[set]}"
+    ;;
+  esac
+}
+
+#1 list of repositories
+function gitCloneRepoList () {
+  repos=( "$1" )
+  for repo in $repos; do
+    local path=${repo}[path]
+    local url=${repo}[url]
+    local branch=${repo}[branch]
+    clone $(expandPath "${!path}") "${!url}" "${!branch}"
+  done
+}
+
+function gitRemove () {
+  case "$1" in
+    "drops") gitRemoveRepoList "${MS_DROPS[set]}";;
+    "infra") gitRemoveRepoList "${MS_INFRA[set]}";;
+    "docu") gitRemoveRepoList "${MS_DOCU[set]}";;
+  esac
+}
+
+#1 list of repositories
+function gitRemoveRepoList () {
+  repos=( "$1" )
+  for repo in $repos; do
+    local path=${repo}[path]
+    rm -rf $(expandPath "${!path}")
+  done
+}
