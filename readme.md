@@ -58,7 +58,7 @@ Follow the upcoming steps to create your production environment:
 0. Enter the local file system pathes of the git repositories that will be created to `default.conf` (default is `~/heureka/...`). If you change the default path, also change the path value of the `GRAV_PATH` variable in `.docker-conf/mode_prod/.env` file.
 1. Change the database configurations for MS-DROPS (`DROPS_DB_*`) and other existing microservices in `.docker-conf/mode_prod/.env`.
 2. Change the application secrets of drops (`.docker-conf/mode_prod/drops/application.conf`) and dispenser (`.docker-conf/mode_prod/dispenser/application.conf`). Both should have a length of 64 characters.
-3. Change the server name in `.docker-conf/mode_prod/nginx/default.conf`. Also add it to `play.filters.hosts.allowed` in `.docker-conf/mod_prod/dispenser/application.conf`.
+3. Change the server name in `default.conf`, section `[ENV_PROD]`. You can add all server names separated by a space. The values will be added to the `application.conf` of dispenser and the `default.conf` of nginx.
 4. Add an SSH config (on Port 443)
 
 #### Hints for the deployment
@@ -157,6 +157,7 @@ Edit or add to the file:
 [ENV_MS_<NAME>]
 compose_files=base.yml microservices/ms-<name>/ms_<name>.yml
 env_file=microservices/ms-<name>/.docker-conf/.env
+server_name=localhost
 
 [<name>_backend]
 url=https://github.com/.../<name>_backend.git
@@ -419,6 +420,7 @@ If you're deploying the microservice environment on a new server with a new name
 ```
 play.filters.hosts.allowed=["<server-name>"]
 ```
+This value is changed automatically, if you are using the `server_name` directive of the configuration file (e.g. in the `default.conf`). Afterwards, you have to restart your server.
 
 ### Navigation configuration
 - `.docker-conf/mode_prod/navigation/GlobalNav.json`
@@ -429,6 +431,8 @@ Setting up a server name has to consider several configuration files due to a va
 - `nginx/default.conf` (see [Nginx configuration](#nginx-configuration))
 - `drops/application.conf` (see [Play2 configuration](#play2-configuration))
 - `dispenser/application.conf` (see [Play2 configuration](#play2-configuration))
+
+These values can be changed by hand or you are using the `server_name` directive of the configuration file (e.g. in the `default.conf`). Afterwards, you have to restart your server.
 
 ## Logging
 Currently, the Heureka-CLI just uses the [logging implemented by Docker](https://docs.docker.com/config/containers/logging/). Thus, leave the Heureka-CLI and enter

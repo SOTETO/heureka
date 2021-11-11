@@ -41,6 +41,7 @@ function createNewMS() {
   echo "[ENV_MS_$upper]" >> microservices/"$dirName"/default.conf
   echo "compose_files=base.yml microservices/$dirName/ms_$name.yml" >> microservices/"$dirName"/default.conf
   echo "env_file=microservices/$dirName/.docker-conf/.env" >> microservices/"$dirName"/default.conf
+  echo "server_name=localhost" >> microservices/"$dirName"/default.conf
 
   # Read and write GIT config
   declare -a repos
