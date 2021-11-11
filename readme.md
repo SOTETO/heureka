@@ -34,7 +34,7 @@ Please choose the environment you want to setup:
 - `drops` - *Microservice:* Initiate a development environment for the MS-DROPS.
 - `infra` - *Additional:* Initiate a development environment for infrastructure services and widget required to run the microservices.
 
-You can also use `exit` to quit the console.
+You can also use `reload` to reload the console (and its configuration) and `exit` to quit the console.
 
 > **Configuration:** As a best practice, the configuration should always be edited _before_ the console will be used. Otherwise, the state of the console could become invalid.
 
@@ -55,10 +55,10 @@ Follow the upcoming steps to create your production environment:
 8. Setup an OAuth client using the Heureka web-ui and add the new `client_id` and `client_secret` to the configuration of the dispenser service, as it is explained in [the configuration of the Play2 apps](#dispenser-oauth-configuration).
 
 #### Best practice for PROD configuration
-0. Enter the local file system pathes of the git repositories that will be created to `git-setup.cfg` (default is `~/heureka/...`). If you change the default path, also change the path value of the `GRAV_PATH` variable in `.docker-conf/mode_dev/.env` file.
+0. Enter the local file system pathes of the git repositories that will be created to `default.conf` (default is `~/heureka/...`). If you change the default path, also change the path value of the `GRAV_PATH` variable in `.docker-conf/mode_prod/.env` file.
 1. Change the database configurations for MS-DROPS (`DROPS_DB_*`) and other existing microservices in `.docker-conf/mode_prod/.env`.
 2. Change the application secrets of drops (`.docker-conf/mode_prod/drops/application.conf`) and dispenser (`.docker-conf/mode_prod/dispenser/application.conf`). Both should have a length of 64 characters.
-3. Change the server name in `.docker-conf/mode_prod/nginx/default.conf`. Also add it to `play.filters.hosts.allowed` in `.docker-conf/mod_prod/dispenser/application.conf`.
+3. Change the server name in `default.conf`, section `[ENV_PROD]`. You can add all server names separated by a space. The values will be added to the `application.conf` of dispenser and the `default.conf` of nginx.
 4. Add an SSH config (on Port 443)
 
 #### Hints for the deployment
@@ -84,7 +84,7 @@ Required to clone all git repositories for the development of infrastructure ser
 #### Deployment
 Follow the upcoming steps to create your infrastructure development environment:
 
-1. Enter the local file system pathes of the git repositories that will be created to `git-setup.cfg>
+1. Enter the local file system pathes of the git repositories in `default.conf`
 2. `bash ./heureka`
 3. `infra` to enter the infrastructure environment of the CLI
 4. `clone`
@@ -119,7 +119,7 @@ The wizard also creates the `env.sh` file for your new microservice, implementin
 - `exit` - close the Heureka console
 - \* - Help
 
-If you want to add more docker container to your setup, change the created docker-compose file (`ms_<name>.yml`) or add more compose files in `docker-setup.cfg`.
+If you want to add more docker container to your setup, change the created docker-compose file (`ms_<name>.yml`) or add more compose files in `default.conf`.
 
 > **Best practice:** Since Heureka uses Docker containers, it is strongly recommended to use a separated Docker container to run a database.
 
@@ -134,34 +134,31 @@ Most important: Use the given pattern for the directory name of starting with `m
 
 Afterwards, create the following required files:
 - `env.sh` -- Contains the BASH functions that are mandatory to integrate the microservice setup in the console.
-- `docker-setup.cfg` -- Configures the docker compose and environment files to run the microservice and its dependencies.
-- `git-setup.cfg` -- Configures the git repositories required to develope the microservice.
+- `default.conf` -- Configures the docker compose and environment files to run the microservice and its dependencies. Furthermore, it configures the git repositories required to develop the microservice.
 - `ms_<name>.yml` -- The docker-compose file to run the microservices environment.
 - `.docker-conf/.env` -- Configures environment variables for the docker-compose setup.
 - `.docker-conf/nginx/location.pool` -- Configures the locations for the NGINX proxy
 - `.docker-conf/nginx/pool2.upstream`-- Configures the upstreams for the NGINX proxy
 
 #### Copy basic files
-Just copy the following files from the `DEV NEW` environment:
-- `ms_<name>.yml` from `./dev.yml` (just add the docker container required for your setup or add an additional compose file)
-- `.docker-conf/.env` from `./.docker-conf/mode_dev/.env` and edit it as you want
-- `.docker-conf/nginx/location.pool` from `./.docker-conf/mode_dev/nginx/location.pool` and manipulate it as required
-- `.docker-conf/nginx/pool2.upstream` from `./.docker-conf/mode_dev/nginx/pool2.upstream` and manipulate it as required
+Just copy the following files from the `template/` directory:
+- `ms_<name>.yml` from `./template/dev.yml` (just add the docker container required for your setup or add an additional compose file)
+- `.docker-conf/.env` from `./template/.docker-conf/.env` and edit it as you want
+- `.docker-conf/nginx/location.pool` from `./template/.docker-conf/nginx/location.pool` and manipulate it as required
+- `.docker-conf/nginx/pool2.upstream` from `./template/.docker-conf/nginx/pool2.upstream` and manipulate it as required
 
 #### Setup the main configuration files
-Copy `docker-setup.cfg` and `git-setup.cfg` from MS-DROPS:
+Copy `default.conf` from MS-DROPS:
 ```
-cp microservices/ms-drops/docker-setup.cfg microservices/ms-<name>/
-cp microservices/ms-drops/git-setup.cfg microservices/ms-<name>/
+cp microservices/ms-drops/default.conf microservices/ms-<name>/
 ```
-Edit the files:
-```docker-setup.cfg
+Edit or add to the file:
+```
 [ENV_MS_<NAME>]
 compose_files=base.yml microservices/ms-<name>/ms_<name>.yml
 env_file=microservices/ms-<name>/.docker-conf/.env
-```
-and
-```git-setup.cfg
+server_name=localhost
+
 [<name>_backend]
 url=https://github.com/.../<name>_backend.git
 branch=develop
@@ -184,8 +181,48 @@ path=~/heureka/ms-<name>/<name>_widget
 set=<name>_backend <name>_frontend <name>_widget
 related=MS_DOCU
 ```
-While the first three examples describe different git repositories, the last entry ([MS_<NAME>]) configures that all repositories named by the attribute `set` are the systems used as parts of the microservice. Thus, these systems are tightly coupled.
+While the three examples starting with `<name>` describe different git repositories, the last entry ([MS_<NAME>]) configures that all repositories named by the attribute `set` are the systems used as parts of the microservice. Thus, these systems are tightly coupled.
 The attribute `related` names a list of all microservices that have to be cloned together with the repositories of the new microservice.
+
+Furthermore, a basic docker configuration is required. Thus, add the following:
+```
+COMPOSE_PROJECT_NAME=heureka-<name>
+
+ARISE_TAG=0.8.43
+ARISE_IP=172.3.0.3
+
+DROPS_TAG=0.36.67
+DROPS_IP=172.3.0.2
+
+DROPS_DB_TAG=latest
+DROPS_DB_ROOT_PASS=drops
+DROPS_DB_USER=drops
+DROPS_DB_PASS=drops
+DROPS_DB_NAME=drops
+DROPS_DB_IP=172.3.200.1
+
+DISPENSER_TAG=latest
+DISPENSER_IP=172.3.100.4
+
+DISPENSER_DB_TAG=latest
+DISPENSER_IP=172.3.100.4
+
+DISPENSER_DB_TAG=latest
+DISPENSER_DB_IP=172.3.200.4
+
+NGINX_POOL_TAG=1.21.1-alpine
+NGINX_POOL_IP=172.3.10.2
+
+NATS_TAG=1.0.6
+NATS_IP=172.3.150.1
+
+GRAV_TAG=latest
+GRAV_PATH=/home/user/heureka/infrastructure/docu
+GRAV_IP=172.3.150.2
+GRAV_UNIX_GROUP_ID=1000
+
+NETWORK_SUBNET=172.3.0.0/16
+```
 
 #### Required functions in `env.sh`
 The `env.sh` script has to implement the following functions:
@@ -251,35 +288,41 @@ If required, you can create as many additional scripts (e.g. in `/commands`) as 
 There are several configuration files to make the MS-architecture more save:
 
 ### Docker compose configuration
-The `docker-setup.cfg` describes all possible docker environments, like:
+The `default.conf` describes all possible docker environments, like:
 ```
 [ENV_PROD]
 compose_files=base.yml prod.yml
 
-[ENV_MS_DROPS]
-compose_files=base.yml ms_drops.yml
+[ENV_INFRA]
+compose_files=infra.yml
+
+[DOCKER_ENV_PROD]
+...
+
+[DOCKER_ENV_INFRA]
+...
 ```
-The example shows the two different environment `ENV_PROD` and `ENV_MS_DROPS`.
+The example shows the two different environment `ENV_PROD` and `ENV_INFRA`.
 
 Additionally, the following files hold the docker configuration for the `ENV_PROD` and `ENV_INFRA` environments:
-- `docker-setup.cfg`
+- `default.conf` -- Every entry beneath an `[ENV_*]` line
 - `base.yml`
 - `prod.yml`
 - `ìnfra.yml`
-- `.docker-conf/mode_infra/.env`
-- `.docker-conf/mode_prod/.env`
+- `.docker-conf/mode_infra/.env` - The variables of the `[DOCKER_ENV_INFRA]` section of the `default.conf` are mirrored. So, change the values only in the `default.conf`!
+- `.docker-conf/mode_prod/.env` - The variables of the `[DOCKER_ENV_PROD]` section of the `default.conf` are mirrored. So, change the values only in the `default.conf`!
 
 For a microservice environment these files are saved in a location relative to the microservices base directory (`microservices/ms-<name>`):
-- `docker-setup.cfg` - by default the file uses the `base.yml` (in the directory of the Heureka-CLI) as a base for the docker-compose configuration that is extended by `ms_<name>.yml`
+- `default.conf` - Every entry beneath an `[ENV_*]` line: By default the file uses the `base.yml` (in the directory of the Heureka-CLI) as a base for the docker-compose configuration that is extended by `ms_<name>.yml`.
 - `ms_<name>.yml` - contains the docker-compose specific configuration required for the setup of your microservices environment
-- `.docker-conf/.env` - contains variables like used versions, ports and (internal) IP addresses used to setup the microservices environment
+- `.docker-conf/.env` - Mirrored by teh `[DOCKER_ENV_MS_<name>]` section in `default.conf`. Change the values only in the `default.conf`! Contains variables like used versions, ports and (internal) IP addresses used to setup the microservices environment
 
 > **IP addresses and ports:** You can change the IP addresses and ports as you want, but keep in mind, that these values also have to be updated in the Nginx configuration as it is explained in the [Nginx configuration](#nginx-configuration).
 
 > **Docker network:** The `base.yml` introduces an virtual docker network that is used to separate the docker container and move the internal communication to the save network. If you remove the docker network, port conflicts could emerge and handling SSL certificate handshake between microservices becomes required.
 
 ### Git configuration
-The `git-setup.cfg` contains the URL, the name and the branch that has to be selected of every git repository. Additionally, you can set a local file system path for the repositories (default is `~/heureka/...`).
+The `default.conf` contains the URL, the name and the branch that has to be selected of every git repository. Additionally, you can set a local file system path for the repositories (default is `~/heureka/...`).
 Furthermore, you can define an microservice ("MS") by adding
 ```
 [MS_<name>]
@@ -377,6 +420,7 @@ If you're deploying the microservice environment on a new server with a new name
 ```
 play.filters.hosts.allowed=["<server-name>"]
 ```
+This value is changed automatically, if you are using the `server_name` directive of the configuration file (e.g. in the `default.conf`). Afterwards, you have to restart your server.
 
 ### Navigation configuration
 - `.docker-conf/mode_prod/navigation/GlobalNav.json`
@@ -387,6 +431,8 @@ Setting up a server name has to consider several configuration files due to a va
 - `nginx/default.conf` (see [Nginx configuration](#nginx-configuration))
 - `drops/application.conf` (see [Play2 configuration](#play2-configuration))
 - `dispenser/application.conf` (see [Play2 configuration](#play2-configuration))
+
+These values can be changed by hand or you are using the `server_name` directive of the configuration file (e.g. in the `default.conf`). Afterwards, you have to restart your server.
 
 ## Logging
 Currently, the Heureka-CLI just uses the [logging implemented by Docker](https://docs.docker.com/config/containers/logging/). Thus, leave the Heureka-CLI and enter

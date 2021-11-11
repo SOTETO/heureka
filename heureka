@@ -21,6 +21,17 @@ function initHeureka () {
   for dir in "${msDirs[@]}"; do
     MICROSERVICES+=($(echo "$dir" | sed s?microservices/ms-??))
   done
+
+  # reload global configs
+  modes=("infra" "prod")
+  for mode in "${modes[@]}"; do
+    reloadGlobalConfig "$mode"
+  done
+
+  # reload MS configs
+  for ms in "${MICROSERVICES[@]}"; do
+    reloadMSConfig "$ms"
+  done
 }
 
 function calcPrompt () {
@@ -90,6 +101,9 @@ function initConsole () {
           setConfig "env" "PROD"
 	  prod
 	  ;;
+        "reload")
+          exec bash heureka
+          ;;
 	"exit")
 	  exit 1
 	  ;;
