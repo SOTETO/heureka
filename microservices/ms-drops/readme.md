@@ -34,6 +34,7 @@ The `dev drops` environment provides the following commands:
 - `docker rm dispenser volumes` - Remove the dispenser volumes. That means the database contents.
 - `drops up man` - Shows a manual explaining how to setup the DROPS backend service
 - `drops admin` - Sets admin access rights in DROPS for a specific user identified by its email address
+- `drops init` - Initiates the Drops database. Requires a running Drops backend.
 - `arise up man` - Shows a manual explaining how to setup the ARISE frontend service
 - `leave` - Leave `DEV` environment
 - `exit` - close the Heureka console
