@@ -34,11 +34,27 @@ function drops_man() {
   docker rm dispenser volumes   Remove the dispenser volumes. That means the database contents.
   drops up man			Shows a manual explaining how to setup the DROPS backend service
   drops admin			Sets admin access rights in DROPS for a specific user identified by its email address
+  drops init			Initiates the Drops database. Requires a running Drops backend.
   arise up man			Shows a manual explaining how to setup the ARISE frontend service
   leave				Leave DEV environment
   exit				Close console
   *           			Help
 "
+}
+
+#1 Domain (server name and protocol, like http://localhost) - default is http://localhost
+function initDropsDB() {
+  local DOMAIN="http://localhost"
+  if [ -z ${1+x} ]; then
+    DOMAIN="http://localhost"
+  else
+    DOMAIN=$1
+  fi
+  local RESPONSE_HEADER=$(curl -o /dev/null -s -w "%{http_code}\n" -m 30 "$DOMAIN/drops")
+  # Since the init call on drops redirects to drops root route, but there is no root route (See https://github.com/SOTETO/drops/issues/16).
+  if [[ $RESPONSE_HEADER = 404 ]]; then
+    echo "Database has been initiated successfully."
+  fi
 }
 
 function drops_env() {
@@ -122,6 +138,8 @@ function drops_env() {
                   esac
                         ;;
                 "admin") prodDropsAdmin drops
+                        ;;
+                "init") initDropsDB
                         ;;
                 *) drops_man
                         ;;

@@ -19,6 +19,7 @@ function dropsMan () {
   source "$WORKDIR/microservices/ms-drops/.docker-conf/.env"
   dropsPath=$(expandPath "${drops[path]}")
   printf "Starting the DROPS backend service should be done manually by the user to have full control. Open a new terminal window and change to \'$dropsPath\'. Run the command 'sbt run' and DROPS should start.\n\n"
-  printf "Next step: Make a request to DROPS at the started port (e.g. 'localhost:9000/drops/') to initiate the database creation. This requires some time. Therefore, calling the nginx proxy will lead to a timeout HTTP error. DROPS itself is configured to wait 30 seconds.\n\n"
+#  printf "Next step: Make a request to DROPS at the started port (e.g. 'localhost:9000/drops/') to initiate the database creation. This requires some time. Therefore, calling the nginx proxy will lead to a timeout HTTP error. DROPS itself is configured to wait 30 seconds.\n\n"
+  printf "Next step: run 'drops init' to initiate the drops database.\n\n"
   printf "Afterwards, you should also start ARISE, create a user and run 'drops admin' to grant admin rights to the newly created user.\n"
 }
