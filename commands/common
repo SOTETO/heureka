@@ -142,11 +142,23 @@ function expandPath () {
   printf '%s\n' "${result%:}"
 }
 
-#1 Domain (server name and protocol, like http://localhost) - default is http://localhost
-function initNavigation() {
+#1 Environment
+function initGlobalNavigation() {
   local CONF_ID="ENV_"${1^^}
-  local MODE_DIR=.docker-conf/mode_$1/
-  local DOCKER_CONF_FILE=$MODE_DIR.env
+  initNavigation "$CONF_ID"
+}
+
+#1 MS Name
+function initMSNavigation() {
+  local CONF_ID="ENV_MS_"${1^^}
+  initNavigation "$CONF_ID"
+}
+
+#1 CONF ID
+function initNavigation() {
+  local CONF_ID="$1"
+  #local MODE_DIR=.docker-conf/mode_$1/
+  #local DOCKER_CONF_FILE=$MODE_DIR.env
   declare -a DOMAINS
 
   eval local CONF_KEYS=\( \${!${CONF_ID}[@]} \)

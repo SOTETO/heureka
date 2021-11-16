@@ -141,7 +141,7 @@ function prod () {
 	"up")
 	  gitClone docu
 	  dockerRun prod
-          initNavigation prod
+          initGlobalNavigation prod
           setConfig "running" "yes"
           prompt=$(calcPrompt)
 	  ;;
@@ -221,7 +221,7 @@ function infra () {
         case "$sub" in
           "up")
                dockerRun infra
-               initNavigation infra
+               initGlobalNavigation infra
 	       setConfig "running" "yes"
                prompt=$(calcPrompt)
                ;;
