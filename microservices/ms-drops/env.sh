@@ -66,6 +66,7 @@ function drops_env() {
         "up")
           gitClone drops
           dockerRun ms_drops
+          initMSNavigation drops
           setConfig "running" "yes"
           prompt=$(calcPrompt)
           ;;
@@ -94,6 +95,7 @@ function drops_env() {
         "docker")
          case "$sub" in
                 "up") dockerRun ms_drops
+                      initMSNavigation drops
                       setConfig "running" "yes"
                       prompt=$(calcPrompt)
                         ;;

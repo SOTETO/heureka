@@ -141,3 +141,117 @@ function expandPath () {
   printf -v result '%s:' "${resultPathElements[@]}"
   printf '%s\n' "${result%:}"
 }
+
+#1 Environment
+function initGlobalNavigation() {
+  local CONF_ID="ENV_"${1^^}
+  initNavigation "$CONF_ID"
+}
+
+#1 MS Name
+function initMSNavigation() {
+  local CONF_ID="ENV_MS_"${1^^}
+  initNavigation "$CONF_ID"
+}
+
+#1 CONF ID
+function initNavigation() {
+  local CONF_ID="$1"
+  #local MODE_DIR=.docker-conf/mode_$1/
+  #local DOCKER_CONF_FILE=$MODE_DIR.env
+  declare -a DOMAINS
+
+  eval local CONF_KEYS=\( \${!${CONF_ID}[@]} \)
+  for CONF_VAR in "${CONF_KEYS[@]}"
+  do
+    case "$CONF_VAR" in
+      "server_name")
+         local NEW_SERVER_NAMES=${CONF_ID}[$CONF_VAR]
+         for SERVER_NAME in "${!NEW_SERVER_NAMES}"
+         do
+            DOMAINS+=($SERVER_NAME)
+         done
+      ;;
+    esac
+  done
+
+  if [ ${#DOMAINS[@]} -eq 0 ]; then
+    DOMAINS+=("localhost")
+  fi
+
+  local result=false
+  declare -a protocols=("http://" "https://")
+  for DOMAIN in "${DOMAINS[@]}"
+  do
+    if [[ "$result" = true ]]; then
+      break;
+    fi
+    for protocol in "${protocols[@]}"
+    do
+      if [[ "$result" = true ]]; then
+        break;
+      fi
+
+      local counter=0
+      while :
+      do
+        #echo "$protocol$DOMAIN/dispenser/navigation/init"
+        local RESPONSE_HEADER=$(curl -o /dev/null -s -w "%{http_code}\n" -m 30 "$protocol$DOMAIN/dispenser/navigation/init")
+        #echo "$RESPONSE_HEADER"
+        case $RESPONSE_HEADER in
+          200)
+            result=true
+            # Add newline after dots...
+            echo ""
+            echo "[Info] Successful initiation of navigation on $protocol$DOMAIN/dispenser."
+            break
+          ;;
+          000)
+            if [[ $counter = 0 ]]; then
+              echo -n "[Status] Waiting for Dispenser ($protocol$DOMAIN/dispenser)."
+            else
+              echo -n "."
+            fi
+            # Wait only 0:30min for Dispenser...
+            if [[ $counter = 6 ]]; then
+              # Add newline after dots...
+              echo ""
+              echo "[Info] $protocol$DOMAIN/dispenser is not responding for 30s. Something went wrong with the server domain, the protocol or Nginx ."
+              break
+            fi
+            counter=$((counter+1))
+            sleep 5s
+          ;;
+          502)
+            if [[ $counter = 0 ]]; then
+              echo -n "[Status] Waiting for Dispenser ($protocol$DOMAIN/dispenser)."
+            else
+              echo -n "."
+            fi
+            # Wait only 1:30min for Dispenser...
+            if [[ $counter = 18 ]]; then
+              # Add newline after dots...
+              echo ""
+              echo "[Info] $protocol$DOMAIN/dispenser is not responding for 1:30min. Something went wrong."
+              break
+            fi
+            counter=$((counter+1))
+            sleep 5s
+          ;;
+          *)
+            # Add newline after dots...
+            echo ""
+            echo "[Info] No successful initiation of the navigation on $protocol$DOMAIN/dispenser."
+            break
+          ;;
+        esac
+      done
+    done
+  done
+
+  if [[ "$result" = true ]]; then
+    echo "[Success] Navigation has been initiated successfully."
+  else
+    echo "[Error] Navigation has not been initiated!"
+  fi
+}
