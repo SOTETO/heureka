@@ -153,6 +153,7 @@ function writeEnvScript() {
   echo "        \"up\")" >> "$scriptFile"
   echo "          gitClone "$name >> "$scriptFile"
   echo "          dockerRun ms_"$name >> "$scriptFile"
+  echo "          initMSNavigation "$name >> "$scriptFile"
   echo "          setConfig \"running\" \"yes\"" >> "$scriptFile"
   echo "          prompt=\$(calcPrompt)" >> "$scriptFile"
   echo "        ;;" >> "$scriptFile"
