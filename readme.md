@@ -344,8 +344,26 @@ There are always three files:
 - `location.pool` - defines the `location` directives for the nginx and thus, it separates the different systems used in the environment
 - `pool2.upstream` - defines the `upstream` directives to the proxied server that are deployed by the different microservices
 
-> **IP addresses and ports:** You can change IP addresses and ports in the `pool2.upstream` as you want, but keep in mind that these directives are pointing to webservers running in the docker containers or on port different to 80 and 443 on the host machine. Thus, if you're changing the IP addresses and ports, you have to ensure that also the webservers are running on the new IP addresses and ports (e.g. by just starting them at the new configuration or manipulating the docker-compose configuration).
+#### IP addresses and ports 
+You can change IP addresses and ports in the `pool2.upstream` as you want, but keep in mind that these directives are pointing to webservers running in the docker containers or on port different to 80 and 443 on the host machine. 
 
+Thus, if you're changing the IP addresses and ports, you have to ensure that also the webservers are running on the new IP addresses and ports (e.g. by just starting them at the new configuration or manipulating the docker-compose configuration).
+
+#### Configure local applications
+If you want to integrate a local application that is not deployed as a docker container, you just have to start it on a specific port different to `80` and `443`. Afterwards, you can add it to the `location.pool` and the `pool2.upstream` to use it.
+
+Use `host.docker.internal` directives in the `pool2.upstream`, like:
+```
+server host.docker.internal:8080;
+```
+Enable the `host.docker.internal` directive in your docker-compose file by:
+```
+nginx-pool:
+    ...
+    extra_hosts:
+      # make 'localhost' ports available in nginx container by using 'host.docker.internal'
+      - "host.docker.internal:host-gateway"
+```
 ### Play2 configuration
 The following files contain the configuration for the play2 apps for the `ENV_PROD` and `ENV_INFRA` environment:
 - `.docker-conf/mode_prod/drops/application.conf`
