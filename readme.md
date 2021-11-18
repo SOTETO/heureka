@@ -38,7 +38,7 @@ You can also use `reload` to reload the console (and its configuration) and `exi
 
 > **Configuration:** As a best practice, the configuration should always be edited _before_ the console will be used. Otherwise, the state of the console could become invalid.
 
-> **Host system effects:** Starting Heureka basically binds the port 80 (and 443 if SSL is configured) and runs several docker container (using CPU and working memory). Additionally, a virtual docker network is initiated and thus, in the most basic case, no more port binding on the host are required. Furthermore, it uses disk space for some cloned GIT repositories.
+> **Host system effects:** Starting Heureka basically binds the port 80 (and 443 if SSL is configured) and runs several docker containers (using CPU and working memory). Additionally, a virtual docker network is initiated and thus, in the most basic case, no more port binding on the host are required. Furthermore, it uses disk space for some cloned GIT repositories.
 
 ### Production environment
 
@@ -113,13 +113,13 @@ The `new` command starts a wizard that creates a new microservice in the `micros
 The wizard also creates the `env.sh` file for your new microservice, implementing very basic commands for your setup:
 
 - `up` - Clones the defined git repositories and starts the docker services by using the configured docker-compose setup.
-- `rm` - Stops and removes the Docker container that have been started.
+- `rm` - Stops and removes the Docker containers that have been started.
 - `admin` - If the system is running, you can name admins.
 - `leave` - Leave the environment
 - `exit` - close the Heureka console
 - \* - Help
 
-If you want to add more docker container to your setup, change the created docker-compose file (`ms_<name>.yml`) or add more compose files in `default.conf`.
+If you want to add more docker containers to your setup, change the created docker-compose file (`ms_<name>.yml`) or add more compose files in `default.conf`.
 
 > **Best practice:** Since Heureka uses Docker containers, it is strongly recommended to use a separated Docker container to run a database.
 
@@ -319,7 +319,7 @@ For a microservice environment these files are saved in a location relative to t
 
 > **IP addresses and ports:** You can change the IP addresses and ports as you want, but keep in mind, that these values also have to be updated in the Nginx configuration as it is explained in the [Nginx configuration](#nginx-configuration).
 
-> **Docker network:** The `base.yml` introduces an virtual docker network that is used to separate the docker container and move the internal communication to the save network. If you remove the docker network, port conflicts could emerge and handling SSL certificate handshake between microservices becomes required.
+> **Docker network:** The `base.yml` introduces an virtual docker network that is used to separate the docker containers and move the internal communication to the save network. If you remove the docker network, port conflicts could emerge and handling SSL certificate handshake between microservices becomes required.
 
 ### Git configuration
 The `default.conf` contains the URL, the name and the branch that has to be selected of every git repository. Additionally, you can set a local file system path for the repositories (default is `~/heureka/...`).
@@ -344,7 +344,7 @@ There are always three files:
 - `location.pool` - defines the `location` directives for the nginx and thus, it separates the different systems used in the environment
 - `pool2.upstream` - defines the `upstream` directives to the proxied server that are deployed by the different microservices
 
-> **IP addresses and ports:** You can change IP addresses and ports in the `pool2.upstream` as you want, but keep in mind that these directives are pointing to webservers running in the docker container or on port different to 80 and 443 on the host machine. Thus, if you're changing the IP addresses and ports, you have to ensure that also the webservers are running on the new IP addresses and ports (e.g. by just starting them at the new configuration or manipulating the docker-compose configuration).
+> **IP addresses and ports:** You can change IP addresses and ports in the `pool2.upstream` as you want, but keep in mind that these directives are pointing to webservers running in the docker containers or on port different to 80 and 443 on the host machine. Thus, if you're changing the IP addresses and ports, you have to ensure that also the webservers are running on the new IP addresses and ports (e.g. by just starting them at the new configuration or manipulating the docker-compose configuration).
 
 ### Play2 configuration
 The following files contain the configuration for the play2 apps for the `ENV_PROD` and `ENV_INFRA` environment:
@@ -439,7 +439,7 @@ Currently, the Heureka-CLI just uses the [logging implemented by Docker](https:/
 ```
 sudo docker logs <container-name>
 ```
-to show the logs of a container. See `docker ps --format '{{.Names}}'` to print the names of the running container.
+to show the logs of a container. See `docker ps --format '{{.Names}}'` to print the names of the running containers.
 
 Print log of MS-DROPS backend service (drops):
 ```
@@ -448,8 +448,8 @@ sudo docker logs drops
 
 ## Troubleshooting
 ### Error `502` in browser
-If you are continously receiving `502` errors, maybe one or more docker container are continously restarting. It sometimes happens that container get corrupted. 
+If you are continously receiving `502` errors, maybe one or more docker containers are continously restarting. It sometimes happens that containers get corrupted. 
 
 __Solution__
-Check, if there are continously restarting docker container by `sudo docker ps` in your terminal. If there are some container, check their logs for more information. If you see no problem, try a restart:
+Check, if there are continously restarting docker containers by `sudo docker ps` in your terminal. If there are some containers, check their logs for more information. If you see no problem, try a restart:
 Use `rm` on your Heureka-CLI and `up` afterwards. In most cases this will solve the trouble.

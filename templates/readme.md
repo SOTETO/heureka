@@ -29,7 +29,7 @@ Using the default `ms_<name>.yml`, the REST-API of MS-DROPS will be available by
 4. Add an nginx upstream for your local new MS in `.docker-conf/nginx/pool2.upstream` (see new or arise and drops as an example).
 5. Add new locations to the nginx `.docker-conf/nginx/location.pool` file (using the new upstreams).
 
-If you want to add more docker container to your setup, change the created docker-compose file (`ms_<name>.yml`) or add more compose files in `default.conf`. See [Docker Compose Docs](https://docs.docker.com/compose/) for more information.
+If you want to add more docker containers to your setup, change the created docker-compose file (`ms_<name>.yml`) or add more compose files in `default.conf`. See [Docker Compose Docs](https://docs.docker.com/compose/) for more information.
 
 In the case you want to merge or add your own docker compose file, please also consider [the hints in the general Heureka-CLI documentation](https://github.com/SOTETO/heureka#docker-compose-configuration). Furthermore, you should also keep in mind that relative pathes in docker compose files have their origin in the path that is used to *run* docker compose (the Heureka base directory). Thus, all relative pathes should be relative to the Heureka base directory.
 
@@ -41,7 +41,7 @@ In the case you want to merge or add your own docker compose file, please also c
 
 ## List of commands
 - `up` - Clones the defined git repositories and starts the docker services by using the configured docker-compose setup.
-- `rm` - Stops and removes the Docker container that have been started.
+- `rm` - Stops and removes the Docker containers that have been started.
 - `admin` - If the system is running, you can name admins.
 - `leave` - Leave the environment
 - `exit` - close the Heureka console
@@ -55,7 +55,7 @@ Currently, the Heureka-CLI just uses the [logging implemented by Docker](https:/
 ```
 sudo docker logs <container-name>
 ```
-to show the logs of a container. See `docker ps --format '{{.Names}}'` to print the names of the running container.
+to show the logs of a container. See `docker ps --format '{{.Names}}'` to print the names of the running containers.
 
 Print log of MS-DROPS backend service (drops):
 ```
