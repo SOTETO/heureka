@@ -4,12 +4,26 @@ services:
   # Dispenser #
   #############
 
-  dispenser-database:
-    image: "mongo:${DISPENSER_DB_TAG}"
-    container_name: dispenser-database
-    restart: always
-    volumes: 
-       - ./.docker-volumes/mode_infra/dispenser-database/:/data/db/
-    # Required for access from local running dispenser
-    ports:
-       - 27017:27017
+    dispenser:
+      volumes:
+        - ./.docker-conf/mode_infra/dispenser/application.conf:/opt/docker/conf/application.conf
+        - ./.docker-conf/mode_infra/navigation/:/opt/docker/conf/navigation/jsons/
+      profiles: ["running-dispenser"]
+
+    dispenser-database:
+      volumes:
+        - ./.docker-volumes/mode_infra/dispenser-database/:/data/db/
+      # Required for access from local running dispenser
+      ports:
+        - 27017:27017
+
+  ################
+  # Architecture #
+  ################
+
+    nginx-pool:
+      volumes:
+        - ./.docker-conf/mode_infra/nginx/:/etc/nginx/conf.d/
+      extra_hosts:
+        # make 'localhost' ports available in nginx container by using 'host.docker.internal'
+        - "host.docker.internal:host-gateway"

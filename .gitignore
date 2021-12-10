@@ -1,3 +1,9 @@
+# Work in progress ignore
+.idea
+*.save
+*.iml
+
+# Data ignore list
 .docker-volumes/
 .docker-volumes/drops-database/mysql/*
 .docker-volumes/dispenser-database/mongodb/*

@@ -60,9 +60,10 @@ function infraMan () {
   manHeader "DEVELOPMENT" "INFRASTRUCTURE REQUIRED TO RUN MICROSERVICES"
   echo -e "
   clone                         Clone the required git repositories
-  rm                            Remove the git repositories excluding the documentatuin contents
+  rm                            Remove the git repositories excluding the documentation contents
   rm docu                       Remove the git repositories including the documentation contents
-  docker up                     Start the 'docker-compose up' considering the '.docker-conf/mode_infra/.env' file (starts the dispenser database on 'localhost:27017')
+  docker up                     Start the 'docker-compose up' considering the '.docker-conf/mode_infra/.env' file
+  docker up dispenser           Start the 'docker-compose up' considering the '.docker-conf/mode_infra/.env' file including a dispenser service
   docker rm                     Stop and remove all docker containers described in the docker-compose file
   docker rm dispenser volumes   Remove the dispenser volumes. That means the database contents.
   leave                         Leave INFRA environment

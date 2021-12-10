@@ -1,10 +1,24 @@
 version: "3.9"  # optional since v1.27.0
 services:
   drops-database:
+    image: "mariadb:${DROPS_DB_TAG}"
+    container_name: drops-database
+    restart: unless-stopped
     ports:
       - 3306:3306
     volumes: 
        - ./.docker-volumes/mode_ms_drops/drops-database/:/var/lib/mysql/
+    environment:
+      MYSQL_ROOT_PASSWORD: "${DROPS_DB_ROOT_PASS}"
+      MYSQL_DATABASE: "${DROPS_DB_NAME}"
+      MYSQL_USER: "${DROPS_DB_USER}"
+      MYSQL_PASSWORD: "${DROPS_DB_PASS}"
+    command:
+      - "--character-set-server=utf8mb4"
+      - "--collation-server=utf8mb4_unicode_ci"
+    networks:
+      pool-network:
+        ipv4_address: ${DROPS_DB_IP}
 
   #############
   # Dispenser #

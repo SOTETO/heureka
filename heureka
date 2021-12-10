@@ -220,21 +220,28 @@ function infra () {
       "docker")
         case "$sub" in
           "up")
-               dockerRun infra
-               initGlobalNavigation infra
-	       setConfig "running" "yes"
-               prompt=$(calcPrompt)
-               ;;
+            case "$para1" in
+                "dispenser") dockerRun infra running-dispenser;;
+                *) dockerRun infra;;
+            esac
+            #initGlobalNavigation infra
+	        setConfig "running" "yes"
+            prompt=$(calcPrompt)
+            ;;
           "rm")
-	     case "$para1" in
+	        case "$para1" in
                "dispenser")
                   case "$para2" in
                     "volumes") dockerRmVolumes infra dispenser-database;;
-                    *) man "INFRA";;
+                    *)
+                      dockerRm infra dispenser
+                      setConfig "running" "no"
+                      prompt=$(calcPrompt)
+                     ;;
                   esac
                ;;
                "")
-		  dockerRm infra
+		          dockerRm infra
                   setConfig "running" "no"
                   prompt=$(calcPrompt)
                   ;;

@@ -26,7 +26,14 @@ function getDockerEnv () {
 function dockerPull () {
   local compose=$( composeSelection $1 )
   local envFile=$( getDockerEnv $1 )
-  sudo docker-compose $compose --env-file $envFile pull
+
+  local profiles=""
+  if [[ -n ${2+x} && !  -z  $2 ]]; then
+    # $2 is set
+    profiles=" --profile $2 "
+  fi
+
+  sudo docker-compose $compose $profiles --env-file $envFile pull
 }
 
 # $1 = selector for drops development environment (value "ms_drops"), development of a new ms ("dev"), infrastructure development (value "infra") or production environment (value "prod")
@@ -34,8 +41,14 @@ function dockerRun () {
   local compose=$( composeSelection $1 )
   local envFile=$( getDockerEnv $1 )
 
-  dockerPull $1
-  sudo docker-compose $compose --env-file $envFile up -d
+  local profiles=""
+  if [[ -n ${2+x} && !  -z  $2 ]]; then
+    # $2 is set
+    profiles=" --profile $2 "
+  fi
+
+  dockerPull $1 $2
+  sudo docker-compose $compose $profiles --env-file $envFile up -d
 }
 
 # $1 = selector for development environment (value "ms_drops"), development of a new ms ("dev"), infrastructure development (value "infra") or production environment (value "prod")
@@ -43,7 +56,13 @@ function dockerStop () {
   local compose=$( composeSelection $1 )
   local envFile=$( getDockerEnv $1 )
 
-  sudo docker-compose $compose --env-file $envFile stop
+  local profiles=""
+  if [[ -n ${2+x} && !  -z  $2 ]]; then
+    # $2 is set
+    profiles=" --profile $2 "
+  fi
+
+  sudo docker-compose $compose $profiles --env-file $envFile stop
 }
 
 # $1 = selector for development environment (value "ms_drops"), development of a new ms ("dev"), infrastructure development (value "infra") or production environment (value "prod")
@@ -51,7 +70,13 @@ function dockerRm () {
   local compose=$( composeSelection $1 )
   local envFile=$( getDockerEnv $1 )
 
-  sudo docker-compose $compose --env-file $envFile rm -fs
+  local profiles=""
+  if  [[ -n ${2+x} && !  -z  $2 ]]; then
+    # $2 is set
+    profiles=" --profile $2 "
+  fi
+
+  sudo docker-compose $compose $profiles --env-file $envFile rm -fs
 }
 
 # $1 = selector for development environment (value "ms_drops"), infrastructure development (value "infra") or production environment (value "prod")
