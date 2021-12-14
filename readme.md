@@ -80,6 +80,7 @@ The `prod` environment provides the following commands:
 
 ### Infrastructure development environment
 Required to clone all git repositories for the development of infrastructure services like `dispenser` or `vca-widget-base`.
+Furthermore, it is possible to start an external service on port `8080` that will be accessible by the base path `/test`.
 
 #### Deployment
 Follow the upcoming steps to create your infrastructure development environment:

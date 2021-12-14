@@ -14,3 +14,7 @@ upstream heureka-widget-navigation {
 upstream grav { 
         server 172.4.150.2;
 }
+
+upstream external-test-service {
+    server host.docker.internal:8080;
+}
