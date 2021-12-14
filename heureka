@@ -224,7 +224,7 @@ function infra () {
                 "dispenser") dockerRun infra running-dispenser;;
                 *) dockerRun infra;;
             esac
-            #initGlobalNavigation infra
+            initGlobalNavigation infra
 	        setConfig "running" "yes"
             prompt=$(calcPrompt)
             ;;
