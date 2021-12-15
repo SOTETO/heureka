@@ -7,14 +7,18 @@ upstream dispenser {
 	server host.docker.internal:9000;
 }
 
+upstream external-test-service {
+    server host.docker.internal:8080;
+}
+
 upstream heureka-widget-navigation {
     server host.docker.internal:8081;
 }
 
-upstream grav { 
-        server 172.4.150.2;
+upstream heureka-sample-widgets {
+   server host.docker.internal:8082;
 }
 
-upstream external-test-service {
-    server host.docker.internal:8080;
+upstream grav { 
+        server 172.4.150.2;
 }
